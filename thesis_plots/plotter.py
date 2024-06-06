@@ -5,6 +5,10 @@ from matplotlib import style
 import matplotlib.pyplot as plt
 
 
+formatter = logging.Formatter('%(levelname)s:%(name)s - %(asctime)s - %(message)s', "%H:%M:%S")
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logging.getLogger("thesis_plots").addHandler(handler)
 logger = logging.getLogger(__name__)
 
 
@@ -12,8 +16,7 @@ class Plotter:
 
     registry = {}
 
-    def __init__(self, log_level: str = "INFO"):
-        logging.getLogger("thesis_plots").setLevel(log_level.upper())
+    def __init__(self):
         self.dir = Path(os.environ.get("THESIS_PLOTS", "./thesis_plots")).resolve()
         logger.debug(f"using directory {self.dir}")
         self.dir.mkdir(exist_ok=True)
@@ -25,8 +28,13 @@ class Plotter:
         _styles = ["thesis_plots.styles.base"] + [f"thesis_plots.styles.{w}" for w in style_name]
 
         def plot_function_with_style(f):
-            style.use(_styles)
-            cls.registry[f.__module__.strip("thesis_plots.") + ":" + f.__name__] = f
+            def wrapper(*args, **kwargs):
+                logger.debug(f"using styles {_styles}")
+                style.use(_styles)
+                return f(*args, **kwargs)
+
+            cls.registry[f.__module__.strip("thesis_plots.") + ":" + f.__name__] = wrapper
+
             return f
 
         return plot_function_with_style

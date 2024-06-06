@@ -14,7 +14,7 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register("side")
+@Plotter.register(["side", "hist"])
 def kcorrection():
     logger.info("plotting k-correction")
 
