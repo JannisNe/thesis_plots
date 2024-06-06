@@ -61,7 +61,3 @@ class Plotter:
                 plt.show()
             plt.close()
         logger.info("done")
-
-    @classmethod
-    def cli(cls, name: str | list[str] | None = None, save: bool = False, show: bool = False, log_level: str = "INFO"):
-        cls(log_level).plot(name, save, show)

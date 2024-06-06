@@ -10,7 +10,9 @@ def run(
         name: Annotated[Optional[list[str]], typer.Argument()] = None,
         save: bool = True,
         show: bool = False,
-        list_plots: Annotated[bool, typer.Option("--list", "-L", is_flag=True, help="list available plots and exit")] = False
+        list_plots: Annotated[
+            bool, typer.Option("--list", "-L", is_flag=True, help="list available plots and exit")
+        ] = False
 ):
     logging.getLogger("thesis_plots").setLevel(log_level.upper())
     plotter = Plotter()
@@ -21,11 +23,7 @@ def run(
             typer.echo(k)
         raise typer.Exit()
 
-    plotter.plot(
-        name=name,
-        save=save,
-        show=show
-    )
+    plotter.plot(name=name, save=save, show=show)
 
 
 def main():
