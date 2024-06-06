@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "thesis-plots"
+version = "0.1.0"
+description = ""
+authors = ["JannisNe <necker@physik.hu-berlin.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+air-flares = {git = "https://gitlab.desy.de/jannisnecker/air_flares"}
+kcorrect = "^5.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
