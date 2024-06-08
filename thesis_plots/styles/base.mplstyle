@@ -1,8 +1,9 @@
-font.size: 12
+font.size: 10
 font.family: sans-serif
+font.sans-serif: helvetica
 
 axes.titlesize: medium
 
-figure.figsize: 3.8832815712, 2.4
+figure.figsize: 3.937007874015748, 2.4332106784273146
 figure.labelsize: medium
 figure.dpi: 300
