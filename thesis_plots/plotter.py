@@ -17,7 +17,7 @@ class Plotter:
     registry = {}
 
     def __init__(self):
-        self.dir = Path(os.environ.get("THESIS_PLOTS", "./thesis_plots")).resolve()
+        self.dir = Path(os.environ.get("THESIS_PLOTS", "./thesis_plots")).expanduser().resolve()
         logger.debug(f"using directory {self.dir}")
         self.dir.mkdir(exist_ok=True)
 
