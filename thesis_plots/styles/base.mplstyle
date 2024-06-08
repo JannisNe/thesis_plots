@@ -1,9 +1,34 @@
-font.size: 10
-font.family: sans-serif
-font.sans-serif: helvetica
-
+font.size: 7
 axes.titlesize: medium
-
 figure.figsize: 3.937007874015748, 2.4332106784273146
 figure.labelsize: medium
 figure.dpi: 300
+
+# sneaked from seaborn white style
+axes.axisbelow: true
+axes.edgecolor: .15
+axes.facecolor: white
+axes.grid: false
+axes.labelcolor: .15
+axes.spines.bottom: true
+axes.spines.left: true
+axes.spines.right: true
+axes.spines.top: true
+figure.facecolor: white
+font.family: sans-serif
+font.sans-serif: Arial, DejaVu Sans, Liberation Sans, Bitstream Vera Sans, sans-serif
+grid.color: .8
+grid.linestyle: "-"
+image.cmap: rocket
+lines.solid_capstyle: round
+patch.edgecolor: w
+patch.force_edgecolor: true
+text.color: .15
+xtick.bottom: false
+xtick.color: .15
+xtick.direction: out
+xtick.top: false
+ytick.color: .15
+ytick.direction: out
+ytick.left: false
+ytick.right: false
