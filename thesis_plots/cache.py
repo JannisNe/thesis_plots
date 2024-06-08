@@ -43,7 +43,7 @@ class DiskCache:
     def get_cache_file(self, key: str) -> Path:
         return self.cache_dir / (str(key) + ".cache")
 
-    def get(self, key: int) -> Any | None:
+    def get(self, key: str) -> Any | None:
         cache_file = self.get_cache_file(key)
         if cache_file.exists():
             logger.debug(f"loading {key} from cache")
@@ -53,7 +53,7 @@ class DiskCache:
             logger.debug(f"{key} not in cache")
             return None
 
-    def set(self, key: int, value: bytes):
+    def set(self, key: str, value: bytes):
         cache_file = self.get_cache_file(key)
         logger.debug(f"saving {key} to cache {cache_file}")
         with cache_file.open("wb") as f:
