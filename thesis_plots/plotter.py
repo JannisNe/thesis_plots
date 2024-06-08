@@ -25,7 +25,8 @@ class Plotter:
     def register(cls, style_name: str | list[str] = None):
         if isinstance(style_name, str):
             style_name = [style_name]
-        _styles = ["thesis_plots.styles.base"] + [f"thesis_plots.styles.{w}" for w in style_name]
+        _add_styles = [f"thesis_plots.styles.{w}" for w in style_name] if style_name else []
+        _styles = ["thesis_plots.styles.base"] + _add_styles
 
         def plot_function_with_style(f):
             def wrapper(*args, **kwargs):
