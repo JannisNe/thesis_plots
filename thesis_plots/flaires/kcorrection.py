@@ -47,7 +47,7 @@ def kcorrection():
     fig, ax = plt.subplots()
     ax.plot(wavelengths, bb_flux, label=f"Blackbody, {temp} K", zorder=10)
     for i, (f, fit) in enumerate(zip(fluxes, fits)):
-        ax.plot(wavelengths, f, label=f"templates" if i == 0 else None, color="dimgrey", zorder=2)
+        ax.plot(wavelengths, f, label=f"galaxy templates" if i == 0 else None, color="dimgrey", zorder=2)
         ax.plot(fit_wave, 10**np.polyval(fit, np.log10(fit_wave)), label=f"PL fits" if i == 0 else None, ls="--",
                 color="dimgrey", alpha=0.7, zorder=5)
     ax.axvline(WISEDataBase.band_wavelengths["W1"].to("AA").value, color="red", label="WISE bands", ls=":")
@@ -67,5 +67,5 @@ def kcorrection():
     zax.set_xticklabels([f"{z:.0f}" for z in zs])
     zax.set_xticklabels([], minor=True)
     zax.set_xlabel("Redshift")
-    ax.legend(ncols=1, loc="lower center", bbox_to_anchor=(0.5, 1.2), frameon=False)
+    ax.legend(ncols=1, loc="lower center", bbox_to_anchor=(0.5, 1.3), frameon=False)
     return fig
