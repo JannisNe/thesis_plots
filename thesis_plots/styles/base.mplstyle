@@ -1,7 +1,4 @@
-font.size: 8.5
-axes.titlesize: medium
 figure.figsize: 3.937007874015748, 2.4332106784273146
-figure.labelsize: medium
 figure.dpi: 300
 
 # sneaked from seaborn white style
@@ -32,3 +29,28 @@ ytick.color: .15
 ytick.direction: out
 ytick.left: false
 ytick.right: false
+
+# sneaked from seaborn paper context
+axes.labelsize: 9.600000000000001
+axes.linewidth: 1.0
+axes.titlesize: 9.600000000000001
+font.size: 9.600000000000001
+grid.linewidth: 0.8
+legend.fontsize: 8.8
+legend.title_fontsize: 9.600000000000001
+lines.linewidth: 1.2000000000000002
+lines.markersize: 4.800000000000001
+patch.linewidth: 0.8
+xtick.labelsize: 8.8
+xtick.major.size: 4.800000000000001
+xtick.major.width: 1.0
+xtick.minor.size: 3.2
+xtick.minor.width: 0.8
+ytick.labelsize: 8.8
+ytick.major.size: 4.800000000000001
+ytick.major.width: 1.0
+ytick.minor.size: 3.2
+ytick.minor.width: 0.8
+
+# sneaked from seaborn colorblind palette
+axes.prop_cycle: cycler('color', ["#0173B2", "#DE8F05", "#029E73", "#D55E00", "#CC78BC", "#CA9161", "#FBAFE4", "#949494", "#ECE133", "#56B4E9"])

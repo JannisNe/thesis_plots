@@ -47,11 +47,11 @@ def kcorrection():
     fig, ax = plt.subplots()
     ax.plot(wavelengths, bb_flux, label=f"Blackbody, {temp} K", zorder=10)
     for i, (f, fit) in enumerate(zip(fluxes, fits)):
-        ax.plot(wavelengths, f, label=f"galaxy templates" if i == 0 else None, color="dimgrey", zorder=2)
+        ax.plot(wavelengths, f, label=f"galaxy templates" if i == 0 else None, color="dimgrey", zorder=2, alpha=0.7)
         ax.plot(fit_wave, 10**np.polyval(fit, np.log10(fit_wave)), label=f"PL fits" if i == 0 else None, ls="--",
-                color="dimgrey", alpha=0.7, zorder=5)
-    ax.axvline(WISEDataBase.band_wavelengths["W1"].to("AA").value, color="red", label="WISE bands", ls=":")
-    ax.axvline(WISEDataBase.band_wavelengths["W2"].to("AA").value, color="red", ls=":")
+                color="dimgrey", alpha=1, zorder=5)
+    ax.axvline(WISEDataBase.band_wavelengths["W1"].to("AA").value, color="C3", label="WISE bands", ls=":")
+    ax.axvline(WISEDataBase.band_wavelengths["W2"].to("AA").value, color="C3", ls=":")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim((3e3, 1e5))
