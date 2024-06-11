@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from matplotlib import style
 import matplotlib.pyplot as plt
+from difflib import get_close_matches
 
 
 formatter = logging.Formatter('%(levelname)s:%(name)s - %(asctime)s - %(message)s', "%H:%M:%S")
@@ -51,7 +52,7 @@ class Plotter:
         logger.info(f"making {len(name)} plots")
         for n in name:
             if n not in self.registry:
-                raise KeyError(f"plot {n} not found in registry")
+                raise KeyError(f"plot {n} not found in registry! {_did_you_mean(n, list(self.registry.keys()))}")
             logger.info(f"plotting {n}")
             fig = self.registry[n]()
             if save:
@@ -62,3 +63,10 @@ class Plotter:
                 plt.show()
             plt.close()
         logger.info("done")
+
+
+def _did_you_mean(name: str, available: list[str]) -> str:
+    closest = get_close_matches(name, available, n=1, cutoff=0.8)
+    if closest:
+        return f"Did you mean {closest[0]}?"
+    return f"Available are {', '.join(available)}"
