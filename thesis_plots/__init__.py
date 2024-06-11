@@ -1,3 +1,1 @@
-from thesis_plots.flaires.kcorrection import kcorrection
-
-
+from thesis_plots import flaires, resimulations
