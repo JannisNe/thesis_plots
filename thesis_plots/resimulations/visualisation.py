@@ -96,7 +96,7 @@ def toy_event():
     ax.view_init(elev=elev, azim=azim)
     ax.plot(*orig_line, zorder=5)
     for line in data["new_lines"][:20]:
-        ax.plot3D(*line, color="r", alpha=0.2, zorder=5)
+        ax.plot3D(*line, color="C3", alpha=0.2, zorder=5)
     ax.set_xlabel('x [m]', labelpad=-25)
     ax.set_ylabel('y [m]', labelpad=-25)
     ax.set_zlabel('z [m]', labelpad=-25)
