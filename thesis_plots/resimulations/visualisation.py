@@ -64,6 +64,8 @@ def circle_plane():
     ax.add_patch(plt.Rectangle((draw_x[0], draw_y[0]), draw_x[1] - draw_x[0], draw_y[1] - draw_y[0],
                                color="grey", alpha=0.3, ls=":", fill=False))
     ax.set_aspect("equal")
+    ax.set_xlabel("x [m]")
+    ax.set_ylabel("y [m]")
 
     return fig
 
