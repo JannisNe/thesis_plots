@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
-import time
 import logging
 import json
 
@@ -71,22 +70,35 @@ def circle_plane():
 
 @Plotter.register("wide")
 def toy_event():
-
     data_file = Path(__file__).parent / "data" / "toy_event.json"
     logger.debug(f"loading data from {data_file}")
     with open(data_file, "r") as f:
         data = json.load(f)
-    geometry = data["geometry"]
-    orig_line = data["orig_line"]
+    geometry = np.array([data["geometry"]["x"], data["geometry"]["y"], data["geometry"]["z"]])
+    orig_line = np.array(data["orig_line"])
+    elev = 60
+    azim = -60
+    view_vector = np.array([np.sin(np.radians(elev)) * np.cos(np.radians(azim)),
+                            np.sin(np.radians(elev)) * np.sin(np.radians(azim)),
+                            np.cos(np.radians(elev))])
 
-    fig = plt.figure()  # (8,6)
-    ax = plt.subplot(projection='3d')
-    ax.plot(*orig_line, lw=3)
-    for line in data["new_lines"]:
-        ax.plot(*line, color="r", alpha=0.2)
-    ax.set_xlabel('pos.x [m]', fontsize=12, labelpad=-25)
-    ax.set_ylabel('pos.y [m]', fontsize=12, labelpad=-25)
-    ax.set_zlabel('pos.z [m]', fontsize=12, labelpad=-25)
-    ax.scatter(geometry['x'], geometry['y'], geometry['z'], s=0.5, c='0.7', alpha=0.4)
+    # find geometry points behind and in front of the plane defined by view vector and orig_line
+    m = np.dot(geometry.T - orig_line[:, 0], view_vector) > 0
+    logger.debug(f"found {m.sum()} points in front of the plane")
+    logger.debug(f"found {len(m) - m.sum()} points behind the plane")
+    zorders = np.zeros(len(geometry.T))
+    zorders[m] = 10
+
+    fig = plt.figure()
+    ax = plt.subplot(projection='3d', computed_zorder=False)
+    ax.view_init(elev=elev, azim=azim)
+    ax.plot(*orig_line, zorder=5)
+    for line in data["new_lines"][:20]:
+        ax.plot3D(*line, color="r", alpha=0.2, zorder=5)
+    ax.set_xlabel('x [m]', labelpad=-25)
+    ax.set_ylabel('y [m]', labelpad=-25)
+    ax.set_zlabel('z [m]', labelpad=-25)
+    ax.scatter(*geometry[:, m], color="0.5", s=0.5, edgecolors="none", zorder=10)
+    ax.scatter3D(*geometry[:, ~m], color="0.5", s=0.5, edgecolors="none", zorder=0)
     ax.set_aspect("equal")
     return fig
