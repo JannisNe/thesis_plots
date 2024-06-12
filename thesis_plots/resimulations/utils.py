@@ -7,7 +7,7 @@ from pooch import retrieve, Pooch
 from thesis_plots.plotter import Plotter
 
 
-logger = logging.getLogger("thesis_plots.resimulations.results")
+logger = logging.getLogger(__name__)
 
 
 class SCPDownloader:
