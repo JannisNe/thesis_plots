@@ -1,6 +1,6 @@
 from pathlib import Path
 import logging
-from thesis_plots.resimulations.results import SCPDownloader
+from thesis_plots.resimulations.utils import SCPDownloader
 
 logger = logging.getLogger("thesis_plots.resimulations.data.create_checksum")
 
