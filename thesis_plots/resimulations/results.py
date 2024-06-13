@@ -9,7 +9,7 @@ from thesis_plots.plotter import Plotter
 
 logger = logging.getLogger(__name__)
 
-events = ["tywin", "lancel", "txs"]
+events = ["tywin", "lancel", "bran", "txs"]
 
 ic_event_name = {
     "tywin": "IC200530A",
@@ -23,7 +23,8 @@ def get_data(event_name: str):
     files = {
         "lancel": "lancel__data_user_jnecker_tde_neutrinos_resim_lancel_out_separate_selection_2m_posvar_M=0.60_E=0.20_OnlineL2_SplineMPE_5_data.npz",
         "tywin": "tywin__data_user_jnecker_tde_neutrinos_resim_tywin_out_separate_selection2_M=0.80_E=0.20_OnlineL2_SplineMPE_6_data.npz",
-        "txs": "txs__data_user_jnecker_tde_neutrinos_resim_txs_out_separate_selection2_M=0.60_E=0.20_OnlineL2_SplineMPE_6_data.npz"
+        "txs": "txs__data_user_jnecker_tde_neutrinos_resim_txs_out_separate_selection2_M=0.60_E=0.20_OnlineL2_SplineMPE_6_data.npz",
+        "bran": "bran__data_user_jnecker_tde_neutrinos_resim_bran_out8_charge_1-1400_truncated_energy.i3.zst__OnlineL2_SplineMPE_6_data.npz"
     }
     filename = Path(__file__).parent / "data" / "resim" / files[event_name]
     logger.debug(f"loading {filename}")
@@ -99,7 +100,8 @@ def charge_plot():
         ylim = {
             "lancel": [0, 500],
             "tywin": [-500, 0],
-            "txs": [-500, 0]
+            "txs": [-500, 0],
+            "bran": [-500, 500]
         }[event_name]
 
         z_sorted = np.argsort(z_om)
