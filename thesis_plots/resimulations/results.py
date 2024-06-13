@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
+from matplotlib import ticker
 
 from thesis_plots.plotter import Plotter
 
@@ -30,7 +30,7 @@ def get_data(event_name: str):
     return np.load(filename)
 
 
-@Plotter.register(arg_loop=events)
+@Plotter.register("upright", arg_loop=events)
 def abs_log_ratios(event_name: str):
 
     logger.debug(f"making plot for {event_name}")
@@ -39,7 +39,7 @@ def abs_log_ratios(event_name: str):
     Eratio = data["Eratio"]
     Emeas_ev = data["Emeas_ev"]
 
-    fig, axs = plt.subplots(nrows=2, gridspec_kw={"height_ratios": [4, 1], "hspace": 0}, sharex="all")
+    fig, axs = plt.subplots(nrows=2, gridspec_kw={"height_ratios": [3, 1], "hspace": 0}, sharex="all")
 
     for i, (iE, iEratio) in enumerate(zip(Esim_trunc, Eratio)):
         marker = ""
@@ -49,26 +49,18 @@ def abs_log_ratios(event_name: str):
         axs[1].plot(iEratio, marker=marker, color="C0", alpha=alpha)
 
     axs[0].plot(Emeas_ev, color="k", label=ic_event_name.get(event_name, event_name), lw=2)
-
     axs[0].set_ylabel("E [GeV]")
     axs[1].set_xlabel("Segment")
     axs[1].set_ylabel("$E_\mathrm{sim} / E_\mathrm{data}$")
     axs[0].set_yscale("log")
     axs[1].set_yscale("log")
-    axs[0].get_xaxis().set_major_locator(MaxNLocator(integer=True))
-
+    axs[0].get_xaxis().set_major_locator(ticker.MaxNLocator(integer=True))
     axs[1].axhline(1, color="k", lw=2)
-    for ax in axs:
-        ax.grid(ls=":", alpha=0.5)
-
     ylim = np.array(axs[0].get_ylim())
     ylim[1] *= 2
     axs[0].set_ylim(*ylim)
-    axs[0].annotate("IceCube Work In Progress",
-                    (0, 1), xycoords="axes fraction",
-                    xytext=(2, -2), textcoords='offset points',
-                    color="red", ha="left", va="top")
-
-    axs[0].legend(loc="lower left")
+    axs[1].get_yaxis().set_major_locator(ticker.LogLocator(numticks=10, subs=[1.0, 2.0, 5.0]))
+    axs[1].yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f"{x:.1g}"))
+    axs[0].legend(loc="upper right")
 
     return fig
