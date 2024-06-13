@@ -36,23 +36,18 @@ class Plotter:
 
             fname = f.__module__.replace("thesis_plots.", "") + ":" + f.__name__
 
-            if not arg_loop:
-                def wrapper(*args, **kwargs):
-                    logger.debug(f"using styles {_styles}")
-                    style.use(_styles)
-                    return f(*args, **kwargs)
+            def wrapper(*args, **kwargs):
+                logger.debug(f"using styles {_styles}")
+                style.use(_styles)
+                return f(*args, **kwargs)
 
+            if not arg_loop:
                 cls.registry[fname] = wrapper
 
             else:
                 wrappers = []
                 for a in np.atleast_1d(arg_loop):
-                    def wrapper(*args, **kwargs):
-                        logger.debug(f"using styles {_styles}")
-                        style.use(_styles)
-                        return f(a, *args, **kwargs)
-
-                    cls.registry[f"{fname}_{a}"] = wrapper
+                    cls.registry[f"{fname}_{a}"] = lambda x=a, *args, **kwargs: wrapper(x, *args, **kwargs)
                     wrappers.append(wrapper)
 
             return f
