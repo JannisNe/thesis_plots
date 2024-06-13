@@ -21,9 +21,9 @@ ic_event_name = {
 
 def get_data(event_name: str):
     files = {
-        "lancel": "lancel__data_user_jnecker_tde_neutrinos_resim_lancel_out_separate_selection_2m_posvar_M=0.60_E=0.20_OnlineL2_SplineMPE_5_data",
-        "tywin": "tywin__data_user_jnecker_tde_neutrinos_resim_tywin_out_separate_selection2_M=0.80_E=0.20_OnlineL2_SplineMPE_6_data",
-        "txs": "txs__data_user_jnecker_tde_neutrinos_resim_txs_out_separate_selection2_M=0.60_E=0.20_OnlineL2_SplineMPE_6_data"
+        "lancel": "lancel__data_user_jnecker_tde_neutrinos_resim_lancel_out_separate_selection_2m_posvar_M=0.60_E=0.20_OnlineL2_SplineMPE_5_data.npz",
+        "tywin": "tywin__data_user_jnecker_tde_neutrinos_resim_tywin_out_separate_selection2_M=0.80_E=0.20_OnlineL2_SplineMPE_6_data.npz",
+        "txs": "txs__data_user_jnecker_tde_neutrinos_resim_txs_out_separate_selection2_M=0.60_E=0.20_OnlineL2_SplineMPE_6_data.npz"
     }
     filename = Path(__file__).parent / "data" / "resim" / files[event_name]
     logger.debug(f"loading {filename}")
@@ -33,12 +33,13 @@ def get_data(event_name: str):
 @Plotter.register(arg_loop=events)
 def abs_log_ratios(event_name: str):
 
+    logger.debug(f"making plot for {event_name}")
     data = get_data(event_name)
     Esim_trunc = data["Esim_trunc"]
     Eratio = data["Eratio"]
     Emeas_ev = data["Emeas_ev"]
 
-    fig, axs = plt.subplots(nrows=2, gridspec_kw={"height_ratios": [height_ratio, 1], "hspace": 0}, sharex="all")
+    fig, axs = plt.subplots(nrows=2, gridspec_kw={"height_ratios": [4, 1], "hspace": 0}, sharex="all")
 
     for i, (iE, iEratio) in enumerate(zip(Esim_trunc, Eratio)):
         marker = ""
