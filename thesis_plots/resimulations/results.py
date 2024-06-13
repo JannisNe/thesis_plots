@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import ticker
+from astropy.coordinates import SkyCoord
 
 from thesis_plots.plotter import Plotter
 
@@ -18,17 +19,24 @@ ic_event_name = {
     "txs": "IC170922A"
 }
 
+em_counterpart = {
+    "tywin": ["AT2019fdr", (257.2786, 26.8557)],  # Reusch et al. (2022)
+    "bran": ["AT2019dsg", (314.26, 14.20)],  # Stein et al. (2021)
+    "lancel": ["AT2019aalc", (231.069435, 4.855293)],  # https://www.wis-tns.org/object/2019aalc
+    "txs": ["TXS 0506+056", (77.35818525834, 05.69314816610)]  # http://cdsportal.u-strasbg.fr/?target=TXS%200506%2B056
+}
+
 
 def get_data(event_name: str):
     files = {
-        "lancel": "lancel__data_user_jnecker_tde_neutrinos_resim_lancel_out_separate_selection_2m_posvar_M=0.60_E=0.20_OnlineL2_SplineMPE_5_data.npz",
+        "lancel": "lancel__data_user_jnecker_tde_neutrinos_resim_lancel_out_separate_selection_posvar_M=0.60_E=0.20_OnlineL2_SplineMPE_5_data.npz",
         "tywin": "tywin__data_user_jnecker_tde_neutrinos_resim_tywin_out_separate_selection2_M=0.80_E=0.20_OnlineL2_SplineMPE_6_data.npz",
         "txs": "txs__data_user_jnecker_tde_neutrinos_resim_txs_out_separate_selection2_M=0.60_E=0.20_OnlineL2_SplineMPE_6_data.npz",
         "bran": "bran__data_user_jnecker_tde_neutrinos_resim_bran_out8_charge_1-1400_truncated_energy.i3.zst__OnlineL2_SplineMPE_6_data.npz"
     }
     filename = Path(__file__).parent / "data" / "resim" / files[event_name]
     logger.debug(f"loading {filename}")
-    return np.load(filename)
+    return np.load(filename, allow_pickle=True)
 
 
 @Plotter.register("upright", arg_loop=events)
@@ -128,5 +136,68 @@ def charge_plot():
     fig.supylabel("z [m]")
     axss[-1][1].set_xlabel("# hit DOMs")
     axss[-1][0].set_xlabel("Charge")
+
+    return fig
+
+
+def alert_scatter(event_name: str):
+    data = get_data(event_name)
+    alert_coord = data["alert_coord"].tolist()
+    offsets = data["offsets"]
+
+    em_counterpart_coord = SkyCoord(*em_counterpart[event_name][1], unit="deg")
+    em_counterpart_offset = [a.to("deg").value for a in alert_coord.spherical_offsets_to(em_counterpart_coord)]
+
+    fig, ax = plt.subplots()
+    ax.scatter(*np.array(offsets).T,
+               marker="o", label="Re-simulations", s=2, alpha=0.3, edgecolors="none")
+    ax.scatter(0, 0,
+               marker="X", label="Best Fit", edgecolors="k", linewidths=0.5)
+    ax.scatter(*em_counterpart_offset,
+               marker="*", label=em_counterpart[event_name][0], edgecolors="k", linewidths=0.5)
+    ax.set_aspect("equal")
+    ax.set_xlim([-5, 5])
+    ax.set_ylim([-5, 5])
+    ax.set_xlabel(r"$\Delta$RA [deg]")
+    ax.set_ylabel(r"$\Delta$Dec [deg]")
+    ax.legend()
+
+    return fig
+
+
+@Plotter.register("wide")
+def alert_scatter_combined():
+    width = plt.rcParams["figure.figsize"][0]
+    figsize = width, width
+    fig, axss = plt.subplots(
+        ncols=2, nrows=2,
+        gridspec_kw={"wspace": 0.05, "hspace": 0.05},
+        sharex="all", sharey="all",
+        figsize=figsize
+    )
+
+    for event_name, ax in zip(events, axss.flatten()):
+        data = get_data(event_name)
+        alert_coord = data["alert_coord"].tolist()
+        offsets = data["offsets"]
+
+        em_counterpart_coord = SkyCoord(*em_counterpart[event_name][1], unit="deg")
+        em_counterpart_offset = [a.to("deg").value for a in alert_coord.spherical_offsets_to(em_counterpart_coord)]
+
+        ax.scatter(*np.array(offsets).T, marker="o", label="Re-simulations", alpha=0.3, edgecolors="none", s=2)
+        ax.scatter(0, 0, marker="X", label="Best Fit", edgecolors="k", linewidths=0.5)
+        ax.scatter(*em_counterpart_offset, marker="*", edgecolors="k", linewidths=0.5, label="EM counterpart")
+        ax.set_aspect("equal")
+        lim = 4
+        ax.set_xlim([-lim, lim])
+        ax.set_ylim([-lim, lim])
+
+        # note the event name in top right corner, offset down and to the left
+        ax.annotate(ic_event_name.get(event_name, event_name) + " + " + em_counterpart[event_name][0], (1, 1),
+                    xycoords="axes fraction", xytext=(-2, -2), textcoords='offset points', ha="right", va="top")
+
+    axss[0][0].legend(bbox_to_anchor=(1, 1.05), loc="lower center", borderaxespad=0.0, frameon=False, ncol=3)
+    fig.supylabel(r"$\Delta$Dec [deg]")
+    fig.supxlabel(r"$\Delta$RA [deg]")
 
     return fig
