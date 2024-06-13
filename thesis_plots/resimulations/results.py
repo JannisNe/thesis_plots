@@ -82,44 +82,49 @@ def angle_distribution(event_name: str):
     return fig
 
 
-@Plotter.register(arg_loop=events)
-def charge_plot(event_name: str):
-    data = get_data(event_name)
-    charge_alert = data["charge_alert"]
-    charge_simul = data["charge_simul"]
-    z_om = data["z_om"]
-
-    ylim = {
-        "lancel": [0, 500],
-        "tywin": [-500, 0],
-        "txs": [-500, 0]
-    }[event_name]
+@Plotter.register("fullpage")
+def charge_plot():
 
     alert_color = "k"
     sim_color = "C2"
-    z_sorted = np.argsort(z_om)
 
-    fig, axs = plt.subplots( ncols=2, gridspec_kw={"wspace": 0}, sharey="all")
+    fig, axss = plt.subplots(ncols=2, nrows=4, gridspec_kw={"wspace": 0, "hspace": 0.1}, sharey="row", sharex="col")
 
-    y = z_om[z_sorted]
+    for event_name, axs in zip(events, axss):
+        data = get_data(event_name)
+        charge_alert = data["charge_alert"]
+        charge_simul = data["charge_simul"]
+        z_om = data["z_om"]
 
-    for i, ax in enumerate(axs):
-        ax.plot(charge_alert[:, 1 + i][z_sorted], y, ls="-", lw=4, label=ic_event_name.get(event_name, event_name),
-                c=alert_color)
-        ax.fill_betweenx(
-            y, charge_simul[:, 1 + i * 3][z_sorted], charge_simul[:, 2 + i * 3][z_sorted],
-            alpha=0.3, color=sim_color, label="Re-simulations Min/Max", linewidth=0
-        )
-        ax.plot(charge_simul[:, 3 + i * 3][z_sorted], y, color=sim_color, ls="--", label="Re-simulations median")
-        xlim = ax.get_xlim()
-        ax.fill_between(xlim - np.array([100, -100]), -50, -150, color="grey", alpha=0.3, linewidth=0)
-        ax.set_xlim(xlim)
+        ylim = {
+            "lancel": [0, 500],
+            "tywin": [-500, 0],
+            "txs": [-500, 0]
+        }[event_name]
 
-    axs[1].annotate("dust layer", (axs[1].get_xlim()[1], -150), ha="right", va="baseline", color="grey")
-    axs[0].legend(bbox_to_anchor=(0.5, 1.1), loc="upper center", borderaxespad=0.0)
-    axs[0].set_ylabel("z [m]")
-    axs[1].set_xlabel("# hit DOMs")
-    axs[0].set_xlabel("Charge")
-    axs[0].set_ylim(*ylim)
+        z_sorted = np.argsort(z_om)
+        y = z_om[z_sorted]
+
+        for i, ax in enumerate(axs):
+            ax.plot(charge_alert[:, 1 + i][z_sorted], y, ls="-", lw=4, c=alert_color)
+            ax.fill_betweenx(
+                y, charge_simul[:, 1 + i * 3][z_sorted], charge_simul[:, 2 + i * 3][z_sorted],
+                alpha=0.3, color=sim_color, label="Re-simulations Min/Max", linewidth=0
+            )
+            ax.plot(charge_simul[:, 3 + i * 3][z_sorted], y, color=sim_color, ls="--", label="Re-simulations median")
+            xlim = ax.get_xlim()
+            ax.fill_between(xlim - np.array([100, -100]), -50, -150, color="grey", alpha=0.3, linewidth=0)
+            ax.set_xlim(xlim)
+
+        # note the event name in top right corner, offset down and to the left
+        axs[1].annotate(ic_event_name.get(event_name, event_name), (1, 1),
+                        xycoords="axes fraction", xytext=(-2, -2), textcoords='offset points', ha="right", va="top")
+        axs[1].annotate("dust layer", (axs[1].get_xlim()[1], -150), ha="right", va="baseline", color="grey")
+        axs[0].set_ylim(*ylim)
+
+    axss[0][0].legend(bbox_to_anchor=(1, 1), loc="lower center", borderaxespad=0.0, frameon=False, ncol=2)
+    fig.supylabel("z [m]")
+    axss[-1][1].set_xlabel("# hit DOMs")
+    axss[-1][0].set_xlabel("Charge")
 
     return fig
