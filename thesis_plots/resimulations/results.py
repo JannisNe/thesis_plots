@@ -64,3 +64,62 @@ def abs_log_ratios(event_name: str):
     axs[0].legend(loc="upper right")
 
     return fig
+
+
+def angle_distribution(event_name: str):
+    data = get_data(event_name)
+    bm = data["angle_bins"]
+    qs = data["angle_quantiles"]
+    cl = data["amgle_cl"]
+
+    fig, ax = plt.subplots()
+    ax.plot(bm, qs[:, 0], label="median")
+    ax.fill_between(bm, qs[:, 1], qs[:, 2], alpha=0.4, label=f"{cl * 100:.0f}% IC")
+    ax.set_xlabel("Simulated offset [deg]")
+    ax.set_ylabel("max(|log$_{10}$(E$_{ratio}$)|)")
+    ax.legend()
+
+    return fig
+
+
+@Plotter.register(arg_loop=events)
+def charge_plot(event_name: str):
+    data = get_data(event_name)
+    charge_alert = data["charge_alert"]
+    charge_simul = data["charge_simul"]
+    z_om = data["z_om"]
+
+    ylim = {
+        "lancel": [0, 500],
+        "tywin": [-500, 0],
+        "txs": [-500, 0]
+    }[event_name]
+
+    alert_color = "k"
+    sim_color = "C2"
+    z_sorted = np.argsort(z_om)
+
+    fig, axs = plt.subplots( ncols=2, gridspec_kw={"wspace": 0}, sharey="all")
+
+    y = z_om[z_sorted]
+
+    for i, ax in enumerate(axs):
+        ax.plot(charge_alert[:, 1 + i][z_sorted], y, ls="-", lw=4, label=ic_event_name.get(event_name, event_name),
+                c=alert_color)
+        ax.fill_betweenx(
+            y, charge_simul[:, 1 + i * 3][z_sorted], charge_simul[:, 2 + i * 3][z_sorted],
+            alpha=0.3, color=sim_color, label="Re-simulations Min/Max", linewidth=0
+        )
+        ax.plot(charge_simul[:, 3 + i * 3][z_sorted], y, color=sim_color, ls="--", label="Re-simulations median")
+        xlim = ax.get_xlim()
+        ax.fill_between(xlim - np.array([100, -100]), -50, -150, color="grey", alpha=0.3, linewidth=0)
+        ax.set_xlim(xlim)
+
+    axs[1].annotate("dust layer", (axs[1].get_xlim()[1], -150), ha="right", va="baseline", color="grey")
+    axs[0].legend(bbox_to_anchor=(0.5, 1.1), loc="upper center", borderaxespad=0.0)
+    axs[0].set_ylabel("z [m]")
+    axs[1].set_xlabel("# hit DOMs")
+    axs[0].set_xlabel("Charge")
+    axs[0].set_ylim(*ylim)
+
+    return fig
