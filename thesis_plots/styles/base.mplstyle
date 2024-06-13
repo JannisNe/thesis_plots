@@ -54,3 +54,6 @@ ytick.minor.width: 0.8
 
 # sneaked from seaborn colorblind palette
 axes.prop_cycle: cycler('color', ["#0173B2", "#DE8F05", "#029E73", "#D55E00", "#CC78BC", "#CA9161", "#FBAFE4", "#949494", "#ECE133", "#56B4E9"])
+
+# sneaked from seaborn deep palette
+#axes.prop_cycle: cycler('color', ["#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3", "#937860", "#DA8BC3", "#8C8C8C", "#CCB974", "#64B5CD"])
