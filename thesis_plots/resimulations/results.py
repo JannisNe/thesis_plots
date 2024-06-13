@@ -165,13 +165,13 @@ def alert_scatter(event_name: str):
     return fig
 
 
-@Plotter.register("wide")
+@Plotter.register()
 def alert_scatter_combined():
     width = plt.rcParams["figure.figsize"][0]
     figsize = width, width
     fig, axss = plt.subplots(
         ncols=2, nrows=2,
-        gridspec_kw={"wspace": 0.05, "hspace": 0.05},
+        gridspec_kw={"wspace": 0.08, "hspace": 0.08},
         sharex="all", sharey="all",
         figsize=figsize
     )
@@ -193,11 +193,11 @@ def alert_scatter_combined():
         ax.set_ylim([-lim, lim])
 
         # note the event name in top right corner, offset down and to the left
-        ax.annotate(ic_event_name.get(event_name, event_name) + " + " + em_counterpart[event_name][0], (1, 1),
-                    xycoords="axes fraction", xytext=(-2, -2), textcoords='offset points', ha="right", va="top")
+        ax.annotate(ic_event_name.get(event_name, event_name) + "\n" + em_counterpart[event_name][0], (0, 1),
+                    xycoords="axes fraction", xytext=(2, -2), textcoords='offset points', ha="left", va="top")
 
     axss[0][0].legend(bbox_to_anchor=(1, 1.05), loc="lower center", borderaxespad=0.0, frameon=False, ncol=3)
-    fig.supylabel(r"$\Delta$Dec [deg]")
-    fig.supxlabel(r"$\Delta$RA [deg]")
+    fig.supylabel(r"$\Delta$Dec [deg]", x=0)
+    fig.supxlabel(r"$\Delta$RA [deg]", y=0)
 
     return fig
