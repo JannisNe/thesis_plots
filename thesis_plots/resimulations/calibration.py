@@ -23,15 +23,15 @@ def metric_histogram(event_name):
     data = get_data(event_name)
     Emeas = data["Emeas"]
     Esim = data["Esim"]
-    Esim_trunc = [e[:len(ee)] for e, ee in zip(Esim, Emeas)]
-    maxabslog = np.array([np.max(abs(np.log10(iEmeas / iEsim))) for iEmeas, iEsim in zip(Emeas, Esim_trunc)])
-    m = maxabslog < np.inf
+    Esim_trunc = np.array([E[:len(Emeas)] for E in Esim])
+    Eratio = np.array([E / Emeas for E in Esim_trunc])
+    max_e_ratio = np.max(abs(np.log10(Eratio)), axis=1)
 
     fig, ax = plt.subplots()
-    ax.hist(maxabslog[m], density=True, cumulative=True)
-    ax.set_xlabel("Maximum of |$\log_{10}(E_\mathrm{ratio})$|")
+    ax.hist(max_e_ratio, density=True, cumulative=True, zorder=1)
+    ax.axvline(0.8, ls="--", zorder=2, color="C1")
+    ax.set_xlabel(r"Maximum of |$\log_{10}(E_\mathrm{ratio})$|")
     ax.set_ylabel("cumulative density")
     ax.set_xlim(left=0)
-
 
     return fig
