@@ -33,8 +33,9 @@ def circle_plane():
     rng = np.random.default_rng(seed=97865)
     draw_x = min(x1, x2), max(x1, x2)
     draw_y = min(y1, y2), max(y1, y2)
-    x_draw_prime = rng.uniform(*draw_x, 100)
-    y_draw_prime = rng.uniform(*draw_y, 100)
+    n_points = 50
+    x_draw_prime = rng.uniform(*draw_x, n_points)
+    y_draw_prime = rng.uniform(*draw_y, n_points)
     m1 = x_draw_prime ** 2 + y_draw_prime ** 2 < r ** 2
     m2 = (x_draw_prime - D) ** 2 + y_draw_prime ** 2 < r ** 2
     m = m1 & m2
@@ -53,14 +54,15 @@ def circle_plane():
 
     fig, ax = plt.subplots()
     for i, (centerx, centery) in enumerate(zip([0, xc], [0, yc])):
-        ax.scatter(centerx, centery, color=f"C{i}", s=4, alpha=1, marker="X", edgecolors="none")
+        ax.scatter(centerx, centery, color=f"C{i}", s=10, alpha=1, marker="X", edgecolors="none")
         ax.add_patch(plt.Circle((centerx, centery), r, color=f"C{i}", fill=False, ls=["-", "--"][i], alpha=1))
     lim_factor = 2
     ax.set_xlim(-lim_factor * rc, lim_factor * rc)
     ax.set_ylim(-lim_factor * rc, lim_factor * rc)
-    ax.scatter(*draw, alpha=0.7, s=2, color="C1", edgecolors="none")
-    ax.scatter(*ddraw, color="C1", s=2, edgecolors="k", lw=0.2)
-    ax.scatter(*nraw, alpha=0.7, s=2, color="grey", edgecolors="none")
+    ps = 5
+    ax.scatter(*draw, alpha=1, s=ps, color="C1", edgecolors="none")
+    ax.scatter(*ddraw, color="C1", s=ps, edgecolors="k", lw=0.4)
+    ax.scatter(*nraw, alpha=1, s=ps, color="grey", edgecolors="none")
     ax.add_patch(plt.Rectangle((draw_x[0], draw_y[0]), draw_x[1] - draw_x[0], draw_y[1] - draw_y[0],
                                color="grey", alpha=0.3, ls=":", fill=False))
     ax.set_aspect("equal")
