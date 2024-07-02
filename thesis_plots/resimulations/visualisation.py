@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib import patches
 import numpy as np
 from pathlib import Path
 import logging
@@ -104,5 +105,49 @@ def toy_event():
     ax.set_zlabel('z [m]', labelpad=-25)
     ax.scatter(*geometry[:, m], color="0.5", s=0.5, edgecolors="none", zorder=10)
     ax.scatter3D(*geometry[:, ~m], color="0.5", s=0.5, edgecolors="none", zorder=0)
+    ax.set_aspect("equal")
+    return fig
+
+
+@Plotter.register("margin")
+def diagram():
+    fig, ax = plt.subplots()
+
+    det_corner = np.array([0.25, 0.06])
+    det_width = 0.6
+    det_height = 0.8
+    ax.add_patch(patches.Rectangle(det_corner, det_width, det_height, fill=False, color="grey", ls=":", zorder=1))
+    ax.annotate("detector", xy=det_corner + np.array([det_width, det_height]), ha="center", va="bottom", color="grey")
+
+    ax.add_patch(
+        patches.FancyArrowPatch((1, 0), (0, 1), arrowstyle="-|>", color="C0", lw=1, mutation_scale=10,
+                                zorder=5)
+    )
+    ax.annotate("original", xy=(0, 1), ha="left", va="bottom", color="C0")
+
+    arc_size = 0.6
+    arc_deg = -45
+    arc_rad = np.radians(arc_deg)
+    ax.add_patch(
+        patches.Arc((0.5, 0.5), arc_size, arc_size, theta1=arc_deg, theta2=0, color="k", lw=1, zorder=2)
+    )
+    alpha_r = 0.2
+    alpha_xy = np.array([0.5, 0.5]) + np.array([np.cos(arc_rad/2) * alpha_r, np.sin(arc_rad/2) * alpha_r])
+    logger.debug(f"alpha_xy: {alpha_xy}")
+    ax.annotate(r"$\alpha$", xy=alpha_xy, ha="center", va="center")
+
+    ax.add_patch(
+        patches.FancyArrowPatch((1, 0.5), (0, 0.5), arrowstyle="-|>", color="C3", lw=0.8, mutation_scale=10
+                                , zorder=6, ls="-")
+    )
+    ax.annotate("resimulated", xy=(0, 0.5), ha="left", va="top", color="C3",
+                textcoords="offset points", xytext=(-15, -2))
+
+    ax.annotate(r"$d$", xy=(det_corner[0] + det_width, 0.325), xytext=(0.93, 0.325), ha="left", va="center",
+                arrowprops=dict(arrowstyle="-[, widthB=1.17, lengthB=0.", lw=1, color="k", zorder=3, shrinkB=0, shrinkA=0))
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
     ax.set_aspect("equal")
     return fig
