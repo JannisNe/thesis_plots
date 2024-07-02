@@ -120,10 +120,10 @@ def diagram():
     ax.annotate("detector", xy=det_corner + np.array([det_width, det_height]), ha="center", va="bottom", color="grey")
 
     ax.add_patch(
-        patches.FancyArrowPatch((1, 0), (0, 1), arrowstyle="-|>", color="C0", lw=1, mutation_scale=10,
+        patches.FancyArrowPatch((1, 0), (0, 1), arrowstyle="-|>", color="C3", lw=1, mutation_scale=10,
                                 zorder=5)
     )
-    ax.annotate("original", xy=(0, 1), ha="left", va="bottom", color="C0")
+    ax.annotate("resimulated", xy=(0, 1), ha="left", va="bottom", color="C3")
 
     arc_size = 0.6
     arc_deg = -45
@@ -137,14 +137,22 @@ def diagram():
     ax.annotate(r"$\alpha$", xy=alpha_xy, ha="center", va="center")
 
     ax.add_patch(
-        patches.FancyArrowPatch((1, 0.5), (0, 0.5), arrowstyle="-|>", color="C3", lw=0.8, mutation_scale=10
+        patches.FancyArrowPatch((1, 0.5), (0, 0.5), arrowstyle="-|>", color="C0", lw=0.8, mutation_scale=10
                                 , zorder=6, ls="-")
     )
-    ax.annotate("resimulated", xy=(0, 0.5), ha="left", va="top", color="C3",
-                textcoords="offset points", xytext=(-15, -2))
+    ax.annotate("original", xy=(0, 0.5), ha="left", va="top", color="C0",
+                textcoords="offset points", xytext=(-20, -2))
 
     ax.annotate(r"$d$", xy=(det_corner[0] + det_width, 0.325), xytext=(0.93, 0.325), ha="left", va="center",
-                arrowprops=dict(arrowstyle="-[, widthB=1.17, lengthB=0.", lw=1, color="k", zorder=3, shrinkB=0, shrinkA=0))
+                arrowprops=dict(
+                    arrowstyle="-[, widthB=1.17, lengthB=0.", lw=1, color="k", zorder=3, shrinkB=0, shrinkA=0
+                ))
+    lx = det_corner[0] + det_width/2
+    ax.annotate(r"L", xy=(lx, 0.52), xytext=(lx, 0.6), ha="center", va="bottom",
+                arrowprops=dict(
+                    arrowstyle="-[, widthB=2.1, lengthB=0.1", lw=1, color="k", zorder=3
+                )
+                )
 
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
