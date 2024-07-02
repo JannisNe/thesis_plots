@@ -137,7 +137,7 @@ def diagram():
     ax.annotate(r"$\alpha$", xy=alpha_xy, ha="center", va="center")
 
     ax.add_patch(
-        patches.FancyArrowPatch((1, 0.5), (0, 0.5), arrowstyle="-|>", color="C0", lw=0.8, mutation_scale=10
+        patches.FancyArrowPatch((1, 0.5), (0, 0.5), arrowstyle="-|>", color="C0", lw=1, mutation_scale=10
                                 , zorder=6, ls="-")
     )
     ax.annotate("original", xy=(0, 0.5), ha="left", va="top", color="C0",
