@@ -159,3 +159,21 @@ def diagram():
     ax.axis("off")
     ax.set_aspect("equal")
     return fig
+
+
+@Plotter.register("margin")
+def error():
+    alpha = np.radians([0, 2, 5])
+    beta = np.linspace(0, 84, 100)
+    err = np.cos(alpha[:, np.newaxis]) / np.cos(alpha[:, np.newaxis] + np.radians(beta))
+
+    fig, ax = plt.subplots()
+    for ia, ierr, ls in zip(alpha, err, [":", "-", "--"]):
+        ax.plot(beta, ierr, label=f"$\\alpha = {np.degrees(ia):.0f}^\\circ$", ls=ls)
+    ax.set_yscale("log")
+    ax.set_xticks([0, 30, 60, 90])
+    ax.get_xaxis().set_major_formatter(plt.ScalarFormatter())
+    ax.legend()
+    ax.set_xlabel(r"$\beta$ [deg]")
+    ax.set_ylabel(r"$\frac{\cos(\alpha) }{ \cos(\alpha + \beta)}$")
+    return fig
