@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from matplotlib import patches
+from matplotlib import patches, transforms
 import numpy as np
 from pathlib import Path
 import logging
@@ -57,9 +57,10 @@ def circle_plane():
     for i, (centerx, centery) in enumerate(zip([0, xc], [0, yc])):
         ax.scatter(centerx, centery, color=f"C{i}", s=10, alpha=1, marker="X", edgecolors="none")
         ax.add_patch(plt.Circle((centerx, centery), r, color=f"C{i}", fill=False, ls=["-", "--"][i], alpha=1))
-    lim_factor = 2
+    lim_factor = 2.5
     ax.set_xlim(-lim_factor * rc, lim_factor * rc)
     ax.set_ylim(-lim_factor * rc, lim_factor * rc)
+    ax.set_yticks(ax.get_yticks()[1:])
     ps = 5
     ax.scatter(*draw, alpha=1, s=ps, color="C1", edgecolors="none")
     ax.scatter(*ddraw, color="C1", s=ps, edgecolors="k", lw=0.4)
@@ -67,8 +68,37 @@ def circle_plane():
     ax.add_patch(plt.Rectangle((draw_x[0], draw_y[0]), draw_x[1] - draw_x[0], draw_y[1] - draw_y[0],
                                color="grey", alpha=0.3, ls=":", fill=False))
     ax.set_aspect("equal")
-    ax.set_xlabel("x [m]")
-    ax.set_ylabel("y [m]")
+    ax.set_xlabel("$x''$ [m]")
+    ax.set_ylabel("$y''$ [m]")
+
+    xy_origin = (0., 0.)
+    logger.debug(f"xy_origin: {xy_origin}")
+    xy_beta = 40
+    xy_l = 0.25
+    t = (
+            transforms.Affine2D().rotate_deg_around(*xy_origin, xy_beta)
+            + transforms.Affine2D().translate(*xy_origin)
+            + ax.transAxes
+    )
+    y_arrow = patches.FancyArrowPatch(
+        (0, 0), (0, xy_l), arrowstyle="-|>", color="k", lw=1, mutation_scale=5,
+        transform=t, shrinkB=0, shrinkA=0, clip_on=False
+    )
+    x_arrow = patches.FancyArrowPatch(
+        (0, 0), (xy_l, 0), arrowstyle="-|>", color="k", lw=1, mutation_scale=5,
+        transform=t, shrinkB=0, shrinkA=0, clip_on=False
+    )
+    ax.add_patch(x_arrow)
+    ax.add_patch(y_arrow)
+    ax.annotate("$x'$", xy=(xy_l, 0), ha="left", va="center", xycoords=t)
+    ax.annotate("$y'$", xy=(0, xy_l), ha="center", va="bottom", xycoords=t)
+
+    arc = patches.Arc((0, 0), xy_l*1.2, xy_l*1.2, theta1=0, theta2=xy_beta, color="k", lw=1, transform=ax.transAxes)
+    ax.add_patch(arc)
+    t2 = transforms.Affine2D().rotate_deg_around(*xy_origin, xy_beta / 2) + ax.transAxes
+    ax.annotate(r"$\gamma$", (xy_l / 3, 0), xycoords=t2, xytext=(0.35, 0), textcoords=ax.transAxes,
+                ha="center", va="bottom",
+                arrowprops=dict(arrowstyle="-", lw=1, color="k", shrinkA=0, shrinkB=0))
 
     return fig
 
