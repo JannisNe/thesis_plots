@@ -46,3 +46,40 @@ def tywin_original_resimulations():
     Esim_trunc = np.array([E[:len(Emeas_ev)] for E in Esim])
     Eratio = np.array([E / Emeas_ev for E in Esim_trunc])
     return ratio_plot(Esim_trunc, Emeas_ev, Eratio)
+
+
+@Plotter.register()
+def tywin_original_resimulations_charge():
+    data = get_data("tywin")
+    charge_alert = data["charge_alert"]
+    charge_simul = data["charge_simul"]
+    z_om = data["z_om"]
+    ylim = [-500, 0],
+
+    alert_color = "k"
+    sim_color = "C2"
+
+    fig, axs = plt.subplots(ncols=2, gridspec_kw={"wspace": 0}, sharey="row", sharex="col")
+
+    z_sorted = np.argsort(z_om)
+    y = z_om[z_sorted]
+
+    for i, ax in enumerate(axs):
+        ax.plot(charge_alert[:, 1 + i][z_sorted], y, ls="-", lw=4, c=alert_color)
+        ax.fill_betweenx(
+            y, charge_simul[:, 1 + i * 3][z_sorted], charge_simul[:, 2 + i * 3][z_sorted],
+            alpha=0.3, color=sim_color, label="Resimulations Min/Max", linewidth=0
+        )
+        ax.plot(charge_simul[:, 3 + i * 3][z_sorted], y, color=sim_color, ls="--", label="Resimulations median")
+        xlim = ax.get_xlim()
+        ax.fill_between(xlim - np.array([100, -100]), -50, -150, color="grey", alpha=0.3, linewidth=0)
+        ax.set_xlim(xlim)
+
+    axs[1].annotate("dust layer", (axs[1].get_xlim()[1], -150), ha="right", va="baseline", color="grey")
+    axs[0].set_ylim(*ylim)
+
+    axs[0].legend(bbox_to_anchor=(1, 1), loc="lower center", borderaxespad=0.5, frameon=False, ncol=2)
+    axs[0].set_ylabel("z [m]")
+    axs[1].set_xlabel("# hit DOMs")
+    axs[0].set_xlabel("Charge")
+    return fig

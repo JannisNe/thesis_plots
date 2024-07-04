@@ -95,9 +95,9 @@ def charge_plot():
             ax.plot(charge_alert[:, 1 + i][z_sorted], y, ls="-", lw=4, c=alert_color)
             ax.fill_betweenx(
                 y, charge_simul[:, 1 + i * 3][z_sorted], charge_simul[:, 2 + i * 3][z_sorted],
-                alpha=0.3, color=sim_color, label="Re-simulations Min/Max", linewidth=0
+                alpha=0.3, color=sim_color, label="Resimulations Min/Max", linewidth=0
             )
-            ax.plot(charge_simul[:, 3 + i * 3][z_sorted], y, color=sim_color, ls="--", label="Re-simulations median")
+            ax.plot(charge_simul[:, 3 + i * 3][z_sorted], y, color=sim_color, ls="--", label="Resimulations median")
             xlim = ax.get_xlim()
             ax.fill_between(xlim - np.array([100, -100]), -50, -150, color="grey", alpha=0.3, linewidth=0)
             ax.set_xlim(xlim)
