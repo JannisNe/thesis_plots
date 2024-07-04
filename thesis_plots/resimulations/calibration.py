@@ -5,6 +5,7 @@ from pathlib import Path
 import pickle
 
 from thesis_plots.plotter import Plotter
+from thesis_plots.resimulations.ratio_segments import ratio_plot
 
 
 logger = logging.getLogger(__name__)
@@ -35,3 +36,13 @@ def metric_histogram(event_name):
     ax.set_xlim(left=0)
 
     return fig
+
+
+@Plotter.register("upright")
+def tywin_original_resimulations():
+    data = get_data("tywin")
+    Emeas_ev = data["Emeas"]
+    Esim = data["Esim"]
+    Esim_trunc = np.array([E[:len(Emeas_ev)] for E in Esim])
+    Eratio = np.array([E / Emeas_ev for E in Esim_trunc])
+    return ratio_plot(Esim_trunc, Emeas_ev, Eratio, "tywin")
