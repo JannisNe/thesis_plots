@@ -7,7 +7,6 @@ def ratio_plot(
     Esim_trunc: list[list[float]],
     Emeas_ev: list[float],
     Eratio: list[float],
-    event_name: str,
     alpha: float = 0.3,
     formatter: ticker.Formatter | None = None
 ) -> plt.Figure:
@@ -16,11 +15,11 @@ def ratio_plot(
 
     for i, (iE, iEratio) in enumerate(zip(Esim_trunc, Eratio)):
         marker = ""
-        label = "Re-simulations" if i == 0 else ""
+        label = "Resimulations" if i == 0 else ""
         axs[0].plot(iE, marker=marker, color="C0", alpha=alpha, label=label)
         axs[1].plot(iEratio, marker=marker, color="C0", alpha=alpha)
 
-    axs[0].plot(Emeas_ev, color="k", label=event_name, lw=2)
+    axs[0].plot(Emeas_ev, color="k", label="Original", lw=2)
     axs[0].set_ylabel("E [GeV]")
     axs[1].set_xlabel("Segment")
     axs[1].set_ylabel("$E_\mathrm{sim} / E_\mathrm{data}$")
@@ -34,6 +33,6 @@ def ratio_plot(
     axs[1].get_yaxis().set_major_locator(ticker.LogLocator(numticks=10, subs=[1.0, 2.0, 5.0]))
     if formatter:
         axs[1].yaxis.set_major_formatter(formatter)
-    axs[0].legend(loc="upper right")
+    axs[0].legend(loc="upper center", ncol=2)
 
     return fig

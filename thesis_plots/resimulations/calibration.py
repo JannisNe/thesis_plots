@@ -45,4 +45,4 @@ def tywin_original_resimulations():
     Esim = data["Esim"]
     Esim_trunc = np.array([E[:len(Emeas_ev)] for E in Esim])
     Eratio = np.array([E / Emeas_ev for E in Esim_trunc])
-    return ratio_plot(Esim_trunc, Emeas_ev, Eratio, "tywin")
+    return ratio_plot(Esim_trunc, Emeas_ev, Eratio)
