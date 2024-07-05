@@ -38,14 +38,27 @@ def metric_histogram(event_name):
     return fig
 
 
-@Plotter.register("upright")
+@Plotter.register()
 def tywin_original_resimulations():
     data = get_data("tywin")
     Emeas_ev = data["Emeas"]
     Esim = data["Esim"]
     Esim_trunc = np.array([E[:len(Emeas_ev)] for E in Esim])
     Eratio = np.array([E / Emeas_ev for E in Esim_trunc])
-    return ratio_plot(Esim_trunc, Emeas_ev, Eratio)
+
+    fig, ax = plt.subplots()
+    ax.axhline(1, color="k", lw=2, label="Original")
+    for i, (iE, iEratio) in enumerate(zip(Esim_trunc, Eratio)):
+        marker = ""
+        label = "Resimulations" if i == 0 else ""
+        ax.plot(iEratio, marker=marker, color="C0", alpha=0.3, label=label)
+    ax.set_xlabel("Segment $k$")
+    ax.set_ylabel("$E_\mathrm{k,sim} / E_\mathrm{k,meas}$")
+    ax.set_yscale("log")
+    ax.legend(loc="lower right", borderaxespad=0.5, frameon=False, ncol=1)
+    ax.set_xlim(0, len(Emeas_ev) - 1)
+
+    return fig
 
 
 @Plotter.register()
