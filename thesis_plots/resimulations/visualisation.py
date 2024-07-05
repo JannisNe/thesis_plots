@@ -103,7 +103,7 @@ def circle_plane():
     return fig
 
 
-@Plotter.register("wide")
+@Plotter.register()
 def toy_event():
     data_file = Path(__file__).parent / "data" / "toy_event.json"
     logger.debug(f"loading data from {data_file}")
