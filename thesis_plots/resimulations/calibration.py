@@ -5,7 +5,7 @@ from pathlib import Path
 import pickle
 
 from thesis_plots.plotter import Plotter
-from thesis_plots.resimulations.ratio_segments import ratio_plot
+from thesis_plots.resimulations.results import ic_event_name
 
 
 logger = logging.getLogger(__name__)
@@ -39,25 +39,32 @@ def metric_histogram(event_name):
 
 
 @Plotter.register()
-def tywin_original_resimulations():
-    data = get_data("tywin")
-    Emeas_ev = data["Emeas"]
-    Esim = data["Esim"]
-    Esim_trunc = np.array([E[:len(Emeas_ev)] for E in Esim])
-    Eratio = np.array([E / Emeas_ev for E in Esim_trunc])
+def original_resimulations_ratios():
+    figsize = plt.rcParams["figure.figsize"]
+    figsize[1] *= 2
+    fig, axs = plt.subplots(figsize=figsize, nrows=2, sharex=True, gridspec_kw={"hspace": 0})
 
-    fig, ax = plt.subplots()
-    ax.axhline(1, color="k", lw=2, label="Original")
-    for i, (iE, iEratio) in enumerate(zip(Esim_trunc, Eratio)):
-        marker = ""
-        label = "Resimulations" if i == 0 else ""
-        ax.plot(iEratio, marker=marker, color="C0", alpha=0.3, label=label)
-    ax.set_xlabel("Segment $k$")
-    ax.set_ylabel("$E_\mathrm{k,sim} / E_\mathrm{k,meas}$")
-    ax.set_yscale("log")
-    ax.legend(loc="lower right", borderaxespad=0.5, frameon=False, ncol=1)
-    ax.set_xlim(0, len(Emeas_ev) - 1)
+    for ev, ax in zip(["txs", "tywin"], axs):
+        data = get_data(ev)
+        Emeas_ev = data["Emeas"]
+        Esim = data["Esim"]
+        Esim_trunc = np.array([E[:len(Emeas_ev)] for E in Esim])
+        Eratio = np.array([E / Emeas_ev for E in Esim_trunc])
 
+        ax.axhline(1, color="k", lw=2, label="Original")
+        for i, (iE, iEratio) in enumerate(zip(Esim_trunc, Eratio)):
+            marker = ""
+            label = "Resimulations" if i == 0 else ""
+            ax.plot(iEratio, marker=marker, color="C0", alpha=0.3, label=label)
+        ax.set_yscale("log")
+        ax.annotate(ic_event_name[ev], (0, 0), xycoords="axes fraction", xytext=(3, 3), textcoords="offset points",
+                    ha="left", va="bottom")
+
+    axs[1].set_xlim(0, 8)
+    axs[1].set_yticks([1e-2, 1e-1, 1, 1e1, 1e2])
+    axs[1].set_xlabel("Segment $k$")
+    axs[0].legend(loc="lower center", borderaxespad=0.5, frameon=False, ncol=1, bbox_to_anchor=(0.5, 1), ncols=2)
+    fig.supylabel(r"$E_\mathrm{k,sim} / E_\mathrm{k,meas}$", x=-0.05)
     return fig
 
 
