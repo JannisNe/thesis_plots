@@ -44,6 +44,7 @@ def metric_calibration():
     m_thresh = np.linspace(0, 2, 100)
     p_tywin = np.sum(tywin_m[:, np.newaxis] < m_thresh, axis=0) / len(tywin_m)
     p_txs = np.sum(txs_m[:, np.newaxis] > m_thresh, axis=0) / len(txs_m)
+    logger.info("1-CDF(0.8) for IC170922A: {:.2f}".format(sum(txs_m > 0.8) / len(txs_m)))
 
     fig, ax = plt.subplots()
     ax.plot(m_thresh, p_tywin, label="purity")
