@@ -1,5 +1,6 @@
 figure.figsize: 3.937007874015748, 2.4332106784273146
 figure.dpi: 300
+legend.frameon: false
 
 # sneaked from seaborn white style
 axes.axisbelow: true

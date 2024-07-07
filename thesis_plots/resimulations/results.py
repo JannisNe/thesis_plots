@@ -129,7 +129,7 @@ def charge_plot():
         axs[1].annotate("dust layer", (axs[1].get_xlim()[1], -150), ha="right", va="baseline", color="grey")
         axs[0].set_ylim(*ylim)
 
-    axss[0][0].legend(bbox_to_anchor=(1, 1), loc="lower center", borderaxespad=0.0, frameon=False, ncol=2)
+    axss[0][0].legend(bbox_to_anchor=(1, 1), loc="lower center", borderaxespad=0.0, ncol=2)
     fig.supylabel("z [m]")
     axss[-1][1].set_xlabel("# hit DOMs")
     axss[-1][0].set_xlabel("Charge")
@@ -193,7 +193,7 @@ def alert_scatter_combined():
         ax.annotate(ic_event_name.get(event_name, event_name) + "\n" + em_counterpart[event_name][0], (0, 1),
                     xycoords="axes fraction", xytext=(2, -2), textcoords='offset points', ha="left", va="top")
 
-    axss[0][0].legend(bbox_to_anchor=(1, 1.05), loc="lower center", borderaxespad=0.0, frameon=False, ncol=3)
+    axss[0][0].legend(bbox_to_anchor=(1, 1.05), loc="lower center", borderaxespad=0.0, ncol=3)
     fig.supylabel(r"$\Delta$Dec [deg]", x=0)
     fig.supxlabel(r"$\Delta$RA [deg]", y=0)
 

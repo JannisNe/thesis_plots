@@ -63,7 +63,7 @@ def original_resimulations_ratios():
     axs[1].set_xlim(0, 8)
     axs[1].set_yticks([1e-2, 1e-1, 1, 1e1, 1e2])
     axs[1].set_xlabel("Segment $k$")
-    axs[0].legend(loc="lower center", borderaxespad=0.5, frameon=False, ncol=1, bbox_to_anchor=(0.5, 1), ncols=2)
+    axs[0].legend(loc="lower center", borderaxespad=0.5, ncol=1, bbox_to_anchor=(0.5, 1), ncols=2)
     fig.supylabel(r"$E_\mathrm{k,sim} / E_\mathrm{k,meas}$", x=-0.05)
     return fig
 
@@ -98,7 +98,7 @@ def tywin_original_resimulations_charge():
     axs[1].annotate("dust layer", (axs[1].get_xlim()[1], -150), ha="right", va="baseline", color="grey")
     axs[0].set_ylim(*ylim)
 
-    axs[0].legend(bbox_to_anchor=(1, 1), loc="lower center", borderaxespad=0.5, frameon=False, ncol=2)
+    axs[0].legend(bbox_to_anchor=(1, 1), loc="lower center", borderaxespad=0.5, ncol=2)
     axs[0].set_ylabel("z [m]")
     axs[1].set_xlabel("# hit DOMs")
     axs[0].set_xlabel("Charge")
