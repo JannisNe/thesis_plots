@@ -56,7 +56,6 @@ def tywin_abs_log_ratio_only():
     data = get_data("tywin")
     Esim_trunc = data["Esim_trunc"]
     Eratio = data["Eratio"]
-    Emeas_ev = data["Emeas_ev"]
 
     fig, ax = plt.subplots()
     ax.axhline(1, color="k", lw=2, label="Original")
