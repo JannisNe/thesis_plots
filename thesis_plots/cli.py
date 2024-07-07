@@ -7,7 +7,10 @@ from thesis_plots.plotter import Plotter
 
 def run(
         log_level: Annotated[str, typer.Option("--log-level", "-l")] = "INFO",
-        name: Annotated[Optional[list[str]], typer.Argument(help="Names(s) of the plots to make")] = None,
+        name: Annotated[
+            Optional[list[str]],
+            typer.Argument(help="Names(s) of the plots to make", autocompletion=lambda: list(Plotter.registry.keys))
+        ] = None,
         save: bool = True,
         show: bool = False,
         list_plots: Annotated[
