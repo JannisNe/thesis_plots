@@ -51,6 +51,28 @@ def abs_log_ratios(event_name: str):
                       formatter=ticker.FuncFormatter(lambda x, _: f"{x:.1f}"))
 
 
+@Plotter.register()
+def tywin_abs_log_ratio_only():
+    data = get_data("tywin")
+    Esim_trunc = data["Esim_trunc"]
+    Eratio = data["Eratio"]
+    Emeas_ev = data["Emeas_ev"]
+
+    fig, ax = plt.subplots()
+    ax.axhline(1, color="k", lw=2, label="Original")
+    for i, (iE, iEratio) in enumerate(zip(Esim_trunc, Eratio)):
+        marker = ""
+        label = "Resimulations" if i == 0 else ""
+        ax.plot(iEratio, marker=marker, color="C0", alpha=0.3, label=label)
+    ax.set_yscale("log")
+    ax.yaxis.set_major_locator(ticker.LogLocator(numticks=10, subs=(1, 2, 5)))
+    ax.yaxis.set_major_formatter("{x:.1g}")
+    ax.set_xlabel("Segment $k$")
+    ax.set_ylabel(r"$E_\mathrm{k,sim} / E_\mathrm{k,meas}$")
+    ax.set_xlim(0, 8)
+    return fig
+
+
 def angle_distribution(event_name: str):
     data = get_data(event_name)
     bm = data["angle_bins"]
