@@ -19,22 +19,39 @@ def get_data(event_name: str):
     return data
 
 
-@Plotter.register(["margin", "notopright"], arg_loop=["bran", "txs", "tywin"])
-def metric_histogram(event_name):
-    data = get_data(event_name)
+def get_max_e_ratio(data):
     Emeas = data["Emeas"]
     Esim = data["Esim"]
     Esim_trunc = np.array([E[:len(Emeas)] for E in Esim])
     Eratio = np.array([E / Emeas for E in Esim_trunc])
-    max_e_ratio = np.max(abs(np.log10(Eratio)), axis=1)
+    return np.max(abs(np.log10(Eratio)), axis=1)
 
+
+@Plotter.register(["margin", "notopright"], arg_loop=["bran", "txs", "tywin"])
+def metric_histogram(event_name):
     fig, ax = plt.subplots()
-    ax.hist(max_e_ratio, density=True, cumulative=True, zorder=1)
+    ax.hist(get_max_e_ratio(get_data(event_name)), density=True, cumulative=True, zorder=1)
     ax.axvline(0.8, ls="--", zorder=2, color="C1")
-    ax.set_xlabel(r"Maximum of |$\log_{10}(E_\mathrm{ratio})$|")
+    ax.set_xlabel("$M$")
     ax.set_ylabel("cumulative density")
     ax.set_xlim(left=0)
+    return fig
 
+
+@Plotter.register(["margin", "notopright"])
+def metric_calibration():
+    tywin_m = get_max_e_ratio(get_data("tywin"))
+    txs_m = get_max_e_ratio(get_data("txs"))
+    m_thresh = np.linspace(0, 2, 100)
+    p_tywin = np.sum(tywin_m[:, np.newaxis] < m_thresh, axis=0) / len(tywin_m)
+    p_txs = np.sum(txs_m[:, np.newaxis] > m_thresh, axis=0) / len(txs_m)
+
+    fig, ax = plt.subplots()
+    ax.plot(m_thresh, p_tywin, label="purity")
+    ax.plot(m_thresh, p_txs, label="efficiency", ls=":", color="C3")
+    ax.set_xlabel("$M$")
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1), ncol=2)
+    ax.axvline(0.8, ls="--", color="C1")
     return fig
 
 
