@@ -31,9 +31,8 @@ def get_max_e_ratio(data):
 def metric_histogram(event_name):
     fig, ax = plt.subplots()
     ax.hist(get_max_e_ratio(get_data(event_name)), density=True, cumulative=True, zorder=1)
-    ax.axvline(0.8, ls="--", zorder=2, color="C1")
     ax.set_xlabel("$M$")
-    ax.set_ylabel("cumulative density")
+    ax.set_ylabel("CDF")
     ax.set_xlim(left=0)
     return fig
 
