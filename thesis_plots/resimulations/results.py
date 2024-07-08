@@ -27,6 +27,13 @@ em_counterpart = {
     "txs": ["TXS 0506+056", (77.35818525834, 05.69314816610)]  # http://cdsportal.u-strasbg.fr/?target=TXS%200506%2B056
 }
 
+ic_gcn_circular_coords = {
+    "bran": [[314.08, +6.56, -2.26], [12.94, +1.50, -1.47]],  # https://gcn.nasa.gov/circulars/25913
+    "lancel": [[230.10, +4.76, -6.48], [3.17, +3.36, -2.09]],  # https://gcn.nasa.gov/circulars/26258
+    "tywin": [[255.37, +2.48, -2.56], [26.61, +2.33, -3.28]],  # https://gcn.nasa.gov/circulars/27865
+    "txs": [[77.43, +1.30, -0.80], [5.72, +0.70, -0.40]]  # https://gcn.nasa.gov/circulars/21874
+}
+
 
 def get_data(event_name: str):
     files = {
@@ -180,10 +187,20 @@ def alert_scatter_combined():
 
         em_counterpart_coord = SkyCoord(*em_counterpart[event_name][1], unit="deg")
         em_counterpart_offset = [a.to("deg").value for a in alert_coord.spherical_offsets_to(em_counterpart_coord)]
+        gcn_circular_info = np.array(ic_gcn_circular_coords[event_name])
+        logger.debug(f"GCN circular info for {event_name}: {gcn_circular_info}")
+        gcn_circular_coord = SkyCoord(*gcn_circular_info.T[0], unit="deg")
+        gcn_circular_offset = [a.to("deg").value for a in alert_coord.spherical_offsets_to(gcn_circular_coord)]
+        gcn_circular_offset_err = gcn_circular_info.T[1:] + gcn_circular_offset
+        dxdy = gcn_circular_offset_err[0] - gcn_circular_offset_err[1]
 
         ax.scatter(*np.array(offsets).T, marker="o", label="Re-simulations", alpha=0.3, edgecolors="none", s=2)
         ax.scatter(0, 0, marker="X", label="Best Fit", edgecolors="k", linewidths=0.5)
         ax.scatter(*em_counterpart_offset, marker="*", edgecolors="k", linewidths=0.5, label="EM counterpart")
+        ax.scatter(*gcn_circular_offset, marker="X", edgecolors="k", label="GCN circular",
+                   fc="none", alpha=0.5, ls="-")
+        ax.add_patch(plt.Rectangle(gcn_circular_offset_err[1], *dxdy, edgecolor="k", facecolor="none",
+                                   alpha=0.5, ls="-"))
         ax.set_aspect("equal")
         lim = 4
         ax.set_xlim([-lim, lim])
@@ -193,7 +210,7 @@ def alert_scatter_combined():
         ax.annotate(ic_event_name.get(event_name, event_name) + "\n" + em_counterpart[event_name][0], (0, 1),
                     xycoords="axes fraction", xytext=(2, -2), textcoords='offset points', ha="left", va="top")
 
-    axss[0][0].legend(bbox_to_anchor=(1, 1.05), loc="lower center", borderaxespad=0.0, ncol=3)
+    axss[0][0].legend(bbox_to_anchor=(1, 1.05), loc="lower center", borderaxespad=0.0, ncol=2)
     fig.supylabel(r"$\Delta$Dec [deg]", x=0)
     fig.supxlabel(r"$\Delta$RA [deg]", y=0)
 
