@@ -30,7 +30,9 @@ def get_max_e_ratio(data):
 @Plotter.register(["margin", "notopright"], arg_loop=["bran", "txs", "tywin"])
 def metric_histogram(event_name):
     fig, ax = plt.subplots()
-    ax.hist(get_max_e_ratio(get_data(event_name)), density=True, cumulative=True, zorder=1)
+    max_e_ratio = get_max_e_ratio(get_data(event_name))
+    logger.info(f"{len(max_e_ratio)} simulations for {event_name}")
+    ax.hist(max_e_ratio, density=True, cumulative=True, zorder=1)
     ax.set_xlabel("$M$")
     ax.set_ylabel("CDF")
     ax.set_xlim(left=0)

@@ -54,6 +54,7 @@ def abs_log_ratios(event_name: str):
     Esim_trunc = data["Esim_trunc"]
     Eratio = data["Eratio"]
     Emeas_ev = data["Emeas_ev"]
+    logger.info(f"{len(Esim_trunc)} simulations for {event_name}")
     return ratio_plot(Esim_trunc, Emeas_ev, Eratio, alpha=0.1,
                       formatter=ticker.FuncFormatter(lambda x, _: f"{x:.1f}"))
 
