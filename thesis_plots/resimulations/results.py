@@ -187,13 +187,28 @@ def alert_scatter_combined():
         offsets = data["offsets"]
 
         em_counterpart_coord = SkyCoord(*em_counterpart[event_name][1], unit="deg")
-        em_counterpart_offset = [a.to("deg").value for a in alert_coord.spherical_offsets_to(em_counterpart_coord)]
+        em_counterpart_offset = np.array([a.to("deg").value for a in alert_coord.spherical_offsets_to(em_counterpart_coord)])
         gcn_circular_info = np.array(ic_gcn_circular_coords[event_name])
         logger.debug(f"GCN circular info for {event_name}: {gcn_circular_info}")
         gcn_circular_coord = SkyCoord(*gcn_circular_info.T[0], unit="deg")
         gcn_circular_offset = [a.to("deg").value for a in alert_coord.spherical_offsets_to(gcn_circular_coord)]
         gcn_circular_offset_err = gcn_circular_info.T[1:] + gcn_circular_offset
         dxdy = gcn_circular_offset_err[0] - gcn_circular_offset_err[1]
+
+        resims_inside_circular = (
+                (offsets.T[0] > gcn_circular_offset_err[1][0]) &
+                (offsets.T[0] < gcn_circular_offset_err[0][0]) &
+                (offsets.T[1] > gcn_circular_offset_err[1][1]) &
+                (offsets.T[1] < gcn_circular_offset_err[0][1])
+        )
+        n_inside = sum(resims_inside_circular)
+        total = len(resims_inside_circular)
+        frac_inside = n_inside / total
+        furthest = np.max(np.linalg.norm(offsets, axis=1))
+        logger.info(
+            f"{event_name}: EM counterpart inside GCN circular: "
+            f"{sum(resims_inside_circular)} of {total} ({frac_inside:.2f}), "
+            f"furthest offset: {furthest:.2f} deg")
 
         ax.scatter(*np.array(offsets).T, marker="o", label="Re-simulations", alpha=0.3, edgecolors="none", s=2)
         ax.scatter(0, 0, marker="X", label="Best Fit", edgecolors="k", linewidths=0.5)
