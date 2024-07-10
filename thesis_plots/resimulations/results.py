@@ -205,10 +205,11 @@ def alert_scatter_combined():
         total = len(resims_inside_circular)
         frac_inside = n_inside / total
         furthest = np.max(np.linalg.norm(offsets, axis=1))
+        gcn_dist = np.linalg.norm(gcn_circular_offset)
         logger.info(
             f"{event_name}: EM counterpart inside GCN circular: "
             f"{sum(resims_inside_circular)} of {total} ({frac_inside:.2f}), "
-            f"furthest offset: {furthest:.2f} deg")
+            f"furthest offset: {furthest:.2f} deg, gcn dist: {gcn_dist:.2f} deg")
 
         ax.scatter(*np.array(offsets).T, marker="o", label="Re-simulations", alpha=0.3, edgecolors="none", s=2)
         ax.scatter(0, 0, marker="X", label="Best Fit", edgecolors="k", linewidths=0.5)
