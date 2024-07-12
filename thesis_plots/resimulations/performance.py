@@ -10,7 +10,7 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register(arg_loop=["tywin", "txs"])
+@Plotter.register(arg_loop=["tywin"])
 def performance(event_name: str):
     data_dir = Path(__file__).parent / "data"
     old_time = pd.read_csv(data_dir / f"old_scheme_time_{event_name}.csv", index_col=0)
@@ -29,27 +29,21 @@ def performance(event_name: str):
     ydiff_err = [np.sqrt(yerr[0][i] ** 2 + yerr[1][i] ** 2) for i in range(len(x))]
     logger.debug(yerr)
 
-    fig, ((ax, total_ax), (diff_ax, total_diff_ax)) = plt.subplots(
-        ncols=2, nrows=2,
-        gridspec_kw={"width_ratios": [9, 1], "wspace": 0, "hspace": 0, "height_ratios": [4, 1]},
-        sharey="row", sharex="col"
+    fig, (ax, diff_ax) = plt.subplots(
+        nrows=2, gridspec_kw={"hspace": 0, "height_ratios": [2, 1]}, sharey="row", sharex="col"
     )
     for i, (t, m) in enumerate(zip(["Old scheme", "New scheme"], ["o", "s"])):
         offset = 0.05 if i == 0 else -0.05
-        ax.errorbar(x[:-1] + offset, y[i][:-1], yerr=yerr[i][:-1], label=t, ls="", marker=m)
-        total_ax.errorbar(offset, y[i][-1], yerr=yerr[i][-1], ls="", marker=m)
+        ax.errorbar(x + offset, y[i], yerr=yerr[i], label=t, ls="", marker=m)
 
-    diff_ax.errorbar(x[:-1], ydiff[:-1], yerr=ydiff_err[:-1], ls="", marker="o", color="k")
-    total_diff_ax.errorbar(0, ydiff[-1], yerr=ydiff_err[-1], ls="", marker="o", color="k")
-    for iax in [diff_ax, total_diff_ax]:
-        iax.axhline(1, color="k", ls="--")
+    diff_ax.errorbar(x, ydiff, yerr=ydiff_err, ls="", marker="o", color="k")
+    diff_ax.axhline(0, color="k", ls="--")
     ax.set_ylabel("Time [s]")
     ax.legend(bbox_to_anchor=(0.5, 1), loc="lower center", ncol=2)
     ax.set_yscale("log")
-    total_ax.set_yscale("log")
     diff_ax.set_ylabel(r"$\Delta$ Time [s]")
-    diff_ax.set_xticks(x[:-1], xlabels[:-1], rotation=45, ha='right')
-    total_diff_ax.set_xticks([0], ["Total"], rotation=45, ha="right")
-    total_diff_ax.set_xlim(-0.5, 0.5)
+    diff_ax.set_xticks(x, xlabels, rotation=45, ha='right')
+    for ax in [ax, diff_ax]:
+        ax.axvline(8.5, color="k", ls=":")
 
     return fig
