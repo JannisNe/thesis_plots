@@ -10,7 +10,7 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register(arg_loop=["tywin"])
+@Plotter.register(arg_loop=["tywin", "txs"])
 def performance(event_name: str):
     data_dir = Path(__file__).parent / "data"
     old_time = pd.read_csv(data_dir / f"old_scheme_time_{event_name}.csv", index_col=0)
@@ -30,20 +30,21 @@ def performance(event_name: str):
     logger.debug(yerr)
 
     fig, (ax, diff_ax) = plt.subplots(
-        nrows=2, gridspec_kw={"hspace": 0, "height_ratios": [2, 1]}, sharey="row", sharex="col"
+        nrows=2, gridspec_kw={"hspace": 0, "height_ratios": [1, 3]}, sharey="row", sharex="col"
     )
     for i, (t, m) in enumerate(zip(["Old scheme", "New scheme"], ["o", "s"])):
         offset = 0.05 if i == 0 else -0.05
-        ax.errorbar(x + offset, y[i], yerr=yerr[i], label=t, ls="", marker=m)
+        ax.errorbar(x + offset, y[i], yerr=yerr[i], label=t, ls="", marker=m, markersize=2, lw=1)
 
-    diff_ax.errorbar(x, ydiff, yerr=ydiff_err, ls="", marker="o", color="k")
+    diff_ax.errorbar(x, ydiff, yerr=ydiff_err, ls="", marker="s", color="C1", lw=1, markersize=2)
     diff_ax.axhline(0, color="k", ls="--")
     ax.set_ylabel("Time [s]")
     ax.legend(bbox_to_anchor=(0.5, 1), loc="lower center", ncol=2)
     ax.set_yscale("log")
     diff_ax.set_ylabel(r"$\Delta$ Time [s]")
-    diff_ax.set_xticks(x, xlabels, rotation=45, ha='right')
+    diff_ax.set_xticks(x, xlabels[:-1] + ["Total"], rotation=45, ha='right')
     for ax in [ax, diff_ax]:
         ax.axvline(8.5, color="k", ls=":")
+    diff_ax.set_yscale("symlog", linthresh=10)
 
     return fig
