@@ -2,14 +2,14 @@ import logging
 import os
 from typing import Any
 from pathlib import Path
-
+from rich.logging import RichHandler
 import numpy as np
 from matplotlib import style
 import matplotlib.pyplot as plt
 
 
-formatter = logging.Formatter('%(levelname)s:%(name)s - %(asctime)s - %(message)s', "%H:%M:%S")
-handler = logging.StreamHandler()
+formatter = logging.Formatter('%(message)s', "%H:%M:%S")
+handler = RichHandler()
 handler.setFormatter(formatter)
 logging.getLogger("thesis_plots").addHandler(handler)
 logger = logging.getLogger(__name__)
