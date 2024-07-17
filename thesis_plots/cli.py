@@ -22,8 +22,12 @@ def run(
 
     if list_plots:
         typer.echo("--- Available plots ---")
-        for k in Plotter.registry.keys():
-            typer.echo(k)
+        if name is not None:
+            names = [k for k in Plotter.registry.keys() if any([iname in k for iname in name])]
+        else:
+            names = Plotter.registry.keys()
+        for n in names:
+            typer.echo(n)
         raise typer.Exit()
 
     plotter.plot(name=name, save=save, show=show)
