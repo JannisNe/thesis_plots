@@ -21,8 +21,8 @@ def walk_modules(names: list[str], the_tree: tree.Tree, parent: str = ""):
         for f in functions:
             _f = f.split(":")[1]
             logger.debug(f"adding function {_f}")
-            sub_tree.add(f"🖌 [bold green] {_f:25s}[/bold green]\t[bold magenta]{parent}.{f}")
-        non_functions = [n.replace(f"{m}", "").strip(".") for n in members if n not in functions]
+            sub_tree.add(f"🖌 [bold green] {_f:35s}[/bold green]\t[bold magenta]{parent}.{f}")
+        non_functions = [n.removeprefix(m).removeprefix(".") for n in members if n not in functions]
         if len(non_functions) > 0:
             walk_modules(non_functions, sub_tree, parent=m if not parent else f"{parent}.{m}")
 
@@ -48,7 +48,7 @@ def run(
         else:
             names = Plotter.registry.keys()
         logger.debug(f"listing plots: {names}")
-        _tree = tree.Tree("[bold white]Plots Tree" + "".join([" "] * (25 + 9)) + "Plot Keys")
+        _tree = tree.Tree("[bold white]Plots Tree" + "".join([" "] * (35 + 7)) + "Plot Keys")
         walk_modules(names, _tree)
         console.Console().print(_tree, new_line_start=True)
         raise typer.Exit()
