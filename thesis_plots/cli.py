@@ -3,8 +3,28 @@ import typer
 import logging
 from typing import Optional
 from typing_extensions import Annotated
-from rich import table, console, box
+from rich import tree, console
 from thesis_plots.plotter import Plotter
+
+
+logger = logging.getLogger(__name__)
+
+
+def walk_modules(names: list[str], the_tree: tree.Tree, parent: str = ""):
+    modules = np.unique([n.split(":")[0].split(".")[0] for n in names])
+    logger.debug(f"walking modules: {modules}, parent: {parent}")
+    for m in modules:
+        logger.debug(f"adding module {m}")
+        sub_tree = the_tree.add(f"[blue] {m}")
+        members = [n for n in names if n.startswith(m)]
+        functions = [n for n in members if n.startswith(f"{m}:")]
+        for f in functions:
+            _f = f.split(":")[1]
+            logger.debug(f"adding function {_f}")
+            sub_tree.add(f"🖌 [bold green] {_f:25s}[/bold green]\t[bold magenta]{parent}.{f}")
+        non_functions = [n.replace(f"{m}", "").strip(".") for n in members if n not in functions]
+        if len(non_functions) > 0:
+            walk_modules(non_functions, sub_tree, parent=m if not parent else f"{parent}.{m}")
 
 
 def run(
@@ -23,22 +43,14 @@ def run(
     plotter = Plotter()
 
     if list_plots:
-        _console = console.Console()
-        _table = table.Table(title="Available plots", show_header=True, header_style="bold magenta", box=box.ROUNDED)
-        _table.add_column("Module")
-        _table.add_column("Name")
         if name is not None:
             names = [k for k in Plotter.registry.keys() if any([iname in k for iname in name])]
         else:
             names = Plotter.registry.keys()
-        modules = np.unique([n.split(".")[0] for n in names])
-        for m in modules:
-            _table.add_row(m)
-            for n in names:
-                if n.startswith(m):
-                    _table.add_row("", n)
-            _table.add_section()
-        _console.print(_table)
+        logger.debug(f"listing plots: {names}")
+        _tree = tree.Tree("[bold white]Plots Tree" + "".join([" "] * (25 + 9)) + "Plot Keys")
+        walk_modules(names, _tree)
+        console.Console().print(_tree, new_line_start=True)
         raise typer.Exit()
 
     plotter.plot(name=name, save=save, show=show)
