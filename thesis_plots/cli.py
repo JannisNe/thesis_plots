@@ -24,7 +24,7 @@ def run(
 
     if list_plots:
         _console = console.Console()
-        _table = table.Table(title="Available plots", show_header=True, header_style="bold magenta", box=box.SIMPLE)
+        _table = table.Table(title="Available plots", show_header=True, header_style="bold magenta", box=box.ROUNDED)
         _table.add_column("Module")
         _table.add_column("Name")
         if name is not None:
@@ -37,6 +37,7 @@ def run(
             for n in names:
                 if n.startswith(m):
                     _table.add_row("", n)
+            _table.add_section()
         _console.print(_table)
         raise typer.Exit()
 
