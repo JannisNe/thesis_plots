@@ -1,7 +1,9 @@
+import numpy as np
 import typer
 import logging
 from typing import Optional
 from typing_extensions import Annotated
+from rich import table, console, box
 from thesis_plots.plotter import Plotter
 
 
@@ -21,13 +23,21 @@ def run(
     plotter = Plotter()
 
     if list_plots:
-        typer.echo("--- Available plots ---")
+        _console = console.Console()
+        _table = table.Table(title="Available plots", show_header=True, header_style="bold magenta", box=box.SIMPLE)
+        _table.add_column("Module")
+        _table.add_column("Name")
         if name is not None:
             names = [k for k in Plotter.registry.keys() if any([iname in k for iname in name])]
         else:
             names = Plotter.registry.keys()
-        for n in names:
-            typer.echo(n)
+        modules = np.unique([n.split(".")[0] for n in names])
+        for m in modules:
+            _table.add_row(m)
+            for n in names:
+                if n.startswith(m):
+                    _table.add_row("", n)
+        _console.print(_table)
         raise typer.Exit()
 
     plotter.plot(name=name, save=save, show=show)
