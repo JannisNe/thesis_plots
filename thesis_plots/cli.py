@@ -10,7 +10,7 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-def walk_modules(names: list[str], the_tree: tree.Tree, parent: str = ""):
+def walk_modules(names: list[str], the_tree: tree.Tree, length: int, parent: str = ""):
     modules = np.unique([n.split(":")[0].split(".")[0] for n in names])
     logger.debug(f"walking modules: {modules}, parent: {parent}")
     for m in modules:
@@ -21,10 +21,11 @@ def walk_modules(names: list[str], the_tree: tree.Tree, parent: str = ""):
         for f in functions:
             _f = f.split(":")[1]
             logger.debug(f"adding function {_f}")
-            sub_tree.add(f"🖌 [bold green] {_f:35s}[/bold green]\t[bold magenta]{parent}.{f}")
+            filled = "".ljust(length - len(_f), ".")
+            sub_tree.add(f"🖌 [bold green] {_f}[/bold green]{filled}[bold magenta]{parent}.{f}")
         non_functions = [n.removeprefix(m).removeprefix(".") for n in members if n not in functions]
         if len(non_functions) > 0:
-            walk_modules(non_functions, sub_tree, parent=m if not parent else f"{parent}.{m}")
+            walk_modules(non_functions, sub_tree, length, parent=m if not parent else f"{parent}.{m}")
 
 
 def run(
@@ -48,8 +49,10 @@ def run(
         else:
             names = Plotter.registry.keys()
         logger.debug(f"listing plots: {names}")
-        _tree = tree.Tree("[bold white]Plots Tree" + "".join([" "] * (35 + 7)) + "Plot Keys")
-        walk_modules(names, _tree)
+        length = max([4 * (n.split(":")[0].count(".") + 1) + 2 + len(n.split(":")[1]) for n in names])
+        logger.debug(f"length: {length}")
+        _tree = tree.Tree("[bold white]Plots Tree" + "".join([" "] * (length + 5)) + "Plot Keys")
+        walk_modules(names, _tree, length)
         console.Console().print(_tree, new_line_start=True)
         raise typer.Exit()
 
