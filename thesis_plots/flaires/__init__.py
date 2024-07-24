@@ -1,1 +1,1 @@
-from thesis_plots.flaires import kcorrection
+from thesis_plots.flaires import kcorrection, ngc7392
