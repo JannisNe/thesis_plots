@@ -13,7 +13,7 @@ from air_flares.export.rates import control_region_mjd, get_wise_times
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register()
+@Plotter.register("upright")
 def luminosity_function():
 
     data = load_data()
@@ -66,19 +66,11 @@ def luminosity_function():
         logger.debug(f"found {n_galaxies[i]} galaxies in redshift bin {i}")
 
         h, b = np.histogram(vals[~nan_mask], bins=lum_bins)
-        ax.bar(
-            b[:-1],
-            h / n_galaxies[i],
-            width=lum_bin_width,
-            align="edge",
-            color="C0",
-            ec="k",
-            alpha=0.6,
-        )
+        ax.bar(b[:-1], h / n_galaxies[i], width=lum_bin_width, align="edge")
         ax.set_xscale("log")
         ax.set_yscale("log")
 
-    fig.supylabel("Rate [galaxy$^{-1}$]")
+    fig.supylabel("Rate [galaxy$^{-1}$]", x=-.05, ha="left")
     xlabel = r"L$_\mathrm{bol,\,peak}$ [erg s$^{-1}$]"
     axes[-1].set_xlabel(xlabel)
 
@@ -95,7 +87,7 @@ def redshifts():
 
     fig, ax = plt.subplots()
     bins = np.linspace(z.min(), z.max(), 20)
-    ax.hist(z.values, bins=bins, alpha=0.5, ec="k")
+    ax.hist(z.values, bins=bins)
     ax.set_xlabel("redshift")
     ax.set_ylabel("number of objects")
     return fig
@@ -104,22 +96,20 @@ def redshifts():
 @Plotter.register(["notopright"])
 def subsamples():
     info = load_data()["subsamples"]
-    xbins = info["xbins"]
-    xkey = info["xkey"]
     xlabel = info["xlabel"]
     news_cutoff = info["news_cutoff"]
     hists = info["hists"]
 
     fig, ax = plt.subplots()
-    ls = ["--", "-.", ":"]
+    ls = ["-", "--", ":"]
     for (subsample, (h, b)), ils in zip(hists.items(), ls):
-        ax.step(b[:-1], h, alpha=0.5, label=subsample, ls=ils, where="post")
+        ax.step(b[:-1], h, label=subsample, ls=ils, where="post")
     ax.set_xlabel(xlabel)
     ax.set_ylabel("number of objects")
     ax.set_yscale("log")
     ax.set_xlim(17.5, 7.5)
     indicate_news_cutoff(ax, annotate="bottom", cutoff=news_cutoff)
-    ax.legend()
+    ax.legend(bbox_to_anchor=(0.5, 1.02), loc='lower center', ncol=3, mode="expand", borderaxespad=0.)
     return fig
 
 
@@ -143,17 +133,18 @@ def peak_times():
     pause_mid_date = pause_start + (pause_end - pause_start) / 2
 
     fig, ax = plt.subplots()
-    h, b, p = ax.hist(x, bins=bins, alpha=0.5, color="C0")
+    ax.hist(x, bins=bins)
     ax.set_xlabel("Peak Date")
     ax.set_ylabel("number of objects")
     ylim = np.array(ax.get_ylim())
+    ylim[1] = ylim[1] * 1.05
     ax.fill_betweenx(ylim * 1.2, x1=[control_region_time[0]], x2=[control_region_time[1]],
                      color="grey", alpha=0.3, ec="none")
-    ax.annotate("reference", (control_region_mid_time, 0), xytext=(0, 2),
-                textcoords="offset points", ha="center", va="bottom", fontsize="small", color="grey")
+    ax.annotate("reference", (control_region_mid_time, ylim[1]), xytext=(0, -2),
+                textcoords="offset points", ha="center", va="top", fontsize="small", color="grey")
     ax.axvline(pause_start, ls="--", color="grey", alpha=0.5)
     ax.axvline(pause_end, ls="--", color="grey", alpha=0.5)
-    ax.annotate("no data", (pause_mid_date, 0), xytext=(0, 2),
-                textcoords="offset points", ha="center", va="bottom", fontsize="small", color="grey")
+    ax.annotate("no data", (pause_mid_date, ylim[1]), xytext=(0, -2),
+                textcoords="offset points", ha="center", va="top", fontsize="small", color="grey")
     ax.set_ylim(ylim)
     return fig
