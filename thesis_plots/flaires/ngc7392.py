@@ -40,7 +40,7 @@ def lightcurve():
     return fig
 
 
-@Plotter.register()
+@Plotter.register("wide")
 def temperature_fit():
     data = load_data()["ngc7392_data"]
     info = data["info"]
@@ -58,7 +58,6 @@ def temperature_fit():
         nrows=n_rows,
         gridspec_kw={"wspace": 0., "hspace": 0.},
         sharex="all", sharey="row",
-        figsize=np.array(plt.rcParams["figure.figsize"]) * 2,
     )
 
     nu_lim_exponent = [13.5, 14.2]
