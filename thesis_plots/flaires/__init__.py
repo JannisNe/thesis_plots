@@ -1,1 +1,1 @@
-from thesis_plots.flaires import kcorrection, ngc7392, radius
+from thesis_plots.flaires import kcorrection, ngc7392, radius, distributions, colors
