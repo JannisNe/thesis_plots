@@ -12,6 +12,7 @@ formatter = logging.Formatter('%(message)s', "%H:%M:%S")
 handler = RichHandler()
 handler.setFormatter(formatter)
 logging.getLogger("thesis_plots").addHandler(handler)
+logging.getLogger("thesis_plots").propagate = False
 logger = logging.getLogger(__name__)
 
 
