@@ -111,23 +111,23 @@ def subsamples():
     hists = info["hists"]
 
     fig, ax = plt.subplots()
-    ax.hist(diff[xkey], bins=xbins, alpha=0.5, label="all")
     ls = ["--", "-.", ":"]
-    for subsample, (h, b) in hists.items():
-        bm = (b[:-1] + b[1:]) / 2
-        ax.bar(bm, h, width=np.diff(b), alpha=0.5, label=subsample)
+    for (subsample, (h, b)), ils in zip(hists.items(), ls):
+        ax.step(b[:-1], h, alpha=0.5, label=subsample, ls=ils, where="post")
     ax.set_xlabel(xlabel)
     ax.set_ylabel("number of objects")
     ax.set_yscale("log")
     ax.set_xlim(17.5, 7.5)
     indicate_news_cutoff(ax, annotate="bottom", cutoff=news_cutoff)
+    ax.legend()
+    return fig
 
 
 @Plotter.register()
 def peak_times():
     data = load_data()
     luminosity_summary = data["luminosity_summary"]
-    types_mask = data["type_masks"]
+    types_mask = data["type_masks_lum_fct"]
     good_mask = ~types_mask["Quasar"]
     x = Time(luminosity_summary["ref_time_mjd"][good_mask], format="mjd").to_datetime()
     control_region_time = Time(control_region_mjd, format="mjd").to_datetime()
