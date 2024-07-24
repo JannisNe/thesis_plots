@@ -1,39 +1,8 @@
 import logging
-import pickle
 import matplotlib.pyplot as plt
-from matplotlib.ticker import NullFormatter
-from matplotlib import colormaps
-from matplotlib.legend_handler import HandlerTuple
-import pandas as pd
 import numpy as np
-from pathlib import Path
-from astropy import constants
-from astropy import units as u
-from astropy.cosmology import Planck18
-from astropy.time import Time
-from itertools import chain
-import healpy as hp
-
 from thesis_plots.flaires.data.load import load_data
 from thesis_plots.plotter import Plotter
-
-from timewise_sup.environment import load_environment
-from timewise_sup.mongo import DatabaseConnector
-from timewise_sup.meta_analysis.flux import get_band_nu
-from timewise_sup.meta_analysis.diagnostics import get_baseline_changes, get_baseline_magnitudes
-from timewise_sup.meta_analysis.luminosity import (
-    get_ir_luminosities_index,
-    luminosity_key,
-    luminosity_err_key,
-    ref_time_key
-)
-from timewise_sup.plots.diagnostic_plots import plot_separation
-
-from air_flares.plots.temperature_plots import (
-    make_temperature_lightcurve_plot,
-    make_temperature_radius_plot,
-    make_temperature_fit_plot
-)
 from air_flares.plots.paper_plots import indicate_news_cutoff
 
 
@@ -54,9 +23,9 @@ def histogram():
     logger.info(f"fraction of AGN in all sources: {agn_in_all_sources:.2f}")
 
     fig, ax = plt.subplots()
-    ax.bar(bins, info["h1"], width=width, color="C0", alpha=0.5, align="edge", label="dust echoes")
+    ax.bar(bm, info["h1"], width=width, color="C0", alpha=0.5, align="center", label="dust echoes")
     # make a histogram of all sources weighted with N_dust_echoes / N_all
-    ax.step(bm, info["h2"], width=width, color="C1", alpha=0.5, align="edge", label="all (scaled)")
+    ax.step(bins[:-1], info["h2"], color="C1", alpha=0.5, where="post", label="all (scaled)")
     ax.axvline(agn_color, ls="--", color="grey", label="Stern+12")
     ax.set_yscale("log")
     ylim = list(ax.get_ylim())
@@ -88,7 +57,7 @@ def baselines():
     ylabels = info["ylabels"]
     xbins = info["xbins"]
     xbin_mids = (xbins[1:] + xbins[:-1]) / 2
-    diff_samples = info["diff_samples"]
+    diff_samples = info["diff_sample"]
 
     fig, axs = plt.subplots(sharex=True, nrows=len(ykeys), gridspec_kw={"hspace": 0})
     for i, (ax, ykey, ylabel) in enumerate(zip(axs, ykeys, ylabels)):
