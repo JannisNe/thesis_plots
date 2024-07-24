@@ -23,9 +23,9 @@ def histogram():
     logger.info(f"fraction of AGN in all sources: {agn_in_all_sources:.2f}")
 
     fig, ax = plt.subplots()
-    ax.bar(bm, info["h1"], width=width, color="C0", alpha=0.5, align="center", label="dust echoes")
+    ax.bar(bm, info["h1"], width=width, color="C0", align="center", label="dust echoes")
     # make a histogram of all sources weighted with N_dust_echoes / N_all
-    ax.step(bins[:-1], info["h2"], color="C1", alpha=0.5, where="post", label="all (scaled)")
+    ax.step(bins[:-1], info["h2"], color="C1", where="post", label="all (scaled)")
     ax.axvline(agn_color, ls="--", color="grey", label="Stern+12")
     ax.set_yscale("log")
     ylim = list(ax.get_ylim())
@@ -54,14 +54,14 @@ def baselines():
     xkey = info["xkey"]
     xlabel = info["xlabel"]
     ykeys = info["ykeys"]
-    ylabels = info["ylabels"]
+    ylabels = [r"$\Delta$ W1", r"$\Delta$ W2", r"$\Delta$ (W1 - W2)"]
     xbins = info["xbins"]
     xbin_mids = (xbins[1:] + xbins[:-1]) / 2
     diff_samples = info["diff_sample"]
 
     fig, axs = plt.subplots(sharex=True, nrows=len(ykeys), gridspec_kw={"hspace": 0})
     for i, (ax, ykey, ylabel) in enumerate(zip(axs, ykeys, ylabels)):
-        ax.scatter(diff_samples[xkey], diff_samples[ykey], s=1, alpha=0.01, label="data", zorder=1)
+        ax.scatter(diff_samples[xkey], diff_samples[ykey], s=1, alpha=0.1, label="data", zorder=1)
         qs = info["qs"][ykey]
         ax.plot(xbin_mids, qs[:, 0.5], color="k", alpha=0.5, label="median", zorder=3)
         ax.plot(xbin_mids, qs[:, 0.16], color="k", ls="--", alpha=0.5, label=r"1 $\sigma$", zorder=3)
@@ -70,7 +70,7 @@ def baselines():
         ax.set_ylabel(ylabel)
         ax.set_ylim(-2.2, 2.2)
         indicate_news_cutoff(ax, annotate="bottom" if i == len(ykeys) - 1 else False, cutoff=info["news_cutoff"])
-    axs[0].legend(loc="lower right")
+    axs[0].legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3, borderaxespad=0., mode="expand")
     axs[-1].set_xlabel(xlabel)
     axs[-1].set_xlim(17.5, 7.5)
 
