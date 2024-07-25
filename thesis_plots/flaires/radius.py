@@ -92,7 +92,7 @@ def correlations():
     xlabels = np.array([r"E$\mathrm{bol}$ [erg]", r"L$_\mathrm{peak}$ [erg s$^{-1}$]", r"T [K]"])
     correlation_factors = [1 / 2, 1, -2.]
 
-    width = plt.rcParams["figure.figsize"][1]
+    width = plt.rcParams["figure.figsize"][0]
     fig, axs = plt.subplots(
         ncols=len(xkeys),
         sharey=True,
