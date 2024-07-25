@@ -1,5 +1,8 @@
 import logging
 import matplotlib.pyplot as plt
+from matplotlib.legend_handler import HandlerTuple
+from matplotlib.lines import Line2D
+from matplotlib.container import ErrorbarContainer
 import numpy as np
 from thesis_plots.flaires.data.load import load_data
 from thesis_plots.plotter import Plotter
@@ -36,9 +39,9 @@ def rate():
     for i, (ax, (relative_rates, relative_rates_err, all_hist, flares_hist, superthresh, _, _)) in enumerate(
             zip(axs, rates)):
         ax.bar(mag_bins[:-1], all_hist, width=width, color="C0", alpha=0.5, zorder=1, ec="none", align="edge")
-        ax.bar(mag_bins[:-1], flares_hist, width=width, color="forestgreen",
+        ax.bar(mag_bins[:-1], flares_hist, width=width, color="C1",
                zorder=2, ec="k", align="edge")
-        ax.bar(mag_bins[:-1], flares_hist - superthresh, width=width, color="forestgreen",
+        ax.bar(mag_bins[:-1], flares_hist - superthresh, width=width, color="C1",
                zorder=3, ec="k", align="edge", hatch="///", bottom=superthresh)
         ax.set_yscale("log")
         ax.annotate(f"{z_bins[i]:.2f} < z < {z_bins[i + 1]:.2f}", **annotation_kwargs)
@@ -48,7 +51,7 @@ def rate():
         if i > 0:
             rate_ax.sharey(rate_axs[0])
         ulm = relative_rates == 0
-        rate_ax.errorbar(mag_bin_mids[~ulm], relative_rates[~ulm], yerr=relative_rates_err[~ulm].T,
+        err_cont = rate_ax.errorbar(mag_bin_mids[~ulm], relative_rates[~ulm], yerr=relative_rates_err[~ulm].T,
                          marker="o", color="grey", zorder=1, ls="", capsize=2, ms=4, ecolor="k", barsabove=True)
         rate_ax.plot(mag_bin_mids[ulm], relative_rates_err[ulm, 1], marker="v", color="grey", zorder=1, ls="", ms=2)
         rate_ax.set_yscale("log")
@@ -68,6 +71,18 @@ def rate():
     rate_axs[0].set_ylabel(r"Rate [yr$^{-1}$ galaxy$^{-1}$]", x=coords2[0], y=coords2[1], ha="center", va="top",
                            labelpad=5)
     rate_axs[0].set_ylim(2e-7, 2e-4)
+
+    legend_patches = [
+        plt.Rectangle((0, 0), 1, 1, fc="C0", alpha=0.5, ec="none", label="all sources"),
+        (
+            plt.Rectangle((0, 0), 1, 1, fc="C1", ec="k", label="flaring sources"),
+            plt.Rectangle((0, 0), 1, 1, fc="C1", ec="k", hatch="///", label="superthreshold flares"),
+        ),
+        err_cont
+    ]
+    legend_text = ["all", "flaring (superthreshold)", "rate"]
+    axs[0].legend(legend_patches, legend_text, handler_map={tuple: HandlerTuple(ndivide=None)},
+                  loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3)
 
     return fig
 

@@ -103,7 +103,7 @@ def temperature_fit():
     last_ax = axs.flatten()[-1]
     last_ax.annotate(f"{offset_value:.0e}", (1, 0), xycoords="axes fraction", fontsize="small")
 
-    fig.supxlabel(r"$\nu$ [Hz]")
+    fig.supxlabel(r"$\nu$ [Hz]", y=-0.03)
     fig.supylabel(r"$\nu L_\nu$ [erg s$^{-1}$]")
 
     return fig

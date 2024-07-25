@@ -89,14 +89,15 @@ def correlations():
 
     xkeys = np.array(["energy", "peak_luminosity", "temperature_at_peak"])
     xerr_keys = np.array(["energy_err", "peak_luminosity_sym_err", "temperature_at_peak_sym_err"])
-    xlabels = np.array([r"E$\mathrm{bol}$ [erg]", r"L$_\mathrm{bol,\,peak}$ [erg s$^{-1}$]", r"T [K]"])
+    xlabels = np.array([r"E$\mathrm{bol}$ [erg]", r"L$_\mathrm{peak}$ [erg s$^{-1}$]", r"T [K]"])
     correlation_factors = [1 / 2, 1, -2.]
 
+    width = plt.rcParams["figure.figsize"][1]
     fig, axs = plt.subplots(
         ncols=len(xkeys),
-        figsize=np.array(plt.rcParams["figure.figsize"]) * np.array([2, 1]),
         sharey=True,
-        gridspec_kw={"wspace": 0}
+        gridspec_kw={"wspace": 0},
+        figsize=(width, width / 3)
     )
 
     y = selected_summary["intrinsic_equivalent_width_pc"]

@@ -28,6 +28,6 @@ def skymap():
         graticule_color="grey",
         override_plot_properties=plot_props,
         max=2000,
-        unit="density [#/deg$^2$]"
+        unit="density [deg$^{-2}$]"
     )
     return plt.gcf()
