@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 import pickle
 from typing import Any, Hashable, get_type_hints
+import hashlib
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,11 @@ class DiskCache:
                 _sorted_args[_args.index(k)] = v.default
 
         logger.debug(f"sorted args are {_sorted_args}")
-        key = f"{f.__module__}_{f.__name__}{hash(tuple(_sorted_args))}"
+        h = hashlib.md5()
+        h.update(pickle.dumps(f.__module__))
+        h.update(pickle.dumps(f.__name__))
+        h.update(pickle.dumps(tuple(_sorted_args)))
+        key = h.hexdigest()
         logger.debug(f"key is {key}")
         return key
 
