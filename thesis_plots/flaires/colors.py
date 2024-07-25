@@ -70,7 +70,7 @@ def baselines():
         ax.set_ylabel(ylabel)
         ax.set_ylim(-2.2, 2.2)
         indicate_news_cutoff(ax, annotate="bottom" if i == len(ykeys) - 1 else False, cutoff=info["news_cutoff"])
-    axs[0].legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3, borderaxespad=0., mode="expand")
+    axs[0].legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3)
     axs[-1].set_xlabel(xlabel)
     axs[-1].set_xlim(17.5, 7.5)
 

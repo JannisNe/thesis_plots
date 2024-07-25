@@ -109,7 +109,7 @@ def subsamples():
     ax.set_yscale("log")
     ax.set_xlim(17.5, 7.5)
     indicate_news_cutoff(ax, annotate="bottom", cutoff=news_cutoff)
-    ax.legend(bbox_to_anchor=(0.5, 1.02), loc='lower center', ncol=3, mode="expand", borderaxespad=0.)
+    ax.legend(bbox_to_anchor=(0.5, 1.02), loc='lower center', ncol=3)
     return fig
 
 
