@@ -107,6 +107,6 @@ def make_offset_cutouts():
     )
 
     fig.supylabel(r"$\Delta$Dec [arcsec]", x=0.03, ha="left")
-    fig.supxlabel(r"$\Delta$RA [arcsec]", y=0.03, ha="left")
+    fig.supxlabel(r"$\Delta$RA [arcsec]", y=0.03, ha="center")
 
     return fig
