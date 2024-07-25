@@ -151,6 +151,48 @@ def peak_times():
     return fig
 
 
+@Plotter.register(["notopright"])
+def energy():
+
+    data = load_data()
+    luminosity_info = data["luminosity_summary"]
+    masks = data["type_masks_lum_fct"]
+    key = "energy"
+    xlabel = r"$E_\mathrm{bol}$ [erg]"
+    types = ["Quasar"]
+
+    emcee_mask = luminosity_info["n_emcee_epochs"] > 2
+    zero_mask = luminosity_info[key] > 0
+    good_mask = emcee_mask & zero_mask
+    logger.debug(f"found {np.sum(good_mask)} sources with at least 3 epochs and non-zero energy")
+    log_e = np.log10(luminosity_info[key][good_mask])
+    bins = np.logspace(np.min(log_e), np.max(log_e), 20)
+
+    fig, ax = plt.subplots()
+    ax.hist(luminosity_info[key][good_mask], bins=bins, label="all")
+    bottoms = np.zeros(len(bins) - 1)
+    for imask, (name, m) in enumerate(masks.items()):
+        if (types is not None) and (name not in types):
+            continue
+        this_mask = good_mask & m
+        logger.debug(f"found {np.sum(this_mask)} sources with at least 3 epochs, non-zero energy, and {name}")
+        h, b, p = ax.hist(
+            luminosity_info[key][this_mask],
+            bins=bins,
+            label=name,
+            hatch=["//", "--", ".."][imask],
+            bottom=bottoms,
+            ec="none"
+        )
+        bottoms += h
+    ax.set_xlabel(xlabel)
+    ax.legend()
+    ax.set_ylabel("count")
+    ax.set_xscale("log")
+
+    return fig
+
+
 @Plotter.register("fullpage")
 def curves():
     data = load_data()
