@@ -41,6 +41,7 @@ def run(
         ] = False
 ):
     logging.getLogger("thesis_plots").setLevel(log_level.upper())
+    logging.getLogger("timewise").setLevel(log_level.upper())
     plotter = Plotter()
 
     if list_plots:
