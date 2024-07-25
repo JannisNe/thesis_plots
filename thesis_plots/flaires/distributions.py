@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from astropy.time import Time
+from astropy.cosmology import Planck18
+from timewise_sup.meta_analysis.luminosity import ref_time_key
 from thesis_plots.flaires.data.load import load_data
 from thesis_plots.plotter import Plotter
-from timewise_sup.meta_analysis.luminosity import luminosity_key
 from air_flares.plots.paper_plots import indicate_news_cutoff
 from air_flares.export.rates import control_region_mjd, get_wise_times
 
@@ -147,4 +148,57 @@ def peak_times():
     ax.annotate("no data", (pause_mid_date, ylim[1]), xytext=(0, -2),
                 textcoords="offset points", ha="center", va="top", fontsize="small", color="grey")
     ax.set_ylim(ylim)
+    return fig
+
+
+@Plotter.register("fullpage")
+def curves():
+    data = load_data()
+    luminosities = data["blackbody_luminosities"]
+    type_masks = data["type_masks_lum_fct"]
+    redshifts = data["redshifts"]
+
+    ykey = ["flux", "luminosity", "temperature", "radius"]
+    yscale = ["log", "log", "log", "log"]
+    ylabel = {
+        "luminosity": r"$L_\mathrm{bol}$ [erg s$^{-1}$]",
+        "flux": r"$L_\mathrm{bol} / 4 \pi d_\mathrm{L}^2$ [erg s$^{-1}$ cm$^{-2}$]",
+        "temperature": r"$T$ [K]",
+        "radius": r"$R_\mathrm{eff}$ [pc]",
+    }
+
+    logger.debug(f"ykey: {ykey}, scales: {yscale}")
+
+    # plot lightcurves
+    fig, axs = plt.subplots(nrows=4, ncols=1, sharex=True, gridspec_kw={"hspace": 0})
+    axs = np.atleast_1d(axs)
+
+    for i_ykey, i_yscale, ax in zip(ykey, yscale, axs):
+        for i, i_luminosity in luminosities.items():
+
+            if type_masks.loc[i, "Quasar"]:
+                logger.debug(f"skipping {i} because it is a quasar")
+                continue
+
+            lc = pd.DataFrame(i_luminosity)
+            good_mask = (
+                    lc["converged"] & lc["good_errors"] & lc["good_luminosity"] &
+                    lc["luminosity_16perc"].notna() & lc["luminosity"].notna() &
+                    (lc["luminosity"] != -999.)
+            )
+            if np.sum(good_mask) < 2:
+                logger.debug(f"Skipping {i} because less than 2 good epochs")
+                continue
+
+            lc = lc[good_mask]
+            if i_ykey == "flux":
+                area = 4 * np.pi * Planck18.luminosity_distance(redshifts.loc[int(i), "z"]).to("cm").value ** 2
+                lc[i_ykey] = lc["luminosity"] / area
+            ax.plot(lc[ref_time_key], lc[i_ykey], alpha=0.2, ls="-", marker="", color="k", zorder=1, lw=0.5)
+
+        ax.set_ylabel(ylabel[i_ykey])
+        ax.set_yscale(i_yscale)
+
+    axs[-1].set_xlabel("time since peak [days]")
+
     return fig
