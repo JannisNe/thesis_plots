@@ -94,7 +94,7 @@ def redshifts():
     return fig
 
 
-@Plotter.register(["notopright"])
+@Plotter.register(["notopright", "margin"])
 def subsamples():
     info = load_data()["subsamples"]
     xlabel = info["xlabel"]
@@ -102,15 +102,29 @@ def subsamples():
     hists = info["hists"]
 
     fig, ax = plt.subplots()
-    ls = ["-", "--", ":"]
-    for (subsample, (h, b)), ils in zip(hists.items(), ls):
-        ax.step(b[:-1], h, label=subsample, ls=ils, where="post")
+    ls = ["", "///", "\\\\"]
+    hi = None
+    subs = ["NED-LVS", "PS1xWISE-STRM", "NEWS"]
+    for subsample, ils in zip(subs, ls):
+        h, b = hists[subsample]
+        bm = (b[1:] + b[:-1]) / 2
+        widht = np.diff(b)
+        ax.bar(bm, h, width=widht, label=subsample, bottom=hi if hi is not None else 0, hatch=ils)
+        if hi is None:
+            hi = h
+        else:
+            hi += h
     ax.set_xlabel(xlabel)
     ax.set_ylabel("number of objects")
     ax.set_yscale("log")
     ax.set_xlim(17.5, 7.5)
-    indicate_news_cutoff(ax, annotate="bottom", cutoff=news_cutoff)
-    ax.legend(bbox_to_anchor=(0.5, 1.02), loc='lower center', ncol=3)
+    ax.axvline(news_cutoff, ls="-", color="grey", zorder=10, lw=1)
+    ax.annotate(
+        r"W1$_\mathrm{NEWS}$",
+        (news_cutoff, max(ax.get_ylim())), xycoords="data", xytext=(2, -2), textcoords="offset points",
+        ha="left", va="top", fontsize="small", color="grey"
+    )
+    ax.legend(bbox_to_anchor=(0.5, 1.02), loc='lower center', ncol=1)
     return fig
 
 
