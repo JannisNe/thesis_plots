@@ -1,8 +1,6 @@
 import logging
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerTuple
-from matplotlib.lines import Line2D
-from matplotlib.container import ErrorbarContainer
 import numpy as np
 from thesis_plots.flaires.data.load import load_data
 from thesis_plots.plotter import Plotter

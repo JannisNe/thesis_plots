@@ -1,5 +1,4 @@
 import logging
-import pdb
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerTuple
 import pandas as pd
@@ -10,8 +9,6 @@ from thesis_plots.plotter import Plotter
 
 
 from timewise.utils import plot_panstarrs_cutout
-from timewise_sup.plots.diagnostic_plots import plot_separation
-
 
 
 logger = logging.getLogger(__name__)
