@@ -45,7 +45,7 @@ def redshift_bias():
 
 
 @Plotter.register("fullpage")
-def make_offset_cutouts():
+def offset_cutouts():
     data = load_data()
     offset_objects = data["offset_objects"]
     separations = data["separations"]
