@@ -1,6 +1,7 @@
 import logging
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from thesis_plots.flaires.data.load import load_data
 from thesis_plots.plotter import Plotter
 from air_flares.plots.paper_plots import indicate_news_cutoff
@@ -57,11 +58,12 @@ def baselines():
     ylabels = [r"$\Delta$ W1", r"$\Delta$ W2", r"$\Delta$ (W1 - W2)"]
     xbins = info["xbins"]
     xbin_mids = (xbins[1:] + xbins[:-1]) / 2
-    diff_samples = info["diff_sample"]
+    splits = [info["diff_sample"].query(f"{xkey} >= {d} and {xkey} < {u}") for d, u in zip(xbins[:-1], xbins[1:])]
+    diff_samples = pd.concat([s.sample(100) if len(s) > 100 else s for s in splits])
 
     fig, axs = plt.subplots(sharex=True, nrows=len(ykeys), gridspec_kw={"hspace": 0})
     for i, (ax, ykey, ylabel) in enumerate(zip(axs, ykeys, ylabels)):
-        ax.scatter(diff_samples[xkey], diff_samples[ykey], s=1, alpha=0.1, label="data", zorder=1)
+        ax.scatter(diff_samples[xkey], diff_samples[ykey], s=1, alpha=0.2, label="data", zorder=1)
         qs = info["qs"][ykey]
         ax.plot(xbin_mids, qs[:, 0.5], color="k", alpha=0.5, label="median", zorder=3)
         ax.plot(xbin_mids, qs[:, 0.16], color="k", ls="--", alpha=0.5, label=r"1 $\sigma$", zorder=3)
