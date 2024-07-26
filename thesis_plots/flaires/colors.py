@@ -1,5 +1,7 @@
 import logging
+from copy import copy
 import matplotlib.pyplot as plt
+from matplotlib.legend_handler import HandlerTuple
 import numpy as np
 import pandas as pd
 from thesis_plots.flaires.data.load import load_data
@@ -75,5 +77,48 @@ def baselines():
     axs[0].legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3)
     axs[-1].set_xlabel(xlabel)
     axs[-1].set_xlim(17.5, 7.5)
+
+    return fig
+
+
+@Plotter.register("margin")
+def baselines_zoom():
+    info = load_data()["baseline_changes"]
+    xkey = info["xkey"]
+    xlabel = info["xlabel"]
+    ykeys = info["ykeys"]
+    ylabels = [r"$\Delta$ W1", r"$\Delta$ (W1 - W2)"]
+    xbins = info["xbins"]
+    xbin_mids = (xbins[1:] + xbins[:-1]) / 2
+    splits = [info["diff_sample"].query(f"{xkey} >= {d} and {xkey} < {u}") for d, u in zip(xbins[:-1], xbins[1:])]
+    diff_samples = pd.concat([s.sample(100) if len(s) > 100 else s for s in splits])
+    m = (diff_samples["W1_diff"] > .2) & (diff_samples["W2_diff"] > .2)
+
+    height = plt.rcParams["figure.figsize"][1] * 2
+    width = plt.rcParams["figure.figsize"][0]
+
+    fig, axs = plt.subplots(sharex=True, nrows=2, gridspec_kw={"hspace": 0}, figsize=(width, height))
+
+    for i, (ax, ykey, ylabel) in enumerate(zip(axs, ["W1_diff", "color_change"], ylabels)):
+        handlers = []
+        for im, w, c, ls, mark in zip([m, ~m], ["high", "low"], ["C1", "C0"], ["-", "--"], ["o", "s"]):
+            p1 = ax.scatter(diff_samples[xkey][im], diff_samples[ykey][im],
+                       s=3, alpha=.1, label="data", zorder=1, color=c, ec="none", marker=mark)
+            qs = info[f"qs_{w}"][ykey]
+            p2 = ax.plot(xbin_mids, qs[:, 0.5], color=c, alpha=1, label="median", zorder=3, ls=ls)
+            ax.fill_between(xbin_mids, qs[:, 0.16], qs[:, 0.84], color=c, alpha=.5, ec="none")
+            p1 = copy(p1)
+            p1.set_sizes([10])
+            p1.set_alpha(.5)
+            handlers.append((p1, p2[0]))
+        ax.axhline(0, ls=":", color="k", alpha=0.5, zorder=2)
+        ax.set_ylabel(ylabel)
+        ax.set_ylim(-2.2, 2.2)
+        indicate_news_cutoff(ax, annotate="bottom" if i == len(ykeys) - 1 else False, cutoff=info["news_cutoff"])
+    axs[0].legend(handlers, ["variable", "steady"], loc="lower center", bbox_to_anchor=(0.5, 1.02),
+                  ncol=3, handler_map={tuple: HandlerTuple(ndivide=None)})
+    axs[-1].set_xlabel(xlabel)
+    axs[-1].set_xlim(17.5, 7)
+    axs[-1].set_ylim(-.25, .25)
 
     return fig
