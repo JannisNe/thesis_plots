@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @Plotter.register("margin")
-def make_redshift_bias_plots():
+def redshift_bias():
     data = load_data()
     luminosity_summary = data["luminosity_summary"]
     redshifts = data["redshifts"][["z"]]
