@@ -1,6 +1,5 @@
 import logging
 import matplotlib.pyplot as plt
-from matplotlib.cm import get_cmap
 import numpy as np
 from astropy.modeling import models
 from astropy import units as u
