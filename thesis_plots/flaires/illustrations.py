@@ -1,5 +1,6 @@
 import logging
 import matplotlib.pyplot as plt
+from matplotlib.cm import get_cmap
 import numpy as np
 from astropy.modeling import models
 from astropy import units as u
@@ -20,7 +21,7 @@ def wise_blackbody():
     wls = np.logspace(np.log10(wl_range[0].value), np.log10(wl_range[1].value), 1000) * u.AA
     bb_flux = [ibb(wls) for ibb in bb]
     ls = ["--", ":"]
-    bbc = "grey"
+    bbc = "C2"
 
     fig, ax = plt.subplots()
     ax2 = ax.twinx()
@@ -35,9 +36,13 @@ def wise_blackbody():
     ax.legend(bbox_to_anchor=(0.5, 1), loc="lower center", ncols=2)
     ax.set_xscale("log")
     ax.set_xlabel("Wavelength [$10^4$ AA]")
-    ax2.set_ylabel("Flux [a.u.]")
+    ax2.set_ylabel("Flux [a.u.]", color=bbc)
     ax2.set(xticks=[2e4, 3e4, 4e4, 6e4, 1e5], xticklabels=["2", "3", "4", "6", "10"], yticks=[], yticklabels=[])
     ax.set_ylabel("Transmission")
+    ax.set_zorder(1)
+    ax.patch.set_visible(False)
+    ax2.spines["right"].set_color(bbc)
+    ax.spines["right"].set_color(bbc)
     plt.tick_params(left=plt.rcParams["ytick.left"], right=plt.rcParams["ytick.right"])
 
     return fig
