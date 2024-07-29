@@ -68,6 +68,8 @@ class DiskCache:
     def cache(f):
         assert f.__module__.startswith("thesis_plots."), "cached function must be in thesis_plots"
         for n, t in get_type_hints(f).items():
+            if n == "return":
+                continue
             assert issubclass(t, Hashable), f"argument {n} of {f} is not hashable"
 
         def wrapper(*args, **kwargs):
