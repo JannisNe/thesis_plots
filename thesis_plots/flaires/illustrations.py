@@ -12,29 +12,32 @@ logger = logging.getLogger(__name__)
 
 @Plotter.register("margin")
 def wise_blackbody():
-    temp = 1800 * u.K
+    temp = np.array([1800, 1500, 1200]) * u.K
     filters = [("wise", "wise", "W1"), ("wise", "wise", "W2")]
-    bb = models.BlackBody(temperature=temp)
+    bb = [models.BlackBody(temperature=t) for t in temp]
     tables = {f"{fac}/{inst} ({band})": get_filter(fac, inst, band) for fac, inst, band in filters}
-    wl_range = np.array((1e4, 1e5)) * u.AA
+    wl_range = np.array((2e4, 1e5)) * u.AA
     wls = np.logspace(np.log10(wl_range[0].value), np.log10(wl_range[1].value), 1000) * u.AA
-    bb_flux = bb(wls)
+    bb_flux = [ibb(wls) for ibb in bb]
     ls = ["--", ":"]
+    bbc = "grey"
 
     fig, ax = plt.subplots()
+    ax2 = ax.twinx()
     for ils, (f, table) in zip(ls, tables.items()):
-        ax.plot(
-            table["Wavelength"],
-            table["Transmission"] * bb(table["Wavelength"].to("AA")).to("erg s-1 cm-2 Hz-1 sr-1").value,
-            ls=ils,
-            label=f.strip(")").replace("wise/wise (", ""),
-            zorder=50
-        )
-    ax.plot(wls, bb_flux.to("erg s-1 cm-2 Hz-1 sr-1").value, label=f"blackbody")
+        ax.plot(table["Wavelength"], table["Transmission"], ls=ils, label=f.strip(")").replace("wise/wise (", ""),
+                 zorder=10)
+    for ibb, ibbmod, itemp in zip(bb_flux, bb, temp):
+        ax2.plot(wls, ibb.value / ibb.value.max(), label=f"{itemp.value:} K", color=bbc, zorder=2)
+        ax2.annotate(f"{itemp.value:.0f} K", (7e4, ibb.value[-200] / ibb.value.max()),
+                    va="center", ha="center", rotation=-45, bbox=dict(facecolor="white", edgecolor="none", alpha=1, pad=0.),
+                    color=bbc, fontsize="small")
     ax.legend(bbox_to_anchor=(0.5, 1), loc="lower center", ncols=2)
-    ax.set(yticklabels=[])
     ax.set_xscale("log")
-    ax.set_xlabel("Wavelength [AA]")
-    ax.set_ylabel("Flux [a.u.]")
+    ax.set_xlabel("Wavelength [$10^4$ AA]")
+    ax2.set_ylabel("Flux [a.u.]")
+    ax2.set(xticks=[2e4, 3e4, 4e4, 6e4, 1e5], xticklabels=["2", "3", "4", "6", "10"], yticks=[], yticklabels=[])
+    ax.set_ylabel("Transmission")
+    plt.tick_params(left=plt.rcParams["ytick.left"], right=plt.rcParams["ytick.right"])
 
     return fig
