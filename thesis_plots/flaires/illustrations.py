@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 @Plotter.register("margin")
 def wise_blackbody():
-    temp = 1600 * u.K
+    temp = 1800 * u.K
     filters = [("wise", "wise", "W1"), ("wise", "wise", "W2")]
     bb = models.BlackBody(temperature=temp)
     tables = {f"{fac}/{inst} ({band})": get_filter(fac, inst, band) for fac, inst, band in filters}
