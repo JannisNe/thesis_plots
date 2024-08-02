@@ -226,13 +226,14 @@ def sjoerts_sample_news():
     in_news_m = match.dist_to_news_source_arcsec < r
     logger.debug(f"found {np.sum(in_news_m)} Sjoerts flares within {r} arcsec of NEWS")
     m = sjoert_m & in_news_m
-    logger.debug(f"found {np.sum(m)} Sjoerts flares not in NEWS")
     m2 = sjoerts_w1mag.index.isin(match.loc[m, "id"])
+    logger.debug(f"found {np.sum(m2)} Sjoerts flares in NEWS, ({np.sum(m2) / sjoerts_w1mag.notna().sum()*100:.0f}%)")
     logger.debug(sjoerts_w1mag[m2].to_string())
     w = np.resize(1 / sjoerts_w1mag.notna().sum(), len(sjoerts_w1mag))
 
     fig, ax = plt.subplots()
-    p1 = ax.bar(bins[:-1], news_hist, width=np.diff(bins), label="NEWS")
+    bm = (bins[1:] + bins[:-1]) / 2
+    p1 = ax.bar(bm, news_hist, width=np.diff(bins), label="NEWS")
     h, b, p2 = ax.hist(sjoerts_w1mag[m2], bins=bins, alpha=1, label="Sjoerts", histtype="step", color="C1", weights=w[m2])
     _, _, p3 = ax.hist(sjoerts_w1mag[~m2], bins=bins, alpha=1, label="not in NEWS", hatch="////", bottom=h, ec="C1", fc="none", weights=w[~m2])
     ax.set_xlabel("W1$_\mathrm{catalog}$")
