@@ -43,7 +43,7 @@ class Plotter:
                 logger.debug(f"using styles {_styles}")
                 style.use(_styles)
                 if orientation:
-                    Plotter.set_orientation(orientation)
+                    cls.set_orientation(orientation)
                 return f(*args, **kwargs)
 
             fname = f.__module__.replace("thesis_plots.", "") + ":" + f.__name__
