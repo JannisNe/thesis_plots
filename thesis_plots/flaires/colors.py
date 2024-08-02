@@ -51,7 +51,7 @@ def histogram():
     return fig
 
 
-@Plotter.register("upright")
+@Plotter.register(orientation="portrait")
 def baselines():
     info = load_data()["baseline_changes"]
     xkey = info["xkey"]

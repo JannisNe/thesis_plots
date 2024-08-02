@@ -47,7 +47,7 @@ def get_data(event_name: str):
     return np.load(filename, allow_pickle=True)
 
 
-@Plotter.register("upright", arg_loop=events)
+@Plotter.register(orientation="portrait", arg_loop=events)
 def abs_log_ratios(event_name: str):
     logger.debug(f"making plot for {event_name}")
     data = get_data(event_name)

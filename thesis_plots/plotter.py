@@ -26,7 +26,12 @@ class Plotter:
         self.dir.mkdir(exist_ok=True)
 
     @classmethod
-    def register(cls, style_name: str | list[str] = None, arg_loop: Any | list[Any] | None = None):
+    def register(
+            cls,
+            style_name: str | list[str] = None,
+            arg_loop: Any | list[Any] | None = None,
+            orientation: str = "landscape"
+    ):
         if isinstance(style_name, str):
             style_name = [style_name]
         _add_styles = [f"thesis_plots.styles.{w}" for w in style_name] if style_name else []
@@ -37,6 +42,7 @@ class Plotter:
             def wrapper(*args, **kwargs):
                 logger.debug(f"using styles {_styles}")
                 style.use(_styles)
+                Plotter.set_orientation(orientation)
                 return f(*args, **kwargs)
 
             fname = f.__module__.replace("thesis_plots.", "") + ":" + f.__name__
@@ -49,6 +55,17 @@ class Plotter:
             return f
 
         return plot_function_with_style
+
+    @classmethod
+    def set_orientation(cls, orientation: str):
+        assert orientation in ["landscape", "portrait"]
+        figsize = plt.rcParams["figure.figsize"]
+        current_orientation = "landscape" if figsize[0] > figsize[1] else "portrait"
+        if current_orientation != orientation:
+            logger.debug(f"changing orientation to {orientation}")
+            ratio = figsize[1] / figsize[0]
+            exponent = 1 if orientation == "landscape" else -1
+            plt.rcParams["figure.figsize"] = (figsize[0], figsize[0] * ratio ** exponent)
 
     def get_filename(self, name: str):
         return self.dir / (name.replace(":", "_").replace(".", "_") + ".pdf")

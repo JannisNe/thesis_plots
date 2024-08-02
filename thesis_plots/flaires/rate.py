@@ -9,7 +9,7 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register("upright")
+@Plotter.register(orientation="portrait")
 def rate():
     data = load_data()
     rates = data["rates"]
