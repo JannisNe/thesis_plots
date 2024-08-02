@@ -30,7 +30,7 @@ class Plotter:
             cls,
             style_name: str | list[str] = None,
             arg_loop: Any | list[Any] | None = None,
-            orientation: str = "landscape"
+            orientation: str | None = None
     ):
         if isinstance(style_name, str):
             style_name = [style_name]
@@ -42,7 +42,8 @@ class Plotter:
             def wrapper(*args, **kwargs):
                 logger.debug(f"using styles {_styles}")
                 style.use(_styles)
-                Plotter.set_orientation(orientation)
+                if orientation:
+                    Plotter.set_orientation(orientation)
                 return f(*args, **kwargs)
 
             fname = f.__module__.replace("thesis_plots.", "") + ":" + f.__name__
