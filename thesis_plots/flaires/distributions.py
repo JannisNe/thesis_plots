@@ -11,7 +11,6 @@ from thesis_plots.flaires.data.load import load_data
 from thesis_plots.plotter import Plotter
 from timewise_sup.samples.sjoerts_flares import TestWISEData
 from air_flares.export.rates import control_region_mjd, get_wise_times
-import ipdb
 
 
 logger = logging.getLogger(__name__)
