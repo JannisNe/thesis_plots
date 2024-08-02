@@ -1,14 +1,17 @@
 import logging
 import matplotlib.pyplot as plt
+from matplotlib.legend_handler import HandlerTuple
 import pandas as pd
+from pathlib import Path
 import numpy as np
 from astropy.time import Time
 from astropy.cosmology import Planck18
 from timewise_sup.meta_analysis.luminosity import ref_time_key
 from thesis_plots.flaires.data.load import load_data
 from thesis_plots.plotter import Plotter
-from air_flares.plots.paper_plots import indicate_news_cutoff
+from timewise_sup.samples.sjoerts_flares import TestWISEData
 from air_flares.export.rates import control_region_mjd, get_wise_times
+import ipdb
 
 
 logger = logging.getLogger(__name__)
@@ -204,6 +207,40 @@ def energy():
     ax.set_ylabel("count")
     ax.set_xscale("log")
 
+    return fig
+
+
+@Plotter.register(["margin", "notopright"])
+def sjoerts_sample_news():
+    data_file = Path(__file__).parent / "data" / "important_indices.csv"
+    logger.debug(f"loading {data_file}")
+    match = pd.read_csv(data_file, index_col=0)
+
+    data = load_data()
+    news_hist = data["subsamples"]["hists"]["NEWS"][0]
+    news_hist = news_hist / np.sum(news_hist)
+    bins = data["subsamples"]["xbins"]
+    sjoerts_w1mag = TestWISEData().parent_sample.df.set_index("name")["w1mpro"]
+    sjoert_m = match.sample_name == "sjoerts_flares"
+    logger.debug(f"found {np.sum(sjoert_m)} Sjoerts flares")
+    r = 5
+    in_news_m = match.dist_to_news_source_arcsec < r
+    logger.debug(f"found {np.sum(in_news_m)} Sjoerts flares within {r} arcsec of NEWS")
+    m = sjoert_m & in_news_m
+    logger.debug(f"found {np.sum(m)} Sjoerts flares not in NEWS")
+    m2 = sjoerts_w1mag.index.isin(match.loc[m, "id"])
+    logger.debug(sjoerts_w1mag[m2].to_string())
+    w = np.resize(1 / sjoerts_w1mag.notna().sum(), len(sjoerts_w1mag))
+
+    fig, ax = plt.subplots()
+    p1 = ax.bar(bins[:-1], news_hist, width=np.diff(bins), label="NEWS")
+    h, b, p2 = ax.hist(sjoerts_w1mag[m2], bins=bins, alpha=1, label="Sjoerts", histtype="step", color="C1", weights=w[m2])
+    _, _, p3 = ax.hist(sjoerts_w1mag[~m2], bins=bins, alpha=1, label="not in NEWS", hatch="////", bottom=h, ec="C1", fc="none", weights=w[~m2])
+    ax.set_xlabel("W1$_\mathrm{catalog}$")
+    ax.set_ylabel("density")
+    ax.set_xlim(17.5, 10)
+    ax.legend([p1, (p2[0], p3[0])], ["NEWS", "ZTF AFs"], handler_map={tuple: HandlerTuple(ndivide=None)}, ncols=2,
+              bbox_to_anchor=(0.5, 1.02), loc='lower center')
     return fig
 
 
