@@ -82,6 +82,10 @@ def rate():
     axs[0].legend(legend_patches, legend_text, handler_map={tuple: HandlerTuple(ndivide=None)},
                   loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3)
 
+    for a in list(axs) + rate_axs:
+        a.tick_params(bottom=plt.rcParams["xtick.bottom"], top=plt.rcParams["xtick.top"],
+                      left=plt.rcParams["ytick.left"], right=plt.rcParams["ytick.right"], which="both")
+
     return fig
 
 

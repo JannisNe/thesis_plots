@@ -67,5 +67,10 @@ def kcorrection():
     zax.set_xticklabels([f"{z:.0f}" for z in zs])
     zax.set_xticklabels([], minor=True)
     zax.set_xlabel("Redshift")
-    ax.legend(ncols=1, loc="lower center", bbox_to_anchor=(0.5, 1.3))
+    ax.legend(ncols=1, loc="lower center", bbox_to_anchor=(0.5, 1.4))
+
+    for a in [ax, zax]:
+        a.tick_params(bottom=plt.rcParams["xtick.bottom"], top=plt.rcParams["xtick.top"],
+                      left=plt.rcParams["ytick.left"], right=plt.rcParams["ytick.right"], which="both")
+
     return fig

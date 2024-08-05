@@ -42,6 +42,9 @@ def wise_blackbody():
     ax.patch.set_visible(False)
     ax2.spines["right"].set_color(bbc)
     ax.spines["right"].set_color(bbc)
-    plt.tick_params(left=plt.rcParams["ytick.left"], right=plt.rcParams["ytick.right"])
+
+    for a in [ax, ax2]:
+        a.tick_params(bottom=plt.rcParams["xtick.bottom"], top=plt.rcParams["xtick.top"],
+                      left=plt.rcParams["ytick.left"], right=plt.rcParams["ytick.right"], which="both")
 
     return fig
