@@ -51,7 +51,7 @@ def redshifts():
     hist_mstar = data["zhist_mstar"]
     logger.debug(f"M_star = {data['mstar2']}")
     bm = (bins[:-1] + bins[1:]) / 2
-    dl_mids = Planck18.luminosity_distance(bm).to("Mpc").value
+    dl_mids = Planck18.luminosity_distance(bm).to("Mpc").value * (1 + bm)
 
     def minfunc(args, hist, max_bin):
         norm, exp = args
@@ -76,9 +76,9 @@ def redshifts():
         [hfull, pfull[0], hmstar, pmstar[0]],
         [
             "all",
-            rf"$N \propto d_\mathrm{{L}}^{{ {res_full.x[1]:.2f} }}$",
+            rf"$N \propto D^{{ {res_full.x[1]:.2f} }}$",
             "M$_\mathrm{W1}$ < M$^\star_\mathrm{W1}$",
-            rf"$N \propto d_\mathrm{{L}}^{{ {res_mstar.x[1]:.2f} }}$"
+            rf"$N \propto D^{{ {res_mstar.x[1]:.2f} }}$"
         ],
         ncol=2, loc="lower center", bbox_to_anchor=(0.5, 1.05)
     )
