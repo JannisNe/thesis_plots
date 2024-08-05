@@ -52,21 +52,33 @@ def redshifts():
     bm = (bins[:-1] + bins[1:]) / 2
     dl_mids = Planck18.luminosity_distance(bm).to("Mpc").value
 
-    def minfunc(args, exclude_last_bins=1):
+    def minfunc(args, hist, max_bin):
         norm, exp = args
-        i = -exclude_last_bins
-        return np.sum((hist_mstar[:i] - norm * dl_mids[:i] ** exp) ** 2 / hist_mstar[:i])
+        return np.sum((hist[:max_bin] - norm * dl_mids[:max_bin] ** exp) ** 2 / hist[:max_bin])
 
-    res = optimize.minimize(minfunc, x0=[1e-4, 2])
-    logger.debug(f"normalization fit: {res.x}")
+    res_mstar = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_mstar, -1))
+    logger.debug(f"normalization fit mstar: {res_mstar.x}")
+    res_full = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_full, 10))
+    logger.debug(f"normalization fit full: {res_full.x}")
 
     fig, ax = plt.subplots()
-    ax.bar(bins[:-1], hist_full, width=width, color="C0", align="edge", label="all")
-    ax.bar(bins[:-1], hist_mstar, width=width, color="C1", align="edge", label="M$_\mathrm{W1}$ < M$^\star_\mathrm{W1}$")
-    ax.plot(bm, res.x[0] * dl_mids ** res.x[1], color="k", ls="--", label=rf"$N \propto d_\mathrm{{L}}^{{ {res.x[1]:.2f} }}$")
+    pfull = ax.plot(bm[:10], res_full.x[0] * dl_mids[:10] ** res_full.x[1], color="C0", ls="--", lw=3)
+    pmstar = ax.plot(bm, res_mstar.x[0] * dl_mids ** res_mstar.x[1], color="C1", ls="--", lw=3)
+    hfull = ax.bar(bins[:-1], hist_full, width=width, color="C0", align="edge", label="all", ec="w")
+    hmstar = ax.bar(bins[:-1], hist_mstar, width=width, color="C1", align="edge", ec="w",
+           label="M$_\mathrm{W1}$ < M$^\star_\mathrm{W1}$")
     ax.set_ylabel("number of objects")
     ax.set_xlabel("redshift")
-    ax.legend(ncol=3, loc="lower center", bbox_to_anchor=(0.5, 1.05))
+    ax.legend(
+        [hfull, pfull[0], hmstar, pmstar[0]],
+        [
+            "all",
+            rf"$N \propto d_\mathrm{{L}}^{{ {res_full.x[1]:.2f} }}$",
+            "M$_\mathrm{W1}$ < M$^\star_\mathrm{W1}$",
+            rf"$N \propto d_\mathrm{{L}}^{{ {res_mstar.x[1]:.2f} }}$"
+        ],
+        ncol=2, loc="lower center", bbox_to_anchor=(0.5, 1.05)
+    )
 
     return fig
 
