@@ -51,11 +51,12 @@ def redshifts():
     hist_mstar = data["zhist_mstar"]
     logger.debug(f"M_star = {data['mstar2']}")
     bm = (bins[:-1] + bins[1:]) / 2
-    dl_mids = Planck18.luminosity_distance(bm).to("Mpc").value * (1 + bm)
+
+    def dist(z, norm, exp):
+        return norm * (Planck18.luminosity_distance(z).to("Mpc").value) ** exp
 
     def minfunc(args, hist, max_bin):
-        norm, exp = args
-        return np.sum((hist[:max_bin] - norm * dl_mids[:max_bin] ** exp) ** 2 / hist[:max_bin])
+        return np.sum((hist[:max_bin] - dist(bm[:max_bin], *args)) ** 2 / hist[:max_bin])
 
     mstar_bin = -2
     res_mstar = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_mstar, mstar_bin))
@@ -63,10 +64,12 @@ def redshifts():
     full_bin = 10
     res_full = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_full, full_bin))
     logger.debug(f"normalization fit full: {res_full.x}, z = {bm[full_bin]}")
+    zplot1 = np.linspace(0, .2, 100)
+    zplot2 = np.linspace(0, .35, 100)
 
     fig, ax = plt.subplots()
-    pfull = ax.plot(bm[:full_bin], res_full.x[0] * dl_mids[:full_bin] ** res_full.x[1], color="C0", ls="-", lw=2)
-    pmstar = ax.plot(bm[:mstar_bin], res_mstar.x[0] * dl_mids[:mstar_bin] ** res_mstar.x[1], color="C1", ls="-", lw=2)
+    pfull = ax.plot(zplot1, dist(zplot1, *res_full.x), color="C0", ls="-", lw=2)
+    pmstar = ax.plot(zplot2, dist(zplot2, *res_mstar.x), color="C1", ls="-", lw=2)
     hfull = ax.bar(bins[:-1], hist_full, width=width, color="C0", align="edge", label="all", ec="w", alpha=0.5)
     ax.bar(bins[:-1], hist_full, width=width, color="none", align="edge", ec="w")
     hmstar = ax.bar(bins[:-1], hist_mstar, width=width, color="C1", align="edge", ec="w", alpha=0.5,
