@@ -87,6 +87,7 @@ def redshifts():
 
 
 def m(z):
+    # this is wring!
     delta_M = 4
     M = -23.83 + 5 * np.log10(0.7) + delta_M
     mu = 5 * np.log10(Planck18.luminosity_distance(z).to(u.pc).value) - 5
@@ -94,7 +95,6 @@ def m(z):
     return M + mu + K
 
 
-@Plotter.register("margin")
 def limiting_mag():
     z = np.linspace(1e-2, 0.5, 100)
     mlim = 17.1
