@@ -57,14 +57,16 @@ def redshifts():
         norm, exp = args
         return np.sum((hist[:max_bin] - norm * dl_mids[:max_bin] ** exp) ** 2 / hist[:max_bin])
 
-    res_mstar = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_mstar, -2))
-    logger.debug(f"normalization fit mstar: {res_mstar.x}")
-    res_full = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_full, 10))
-    logger.debug(f"normalization fit full: {res_full.x}")
+    mstar_bin = -2
+    res_mstar = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_mstar, mstar_bin))
+    logger.debug(f"normalization fit mstar: {res_mstar.x}, z = {bm[mstar_bin]}")
+    full_bin = 10
+    res_full = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_full, full_bin))
+    logger.debug(f"normalization fit full: {res_full.x}, z = {bm[full_bin]}")
 
     fig, ax = plt.subplots()
-    pfull = ax.plot(bm[:10], res_full.x[0] * dl_mids[:10] ** res_full.x[1], color="C0", ls="-", lw=2)
-    pmstar = ax.plot(bm, res_mstar.x[0] * dl_mids ** res_mstar.x[1], color="C1", ls="-", lw=2)
+    pfull = ax.plot(bm[:full_bin], res_full.x[0] * dl_mids[:full_bin] ** res_full.x[1], color="C0", ls="-", lw=2)
+    pmstar = ax.plot(bm[:mstar_bin], res_mstar.x[0] * dl_mids[:mstar_bin] ** res_mstar.x[1], color="C1", ls="-", lw=2)
     hfull = ax.bar(bins[:-1], hist_full, width=width, color="C0", align="edge", label="all", ec="w", alpha=0.5)
     ax.bar(bins[:-1], hist_full, width=width, color="none", align="edge", ec="w")
     hmstar = ax.bar(bins[:-1], hist_mstar, width=width, color="C1", align="edge", ec="w", alpha=0.5,
