@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patheffects as path_effects
 import healpy as hp
 from astropy.cosmology import Planck18, z_at_value
 from astropy import units as u
@@ -56,17 +57,19 @@ def redshifts():
         norm, exp = args
         return np.sum((hist[:max_bin] - norm * dl_mids[:max_bin] ** exp) ** 2 / hist[:max_bin])
 
-    res_mstar = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_mstar, -1))
+    res_mstar = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_mstar, -2))
     logger.debug(f"normalization fit mstar: {res_mstar.x}")
     res_full = optimize.minimize(minfunc, x0=[1e-4, 2], args=(hist_full, 10))
     logger.debug(f"normalization fit full: {res_full.x}")
 
     fig, ax = plt.subplots()
-    pfull = ax.plot(bm[:10], res_full.x[0] * dl_mids[:10] ** res_full.x[1], color="C0", ls="--", lw=3)
-    pmstar = ax.plot(bm, res_mstar.x[0] * dl_mids ** res_mstar.x[1], color="C1", ls="--", lw=3)
-    hfull = ax.bar(bins[:-1], hist_full, width=width, color="C0", align="edge", label="all", ec="w")
-    hmstar = ax.bar(bins[:-1], hist_mstar, width=width, color="C1", align="edge", ec="w",
+    pfull = ax.plot(bm[:10], res_full.x[0] * dl_mids[:10] ** res_full.x[1], color="C0", ls="-", lw=2)
+    pmstar = ax.plot(bm, res_mstar.x[0] * dl_mids ** res_mstar.x[1], color="C1", ls="-", lw=2)
+    hfull = ax.bar(bins[:-1], hist_full, width=width, color="C0", align="edge", label="all", ec="w", alpha=0.5)
+    ax.bar(bins[:-1], hist_full, width=width, color="none", align="edge", ec="w")
+    hmstar = ax.bar(bins[:-1], hist_mstar, width=width, color="C1", align="edge", ec="w", alpha=0.5,
            label="M$_\mathrm{W1}$ < M$^\star_\mathrm{W1}$")
+    ax.bar(bins[:-1], hist_mstar, width=width, color="none", align="edge", ec="w")
     ax.set_ylabel("number of objects")
     ax.set_xlabel("redshift")
     ax.legend(
