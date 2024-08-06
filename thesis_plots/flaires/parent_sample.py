@@ -72,10 +72,11 @@ def redshifts():
     popt_full, _ = optimize.curve_fit(dist, bm[full_bin[0]:full_bin[1]], hist_full[full_bin[0]:full_bin[1]], p0=[1e-3, 2])
     logger.debug(f"normalization fit full: {popt_full}, z = {bm[full_bin[1]]}")
     zplot1 = np.linspace(0, .2, 100)
-
+    zplot_ext = np.linspace(0.2, 0.4, 100)
 
     fig, ax = plt.subplots()
     pfull = ax.plot(zplot1, dist(zplot1, *popt_full), color="C0", ls="-", lw=2)
+    ax.plot(zplot_ext, dist(zplot_ext, *popt_full), color="C0", ls=":", lw=2)
     hfull = ax.bar(bins[:-1], hist_full, width=width, color="C0", align="edge", label="all", ec="w", alpha=0.5)
     handles = [hfull, pfull[0]]
     ax.bar(bins[:-1], hist_full, width=width, color="none", align="edge", ec="w")
@@ -89,12 +90,13 @@ def redshifts():
         zplot2 = np.linspace(0, valid_until, 100)
         pmstar = ax.plot(zplot2, dist(zplot2, *res_mastar[mstar]), ls="-", lw=2, color=c)
         zplot_ext = np.linspace(valid_until, 0.4, 100)
-        ax.plot(zplot_ext, dist(zplot_ext, *res_mastar[mstar]), ls="--", lw=2, color=c)
+        ax.plot(zplot_ext, dist(zplot_ext, *res_mastar[mstar]), ls=":", lw=2, color=c)
         handles.extend([hmstar, pmstar[0]])
 
     ax.set_ylabel("number of objects")
     ax.set_xlabel("redshift")
     ax.set_ylim(0, 2e6)
+    ax.set_xlim(0, .4)
     ax.legend()
     ax.legend(
         handles,
