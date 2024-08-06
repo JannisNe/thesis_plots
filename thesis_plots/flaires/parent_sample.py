@@ -55,7 +55,7 @@ def redshifts():
     def dist(z, norm, exp):
         return norm * (Planck18.luminosity_distance(z).to("Mpc").value / (1+z) / np.sqrt(Planck18.efunc(z))) ** exp
 
-    mstars_bin = {-22: (0, 10), -24: (0, 9), -26: (0, -4), data['mstar'][0]: (0, 10)}
+    mstars_bin = {-22: (0, 10), -24: (0, 9), -26: (0, -1), data['mstar'][0]: (0, 10)}
     res_mastar = dict()
     for mstar, hist_mstar in hists_mstar.items():
         popt, pcov = optimize.curve_fit(
@@ -85,13 +85,16 @@ def redshifts():
         hmstar = ax.bar(bins[:-1], hist_mstar, alpha=.5, width=width, color=c, align="edge", ec="w",
                         label=f"M$_\mathrm{{W1}}$ < {mstar}$")
         ax.bar(bins[:-1], hist_mstar, width=width, color="none", align="edge", ec="w")
-        b = mstars_bin[mstar]
-        zplot2 = np.linspace(bm[b[0]], bm[b[1]], 100)
+        valid_until = bm[mstars_bin[mstar][1]]
+        zplot2 = np.linspace(0, valid_until, 100)
         pmstar = ax.plot(zplot2, dist(zplot2, *res_mastar[mstar]), ls="-", lw=2, color=c)
+        zplot_ext = np.linspace(valid_until, 0.4, 100)
+        ax.plot(zplot_ext, dist(zplot_ext, *res_mastar[mstar]), ls="--", lw=2, color=c)
         handles.extend([hmstar, pmstar[0]])
 
     ax.set_ylabel("number of objects")
     ax.set_xlabel("redshift")
+    ax.set_ylim(0, 2e6)
     ax.legend()
     ax.legend(
         handles,
