@@ -55,53 +55,56 @@ def redshifts():
     def dist(z, norm, exp):
         return norm * (Planck18.luminosity_distance(z).to("Mpc").value / (1+z) / np.sqrt(Planck18.efunc(z))) ** exp
 
-    def minfunc(args, hist, bin):
-        max_bin = bin[1]
-        min_bin = bin[0]
-        return np.sum((hist[min_bin:max_bin] - dist(bm[min_bin:max_bin], *args) ** 2) / hist[min_bin:max_bin])
-
-    mstars_bin = {-22: (0, 10), -24: (0, -2), -26: (5, -4), data['mstar'][0]: (0, 10)}
+    mstars_bin = {-22: (0, 10), -24: (0, 9), -26: (0, -4), data['mstar'][0]: (0, 10)}
     res_mastar = dict()
     for mstar, hist_mstar in hists_mstar.items():
-        res_mstar = optimize.minimize(minfunc, x0=[1e-3, 2], args=(hist_mstar, mstars_bin[mstar]))
-        logger.debug(f"mstar={mstar}: normalization fit mstar: {res_mstar.x}, "
+        popt, pcov = optimize.curve_fit(
+            dist,
+            bm[mstars_bin[mstar][0]:mstars_bin[mstar][1]],
+            hist_mstar[mstars_bin[mstar][0]:mstars_bin[mstar][1]],
+            p0=[1e-3, 2]
+        )
+        logger.debug(f"mstar={mstar}: normalization fit mstar: {popt}, "
                      f"z = {bm[mstars_bin[mstar][0]]:.2f}-{bm[mstars_bin[mstar][1]]:.2f}")
-        logger.debug(res_mstar)
-        res_mastar[mstar] = res_mstar
+        res_mastar[mstar] = popt
 
     full_bin = (0, 10)
-    res_full = optimize.minimize(minfunc, x0=[1e-3, 2], args=(hist_full, full_bin))
-    logger.debug(f"normalization fit full: {res_full.x}, z = {bm[full_bin[1]]}")
-    logger.debug(res_full)
+    popt_full, _ = optimize.curve_fit(dist, bm[full_bin[0]:full_bin[1]], hist_full[full_bin[0]:full_bin[1]], p0=[1e-3, 2])
+    logger.debug(f"normalization fit full: {popt_full}, z = {bm[full_bin[1]]}")
     zplot1 = np.linspace(0, .2, 100)
 
 
     fig, ax = plt.subplots()
-    pfull = ax.plot(zplot1, dist(zplot1, *res_full.x), color="C0", ls="-", lw=2)
+    pfull = ax.plot(zplot1, dist(zplot1, *popt_full), color="C0", ls="-", lw=2)
     hfull = ax.bar(bins[:-1], hist_full, width=width, color="C0", align="edge", label="all", ec="w", alpha=0.5)
+    handles = [hfull, pfull[0]]
     ax.bar(bins[:-1], hist_full, width=width, color="none", align="edge", ec="w")
-    for mstar, hist_mstar in hists_mstar.items():
-        if mstar not in [-24, -26]: continue
-        hmstar = ax.step(bins[:-1], hist_mstar, where="pre", alpha=1,
-               label=f"M$_\mathrm{{W1}}$ < {mstar}$")
+    for ci, mstar in enumerate([-24, -26]):
+        c = f"C{ci+1}"
+        hist_mstar = hists_mstar[mstar]
+        hmstar = ax.bar(bins[:-1], hist_mstar, alpha=.5, width=width, color=c, align="edge", ec="w",
+                        label=f"M$_\mathrm{{W1}}$ < {mstar}$")
+        ax.bar(bins[:-1], hist_mstar, width=width, color="none", align="edge", ec="w")
         b = mstars_bin[mstar]
-        zplot2 = np.linspace(bins[b[0]], bins[b[1]], 100)
-        pmstar = ax.plot(zplot2, dist(zplot2, *res_mastar[mstar].x), ls="-", lw=2)
-        # ax.bar(bins[:-1], hist_mstar, width=width, color="none", align="edge", ec="w")
+        zplot2 = np.linspace(bm[b[0]], bm[b[1]], 100)
+        pmstar = ax.plot(zplot2, dist(zplot2, *res_mastar[mstar]), ls="-", lw=2, color=c)
+        handles.extend([hmstar, pmstar[0]])
+
     ax.set_ylabel("number of objects")
     ax.set_xlabel("redshift")
     ax.legend()
-    # ax.set_yscale("log")
-    # ax.legend(
-    #     [hfull, pfull[0], hmstar, pmstar[0]],
-    #     [
-    #         "all",
-    #         rf"$N \propto D^{{ {res_full.x[1]:.2f} }}$",
-    #         "M$_\mathrm{W1}$ < M$^\star_\mathrm{W1}$",
-    #         rf"$N \propto D^{{ {res_mstar.x[1]:.2f} }}$"
-    #     ],
-    #     ncol=2, loc="lower center", bbox_to_anchor=(0.5, 1.05)
-    # )
+    ax.legend(
+        handles,
+        [
+            "all",
+            rf"$N \propto D^{{ {popt_full[1]:.2f} }}$",
+            "M$_\mathrm{W1} < -24$",
+            rf"$N \propto D^{{ {res_mastar[-24][1]:.2f} }}$",
+            "M$_\mathrm{W1} < -26$",
+            rf"$N \propto D^{{ {res_mastar[-26][1]:.2f} }}$",
+        ],
+        ncol=3, loc="lower center", bbox_to_anchor=(0.5, 1.05)
+    )
 
     return fig
 
