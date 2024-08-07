@@ -58,27 +58,45 @@ def dust_echo():
     rot = -90
     dust_color = "grey"
     light_color = "C1"
+    annotation_c = "k"
     hratio = plt.rcParams["figure.figsize"][1] / plt.rcParams["figure.figsize"][0]
     lim = 1.1
     line_angles = np.radians([rot - a - b/2, rot - a + b/2, rot + a - b/2, rot + a + b/2])
+    sina = np.sin(line_angles)
+    cosa = np.cos(line_angles)
     bottom = 2 * hratio - 1
 
-    pathces = (
+    my_patches = (
         [patches.Circle((0, 0), 1, fill=False, edgecolor=dust_color, lw=4)] +
-        [patches.FancyArrowPatch((0, 0), (np.cos(_a), np.sin(_a)), arrowstyle="-", shrinkA=0, shrinkB=0,
+        [patches.FancyArrowPatch((0, 0), (c, s), arrowstyle="-", shrinkA=0, shrinkB=0,
                                  lw=1, mutation_scale=10, zorder=5, ls="-", color=light_color)
-         for _a in line_angles] +
-        [patches.FancyArrowPatch((np.cos(_a), np.sin(_a)), (np.cos(_a), -bottom), arrowstyle="-|>",
+         for s, c in zip(sina, cosa)] +
+        [patches.FancyArrowPatch((c, s), (c, -bottom), arrowstyle="-|>",
                                  lw=1, mutation_scale=10, zorder=5, ls="-", color=light_color, shrinkA=0)
-         for _a in line_angles] +
+         for s, c in zip(sina, cosa)] +
         [patches.Arc((0, 0), 2, 2, theta1=f * a - b/2 + rot, theta2=f * a + b/2 + rot, color=light_color, lw=4)
-         for f in [-1, 1]]
+         for f in [-1, 1]] +
+        [patches.FancyArrowPatch((0, 0), (0, 1), arrowstyle="<|-|>", lw=1, mutation_scale=10, zorder=5,
+                                 color=annotation_c, ls="-", shrinkA=6)] +
+        [patches.FancyArrowPatch(
+            (cosa[1], sina[0]),
+            (cosa[1], sina[1]),
+            arrowstyle="<|-|>", lw=1, mutation_scale=10, zorder=5, color=annotation_c, ls="-", shrinkA=0, shrinkB=0),
+        patches.FancyArrowPatch(
+            (cosa[0], sina[0]),
+            (cosa[1], sina[0]),
+            arrowstyle="-", lw=1, mutation_scale=10, zorder=5, color=annotation_c, ls="--", shrinkA=0, shrinkB=0),
+        ]
     )
 
     fig, ax = plt.subplots()
-    for p in pathces:
+    for p in my_patches:
         ax.add_patch(p)
     ax.scatter([0], [0], color=light_color, s=100, zorder=10, marker="*")
+    ax.annotate("$R_\mathrm{dust}$", (0, .5), xytext=(2, 0), textcoords="offset points", ha="left", va="center",
+                color=annotation_c)
+    ax.annotate("$c\Delta T$", (cosa[1], (sina[0] + sina[1]) / 2), xytext=(-3, 3), textcoords="offset points", ha="right",
+                va="center", color=annotation_c)
     ax.set_aspect("equal")
     ax.set_xlim(-lim, lim)
     ax.set_ylim(-lim * bottom, lim)
