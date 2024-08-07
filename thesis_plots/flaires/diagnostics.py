@@ -2,6 +2,7 @@ import logging
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerTuple
 import pandas as pd
+from scipy import stats
 import numpy as np
 
 from thesis_plots.flaires.data.load import load_data
@@ -105,5 +106,29 @@ def offset_cutouts():
 
     fig.supylabel(r"$\Delta$Dec [arcsec]", x=0.03, ha="left")
     fig.supxlabel(r"$\Delta$RA [arcsec]", y=0.03, ha="center")
+
+    return fig
+
+
+@Plotter.register("fullpage", arg_loop=[0, 1])
+def chi2(page: int):
+    hists = load_data()["chi2"]
+    rows = 4
+    col = 3
+    n_per_page = rows * col
+    ns = range(page * n_per_page, (page + 1) * n_per_page)
+    x_dense = np.linspace(0, 4, 1000)
+
+    fig, axs = plt.subplots(ncols=col, nrows=rows, sharex="all", sharey="all")
+
+    for i, ax in zip(ns, axs.flatten()):
+        if i in hists:
+            h, b = hists[i]
+            ax.bar(b, h, width=np.diff(b), align="edge", color="C0")
+            ax.set_title(f"{i} datapoints", pad=-14, y=1)
+            ax.plot(x_dense, stats.chi2(i - 1, 0, 1 / (i - 1)).pdf(x_dense))
+            ax.plot(x_dense, stats.f(1, i - 1, 0).pdf(x_dense), ls="--")
+        else:
+            ax.axis("off")
 
     return fig
