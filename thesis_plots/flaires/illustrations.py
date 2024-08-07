@@ -1,5 +1,6 @@
 import logging
 import matplotlib.pyplot as plt
+from matplotlib import patches
 import numpy as np
 from astropy.modeling import models
 from astropy import units as u
@@ -46,5 +47,41 @@ def wise_blackbody():
     for a in [ax, ax2]:
         a.tick_params(bottom=plt.rcParams["xtick.bottom"], top=plt.rcParams["xtick.top"],
                       left=plt.rcParams["ytick.left"], right=plt.rcParams["ytick.right"], which="both")
+
+    return fig
+
+
+@Plotter.register("margin", orientation="portrait")
+def dust_echo():
+    a = 40
+    b = 50
+    rot = -90
+    dust_color = "grey"
+    light_color = "C1"
+    hratio = plt.rcParams["figure.figsize"][1] / plt.rcParams["figure.figsize"][0]
+    lim = 1.1
+    line_angles = np.radians([rot - a - b/2, rot - a + b/2, rot + a - b/2, rot + a + b/2])
+    bottom = 2 * hratio - 1
+
+    pathces = (
+        [patches.Circle((0, 0), 1, fill=False, edgecolor=dust_color, lw=4)] +
+        [patches.FancyArrowPatch((0, 0), (np.cos(_a), np.sin(_a)), arrowstyle="-", shrinkA=0, shrinkB=0,
+                                 lw=1, mutation_scale=10, zorder=5, ls="-", color=light_color)
+         for _a in line_angles] +
+        [patches.FancyArrowPatch((np.cos(_a), np.sin(_a)), (np.cos(_a), -bottom), arrowstyle="-|>",
+                                 lw=1, mutation_scale=10, zorder=5, ls="-", color=light_color, shrinkA=0)
+         for _a in line_angles] +
+        [patches.Arc((0, 0), 2, 2, theta1=f * a - b/2 + rot, theta2=f * a + b/2 + rot, color=light_color, lw=4)
+         for f in [-1, 1]]
+    )
+
+    fig, ax = plt.subplots()
+    for p in pathces:
+        ax.add_patch(p)
+    ax.scatter([0], [0], color=light_color, s=100, zorder=10, marker="*")
+    ax.set_aspect("equal")
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim * bottom, lim)
+    ax.axis("off")
 
     return fig
