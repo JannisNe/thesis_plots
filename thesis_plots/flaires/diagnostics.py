@@ -4,6 +4,7 @@ from matplotlib.legend_handler import HandlerTuple
 import pandas as pd
 from scipy import stats
 import numpy as np
+import math
 
 from thesis_plots.flaires.data.load import load_data
 from thesis_plots.plotter import Plotter
@@ -110,31 +111,48 @@ def offset_cutouts():
     return fig
 
 
-@Plotter.register("fullpage", arg_loop=[0, 1])
+n_per_page = 4
+max_ns = 16
+
+
+@Plotter.register("fullpage", arg_loop=range(int(math.ceil(max_ns / n_per_page))))
 def chi2(page: int):
     hists = load_data()["chi2"]
     rows = 4
     col = 2
     n_per_page = 4
-    ns = range(page * n_per_page + 1, (page + 1) * n_per_page + 1)
+    skip = 3
+    ns = range(page * n_per_page + skip, (page + 1) * n_per_page + skip)
     logger.debug(f"plotting chi2 histograms for {ns}")
     x_dense = np.linspace(0, 4, 1000)
 
-    gridspec = {"wspace": 0., "hspace": .5}
+    gridspec = {"wspace": 0., "hspace": .1}
     fig, axs = plt.subplots(ncols=col, nrows=rows, sharex="all", sharey="all", gridspec_kw=gridspec)
 
     for i in ns:
-        iaxs = axs[i - 1, :]
+        iaxs = axs[(i - skip) % n_per_page, :]
         if i in hists:
             for j, b in enumerate(["W1", "W2"]):
-                h, d, bins = hists[i][b]
+                h, d, bins, p = hists[i][b]
                 ax = iaxs[j]
-                ax.bar(bins[:-1], d, width=np.diff(bins), align="edge", color="C0")
-                ax.set_title(f"{i} datapoints", pad=-14, y=1)
-                ax.plot(x_dense, stats.chi2(i - 1, 0, 1 / (i - 1)).pdf(x_dense))
-                ax.plot(x_dense, stats.f(1, i - 1, 0).pdf(x_dense), ls="--")
+                phist = ax.bar(bins[:-1], d, width=np.diff(bins), align="edge", color="C0")
+                pchi2 = ax.plot(x_dense, stats.chi2(i - 1, 0, 1 / (i - 1)).pdf(x_dense), ls="--", color="C1")
+                pf = ax.plot(x_dense, stats.f(i - 1, 1, 0).pdf(x_dense), ls=":", color="C2")
+                ax.set_ylim(0, 1.5)
+
+            iaxs[0].annotate(f"{i} datapoints", (1, 1), (-5, -5), "axes fraction", "offset points",
+                             color="black", ha="right", va="top")
         else:
             for ax in iaxs:
                 ax.axis("off")
+
+    axs[-1, 0].set_xlabel(r"$\chi_\mathrm{W1}^2 / \mathrm{doF}$")
+    axs[-1, 1].set_xlabel(r"$\chi_\mathrm{W2}^2 / \mathrm{doF}$")
+    fig.supylabel("density")
+    fig.legend(
+        [phist, pchi2[0], pf[0]],
+        ["histogram", r"$\chi^2$", r"$F$"],
+        loc="upper center", ncol=3, borderaxespad=2.8
+    )
 
     return fig
