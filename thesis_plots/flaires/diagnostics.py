@@ -114,21 +114,27 @@ def offset_cutouts():
 def chi2(page: int):
     hists = load_data()["chi2"]
     rows = 4
-    col = 3
-    n_per_page = rows * col
-    ns = range(page * n_per_page, (page + 1) * n_per_page)
+    col = 2
+    n_per_page = 4
+    ns = range(page * n_per_page + 1, (page + 1) * n_per_page + 1)
+    logger.debug(f"plotting chi2 histograms for {ns}")
     x_dense = np.linspace(0, 4, 1000)
 
-    fig, axs = plt.subplots(ncols=col, nrows=rows, sharex="all", sharey="all")
+    gridspec = {"wspace": 0., "hspace": .5}
+    fig, axs = plt.subplots(ncols=col, nrows=rows, sharex="all", sharey="all", gridspec_kw=gridspec)
 
-    for i, ax in zip(ns, axs.flatten()):
+    for i in ns:
+        iaxs = axs[i - 1, :]
         if i in hists:
-            h, b = hists[i]
-            ax.bar(b, h, width=np.diff(b), align="edge", color="C0")
-            ax.set_title(f"{i} datapoints", pad=-14, y=1)
-            ax.plot(x_dense, stats.chi2(i - 1, 0, 1 / (i - 1)).pdf(x_dense))
-            ax.plot(x_dense, stats.f(1, i - 1, 0).pdf(x_dense), ls="--")
+            for j, b in enumerate(["W1", "W2"]):
+                h, d, bins = hists[i][b]
+                ax = iaxs[j]
+                ax.bar(bins[:-1], d, width=np.diff(bins), align="edge", color="C0")
+                ax.set_title(f"{i} datapoints", pad=-14, y=1)
+                ax.plot(x_dense, stats.chi2(i - 1, 0, 1 / (i - 1)).pdf(x_dense))
+                ax.plot(x_dense, stats.f(1, i - 1, 0).pdf(x_dense), ls="--")
         else:
-            ax.axis("off")
+            for ax in iaxs:
+                ax.axis("off")
 
     return fig
