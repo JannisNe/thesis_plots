@@ -156,3 +156,19 @@ def chi2(page: int):
     )
 
     return fig
+
+
+@Plotter.register("wide")
+def coverage():
+    data = load_data()["coverage"]
+    fig, axs = plt.subplots(ncols=2, sharex="all", sharey="all", gridspec_kw={"wspace": 0.})
+    for i, (b, (h, bins, l)) in enumerate(data.items()):
+        logger.info(f"plotting coverage for {b}: {l}")
+        axs[i].bar(bins[:-1], h, width=np.diff(bins), align="edge")
+        med = float(l.strip("$").split(" ^")[0])
+        axs[i].axvline(med, color="k", ls="--", label=f"median: {l}")
+        axs[i].set_xlabel(f"W{i+1}")
+        axs[i].legend()
+    axs[0].set_ylabel("number of objects")
+    fig.supxlabel("coverage", ha="center", y=-0.05)
+    return fig
