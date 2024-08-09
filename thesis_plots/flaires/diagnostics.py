@@ -160,9 +160,14 @@ def chi2(args: tuple[str, int]):
 def coverage():
     data = load_data()["coverage"]
     fig, axs = plt.subplots(ncols=2, sharex="all", sharey="all", gridspec_kw={"wspace": 0.})
+    merge_bins = 3
     for i, (b, (h, bins, l)) in enumerate(data.items()):
         logger.info(f"plotting coverage for {b}: {l}")
-        axs[i].bar(bins[:-1], h, width=np.diff(bins), align="edge")
+        new_bins = bins[::merge_bins]
+        logger.debug(f"reduced bins from {len(bins)} to {len(new_bins)}")
+        new_h = np.add.reduceat(h, np.arange(0, len(h), merge_bins))
+        logger.debug(f"reduced data from {len(h)} to {len(new_h)}")
+        axs[i].bar(new_bins[:-1], new_h, width=np.diff(new_bins), align="edge")
         med = float(l.strip("$").split(" ^")[0])
         axs[i].axvline(med, color="k", ls="--", label=f"median: {l}")
         axs[i].set_xlabel(f"W{i+1}")
