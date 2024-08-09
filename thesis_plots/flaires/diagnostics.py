@@ -143,10 +143,10 @@ def chi2(args: tuple[str, int]):
         pchi2 = ax.plot(x_dense, stats.chi2(i - 1, 0, 1 / (i - 1)).pdf(x_dense), ls="--", color="C1", lw=2)
         pf = ax.plot(x_dense, stats.f(i - 1, 1, 0).pdf(x_dense), ls="-", color="C2", lw=2)
         ax.set_ylim(0, 1.4)
-        ax.set_title(f"{i} datapoints", pad=-14, y=1, color="black")
+        ax.set_title(f"N={i}", pad=-14, y=1, color="black")
 
     fig.supylabel("density")
-    fig.supxlabel(r"$\chi^2 / \mathrm{doF}$")
+    fig.supxlabel(r"$\chi^2 / (N - 1)$")
     axs[0, 1].legend(
         [phist, pchi2[0], pf[0]],
         ["data", r"$\chi^2$-distribution", r"$F$-distribution"],
