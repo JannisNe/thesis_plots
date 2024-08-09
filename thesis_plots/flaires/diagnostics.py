@@ -111,36 +111,46 @@ def offset_cutouts():
     return fig
 
 
-@Plotter.register("fullpage", arg_loop=["W1", "W2"])
-def chi2(band: str):
+@Plotter.register("fullpage", arg_loop=[("W1", 0), ("W1", 1), ("W2", 0), ("W2", 1)])
+def chi2(args: tuple[str, int]):
+    band, page = args
+    page = int(page)
     hists = load_data()["chi2"]
-    rows = 4
+    nominal_rows = 4
     col = 3
-    ns = range(3, 19)
-    logger.debug(f"plotting chi2 histograms for {ns}")
+    start = 2 + page * col * nominal_rows
+    end = 2 + (page + 1) * col * nominal_rows
+    ns_in_hist = [n for n in range(start, end) if n in hists]
+    rows = math.ceil(len(ns_in_hist) / col)
+    w, h = plt.rcParams["figure.figsize"]
+    h *= rows / nominal_rows
+    logger.debug(f"plotting chi2 histograms for {ns_in_hist}")
     x_dense = np.linspace(0, 4, 1000)
 
     gridspec = {"wspace": 0., "hspace": 0}
-    fig, axs = plt.subplots(ncols=col, nrows=rows, sharex="all", sharey="all", gridspec_kw=gridspec)
+    fig, axs = plt.subplots(ncols=col, nrows=rows, sharex="all", sharey="all", gridspec_kw=gridspec, figsize=(w, h))
     axs_flat = axs.flatten()
+    merge_bins = 3
 
-    for j, (i, ax) in enumerate(zip(ns, axs_flat)):
-        if i in hists:
-            h, d, bins, p = hists[i][band]
-            phist = ax.bar(bins[:-1], d, width=np.diff(bins), align="edge", color="C0")
-            pchi2 = ax.plot(x_dense, stats.chi2(i - 1, 0, 1 / (i - 1)).pdf(x_dense), ls="--", color="C1")
-            pf = ax.plot(x_dense, stats.f(i - 1, 1, 0).pdf(x_dense), ls=":", color="C2")
-            ax.set_ylim(0, 1.5)
-            ax.set_title(f"{i} datapoints", pad=-14, y=1, color="black")
-        else:
-            ax.axis("off")
+    for j, (i, ax) in enumerate(zip(ns_in_hist, axs_flat)):
+        h, d, bins, p = hists[i][band]
+        new_bins = bins[::merge_bins]
+        logger.debug(f"reduced bins from {len(bins)} to {len(new_bins)}")
+        new_d = np.add.reduceat(d, np.arange(0, len(d), merge_bins)) / merge_bins
+        logger.debug(f"reduced data from {len(d)} to {len(new_d)}")
+        phist = ax.bar(new_bins[:-1], new_d, width=np.diff(new_bins), align="edge", color="C0", alpha=0.5)
+        ax.bar(new_bins[:-1], new_d, width=np.diff(new_bins), align="edge", color="none", ec="w")
+        pchi2 = ax.plot(x_dense, stats.chi2(i - 1, 0, 1 / (i - 1)).pdf(x_dense), ls="--", color="C1", lw=2)
+        pf = ax.plot(x_dense, stats.f(i - 1, 1, 0).pdf(x_dense), ls="-", color="C2", lw=2)
+        ax.set_ylim(0, 1.4)
+        ax.set_title(f"{i} datapoints", pad=-14, y=1, color="black")
 
     fig.supylabel("density")
-    fig.supxlabel(r"$\chi^2$")
-    fig.legend(
+    fig.supxlabel(r"$\chi^2 / \mathrm{doF}$")
+    axs[0, 1].legend(
         [phist, pchi2[0], pf[0]],
-        ["histogram", r"$\chi^2-distribution$", r"$F$-distribution"],
-        loc="upper center", ncol=3, borderaxespad=2.8
+        ["data", r"$\chi^2$-distribution", r"$F$-distribution"],
+        loc="lower center", ncol=3, bbox_to_anchor=(0.5, 1.05)
     )
 
     return fig
