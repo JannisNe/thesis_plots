@@ -51,7 +51,8 @@ class Plotter:
                 cls.registry[fname] = wrapper
             else:
                 for a in np.atleast_1d(arg_loop):
-                    cls.registry[f"{fname}_{a}"] = lambda x=a, *args, **kwargs: wrapper(x, *args, **kwargs)
+                    ka = a if (len(a) == 1 or isinstance(a, str)) else "_".join([str(aa) for aa in a])
+                    cls.registry[f"{fname}_{ka}"] = lambda x=a, *args, **kwargs: wrapper(x, *args, **kwargs)
 
             return f
 
