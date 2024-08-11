@@ -1,7 +1,9 @@
 import logging
 import matplotlib.pyplot as plt
 from matplotlib import patches
+from matplotlib import lines
 import numpy as np
+from scipy import stats
 from astropy.modeling import models
 from astropy import units as u
 from thesis_plots.plotter import Plotter
@@ -101,5 +103,41 @@ def dust_echo():
     ax.set_xlim(-lim, lim)
     ax.set_ylim(-lim * bottom, lim)
     ax.axis("off")
+
+    return fig
+
+
+@Plotter.register("margin")
+def f_distribution():
+    f = stats.f
+    x = np.linspace(0, 3, 1000)
+    df = 10
+    dfs = [(df, 1), (df, 5), (df, 100)]
+    pdfs = [f(*df).pdf for df in dfs]
+    chi2_pdf = stats.chi2(df, scale=1/df).pdf(x)
+
+    fig, ax = plt.subplots()
+    for i, (pdf, df) in enumerate(zip(pdfs, dfs)):
+        color = f"C{i}"
+        ax.plot(x, pdf(x), color=color)
+        if i == 2:
+            offset = (50, 0)
+            r = 0
+            arrowprops = dict(arrowstyle="-", lw=1, color=color, shrinkA=0, shrinkB=0, zorder=5)
+        else:
+            offset = (0, 0)
+            r = -30
+            arrowprops = {}
+        ax.annotate(r"$\nu_2=$" + f"{df[1]:.0f}", (.9, pdf(.9)), xytext=offset, textcoords="offset points", color=color,
+                    ha="center", va="center", rotation=r, bbox=dict(facecolor="white", edgecolor="none", alpha=1, pad=0.),
+                    arrowprops=arrowprops)
+    chi2_line= ax.plot(x, chi2_pdf, ls="--", color="C3", zorder=10)
+    f_line = lines.Line2D([], [], color="grey")
+    ax.legend([chi2_line[0], f_line], [r"$\chi^2_{10}$", r"$F(10, \nu_2)$"], loc="lower center",
+              bbox_to_anchor=(0.5, 1.05), ncol=2)
+    ax.set_xlabel(r"$\chi^2$")
+    ax.set_ylabel("density")
+    ax.set_xlim(0, max(x))
+    ax.set_ylim(0, 1.1)
 
     return fig
