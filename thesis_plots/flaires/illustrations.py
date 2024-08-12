@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 from matplotlib import lines
 import numpy as np
+from pathlib import Path
 from scipy import stats
 from astropy.modeling import models
 from astropy import units as u
@@ -140,4 +141,18 @@ def f_distribution():
     ax.set_xlim(0, max(x))
     ax.set_ylim(0, 1.1)
 
+    return fig
+
+
+@Plotter.register("margin")
+def hdbscan():
+    rawimage = Path(__file__).parent / "data" / "hdbscan.png"
+    img = plt.imread(rawimage)
+    fig, ax = plt.subplots()
+    ax.imshow(img)
+    ax.set_xlabel("$x$")
+    ax.set_ylabel("$f(x)$")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.spines[['right', 'top', "bottom", "left"]].set_visible(False)
     return fig
