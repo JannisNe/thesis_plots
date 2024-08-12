@@ -96,7 +96,7 @@ def dust_echo():
     for p in my_patches:
         ax.add_patch(p)
     ax.scatter([0], [0], color=light_color, s=100, zorder=10, marker="*")
-    ax.annotate("$R_\mathrm{dust}$", (0, .5), xytext=(2, 0), textcoords="offset points", ha="left", va="center",
+    ax.annotate("$R_\mathrm{BB}$", (0, .5), xytext=(2, 0), textcoords="offset points", ha="left", va="center",
                 color=annotation_c)
     ax.annotate("$c\Delta T$", (cosa[1], (sina[0] + sina[1]) / 2), xytext=(-3, 3), textcoords="offset points", ha="right",
                 va="center", color=annotation_c)
