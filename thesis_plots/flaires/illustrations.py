@@ -98,8 +98,8 @@ def dust_echo():
     ax.scatter([0], [0], color=light_color, s=100, zorder=10, marker="*")
     ax.annotate("$R_\mathrm{BB}$", (0, .5), xytext=(2, 0), textcoords="offset points", ha="left", va="center",
                 color=annotation_c)
-    ax.annotate("$c\Delta T$", (cosa[1], (sina[0] + sina[1]) / 2), xytext=(-3, 3), textcoords="offset points", ha="right",
-                va="center", color=annotation_c)
+    ax.annotate("$c\Delta T_\mathrm{opt}$", (cosa[1], (sina[0] + sina[1]) / 2), xytext=(3, 3), textcoords="offset points", ha="left",
+                va="center", color=annotation_c, bbox=dict(facecolor="white", edgecolor="none", alpha=1, pad=0.5), zorder=20)
     ax.set_aspect("equal")
     ax.set_xlim(-lim, lim)
     ax.set_ylim(-lim * bottom, lim)
