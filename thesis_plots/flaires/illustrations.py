@@ -7,6 +7,7 @@ from pathlib import Path
 from scipy import stats
 from astropy.modeling import models
 from astropy import units as u
+from air_flares.mbh import mass_blackhole_from_abs_mag
 from thesis_plots.plotter import Plotter
 from thesis_plots.instruments.bandpasses import get_filter
 
@@ -155,4 +156,23 @@ def hdbscan():
     ax.set_xticks([])
     ax.set_yticks([])
     ax.spines[['right', 'top', "bottom", "left"]].set_visible(False)
+    return fig
+
+
+@Plotter.register("margin")
+def black_hole_mass():
+    abs_mag = np.linspace(-20, -28, 100)[::-1]
+    mass = {w: mass_blackhole_from_abs_mag(abs_mag, galax_class=w) for w in ["ellipticals", "agn"]}
+    labels = {"ellipticals": "Ellipticals", "agn": "AGN"}
+
+    fig, ax = plt.subplots()
+    for w, m in mass.items():
+        ax.plot(abs_mag, m, label=labels[w])
+    ax.set_xlabel("M$_\mathrm{W1}$")
+    ax.set_ylabel("m$_\mathrm{BH}$")
+    ax.axhline(1e8, color="grey", ls="--")
+    ax.annotate("Hills mass", (abs_mag[-1], 1e8), xytext=(0, 0), textcoords="offset points", ha="right", va="bottom", color="grey")
+    ax.legend(bbox_to_anchor=(0.5, 1), loc="lower center", ncol=2)
+    ax.set_yscale("log")
+
     return fig
