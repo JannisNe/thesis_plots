@@ -130,7 +130,7 @@ def subsamples():
     return fig
 
 
-@Plotter.register()
+@Plotter.register("margin")
 def peak_times():
     data = load_data()
     luminosity_summary = data["luminosity_summary"]
@@ -154,16 +154,17 @@ def peak_times():
     ax.set_xlabel("Peak Date")
     ax.set_ylabel("number of objects")
     ylim = np.array(ax.get_ylim())
-    ylim[1] = ylim[1] * 1.05
+    ylim[1] = ylim[1] * 1.1
     ax.fill_betweenx(ylim * 1.2, x1=[control_region_time[0]], x2=[control_region_time[1]],
                      color="grey", alpha=0.3, ec="none")
     ax.annotate("reference", (control_region_mid_time, ylim[1]), xytext=(0, -2),
                 textcoords="offset points", ha="center", va="top", fontsize="small", color="grey")
     ax.axvline(pause_start, ls="--", color="grey", alpha=0.5)
     ax.axvline(pause_end, ls="--", color="grey", alpha=0.5)
-    ax.annotate("no data", (pause_mid_date, ylim[1]), xytext=(0, -2),
+    ax.annotate("no\ndata", (pause_mid_date, ylim[1]), xytext=(0, -2),
                 textcoords="offset points", ha="center", va="top", fontsize="small", color="grey")
     ax.set_ylim(ylim)
+    ax.tick_params(axis='x', labelrotation=45)
     return fig
 
 
