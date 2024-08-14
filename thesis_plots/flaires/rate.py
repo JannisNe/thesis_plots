@@ -52,7 +52,7 @@ def rate():
         ulm = relative_rates == 0
         err_cont = rate_ax.errorbar(mag_bin_mids[~ulm], relative_rates[~ulm], yerr=relative_rates_err[~ulm].T,
                          marker="o", color="grey", zorder=1, ls="", capsize=2, ms=4, ecolor="k", barsabove=True)
-        rate_ax.plot(mag_bin_mids[ulm], relative_rates_err[ulm, 1], marker="v", color="grey", zorder=1, ls="", ms=2)
+        ul_marker, = rate_ax.plot(mag_bin_mids[ulm], relative_rates_err[ulm, 1], marker="v", color="k", zorder=1, ls="", ms=3)
         rate_ax.set_yscale("log")
 
     axs[-1].set_xlabel(xlabel)
@@ -77,9 +77,9 @@ def rate():
             plt.Rectangle((0, 0), 1, 1, fc="C1", ec="w", label="flaring sources"),
             plt.Rectangle((0, 0), 1, 1, fc="C1", ec="w", hatch="////", label="superthreshold flares"),
         ),
-        err_cont
+        (err_cont, ul_marker),
     ]
-    legend_text = ["all", "flaring (superthreshold)", "rate"]
+    legend_text = ["all", "flaring (superthreshold)", "rate (limits)"]
     axs[0].legend(legend_patches, legend_text, handler_map={tuple: HandlerTuple(ndivide=None)},
                   loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3)
 
