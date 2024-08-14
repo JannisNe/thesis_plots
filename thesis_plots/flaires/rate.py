@@ -79,7 +79,7 @@ def rate():
         ),
         (err_cont, ul_marker),
     ]
-    legend_text = ["all", "flaring (superthreshold)", "rate (limits)"]
+    legend_text = ["parent sample", "flaring (below $L_\mathrm{bol,lim}$)", "rate (limits)"]
     axs[0].legend(legend_patches, legend_text, handler_map={tuple: HandlerTuple(ndivide=None)},
                   loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3)
 
