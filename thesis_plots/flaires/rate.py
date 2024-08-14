@@ -9,7 +9,7 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register(orientation="portrait")
+@Plotter.register("fullpage")
 def rate():
     data = load_data()
     rates = data["rates"]
@@ -36,11 +36,12 @@ def rate():
     mag_bin_mids = (mag_bins[1:] + mag_bins[:-1]) / 2
     for i, (ax, (relative_rates, relative_rates_err, all_hist, flares_hist, superthresh, _, _)) in enumerate(
             zip(axs, rates)):
-        ax.bar(mag_bins[:-1], all_hist, width=width, color="C0", alpha=0.5, zorder=1, ec="none", align="edge")
+        ax.bar(mag_bins[:-1], all_hist, width=width, color="C0", alpha=.7, zorder=1, ec="none", align="edge")
+        ax.bar(mag_bins[:-1], all_hist, width=width, color="none", alpha=1, zorder=1, ec="w", align="edge")
         ax.bar(mag_bins[:-1], flares_hist, width=width, color="C1",
-               zorder=2, ec="k", align="edge")
+               zorder=2, ec="w", align="edge")
         ax.bar(mag_bins[:-1], flares_hist - superthresh, width=width, color="C1",
-               zorder=3, ec="k", align="edge", hatch="///", bottom=superthresh)
+               zorder=3, ec="w", align="edge", hatch="///", bottom=superthresh)
         ax.set_yscale("log")
         ax.annotate(f"{z_bins[i]:.2f} < z < {z_bins[i + 1]:.2f}", **annotation_kwargs)
         ax.set_ylim(5e-1, 2e7)
@@ -71,10 +72,10 @@ def rate():
     rate_axs[0].set_ylim(2e-7, 2e-4)
 
     legend_patches = [
-        plt.Rectangle((0, 0), 1, 1, fc="C0", alpha=0.5, ec="none", label="all sources"),
+        plt.Rectangle((0, 0), 1, 1, fc="C0", alpha=0.5, ec="w", label="all sources"),
         (
-            plt.Rectangle((0, 0), 1, 1, fc="C1", ec="k", label="flaring sources"),
-            plt.Rectangle((0, 0), 1, 1, fc="C1", ec="k", hatch="///", label="superthreshold flares"),
+            plt.Rectangle((0, 0), 1, 1, fc="C1", ec="w", label="flaring sources"),
+            plt.Rectangle((0, 0), 1, 1, fc="C1", ec="w", hatch="////", label="superthreshold flares"),
         ),
         err_cont
     ]
@@ -89,7 +90,7 @@ def rate():
     return fig
 
 
-@Plotter.register()
+@Plotter.register("wide")
 def evolution():
     data = load_data()
     rates = data["rates"]
@@ -162,9 +163,9 @@ def evolution():
         "SFR", (z_plot[-1], f_z_sfr[-1]), xycoords="data",
         xytext=(-2, 2), textcoords="offset points", ha="right", va="bottom", fontsize="small", color="grey"
     )
-    ax.set_ylim(5e-3, 2e1)
+    ax.set_ylim(5e-2, 12)
     ax.set_xlim(min(z_mids), max(z_bins))
-    ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncols=2, mode="expand", borderaxespad=0.)
+    ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncols=3, mode="expand", borderaxespad=0.)
     ax.set_yscale("log")
     ax.set_xlabel("Redshift")
     ax.set_ylabel(r"Normalized Rate")

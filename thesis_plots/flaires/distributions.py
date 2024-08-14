@@ -16,7 +16,7 @@ from air_flares.export.rates import control_region_mjd, get_wise_times
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register(orientation="portrait")
+@Plotter.register("wide", orientation="portrait")
 def luminosity_function():
 
     data = load_data()
