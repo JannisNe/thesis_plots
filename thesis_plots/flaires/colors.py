@@ -51,7 +51,7 @@ def histogram():
     return fig
 
 
-@Plotter.register(orientation="portrait")
+@Plotter.register("margin", orientation="portrait")
 def baselines():
     info = load_data()["baseline_changes"]
     xkey = info["xkey"]
@@ -73,8 +73,8 @@ def baselines():
         ax.axhline(0, ls=":", color="k", alpha=0.5, zorder=2)
         ax.set_ylabel(ylabel)
         ax.set_ylim(-2.2, 2.2)
-        indicate_news_cutoff(ax, annotate="bottom" if i == len(ykeys) - 1 else False, cutoff=info["news_cutoff"])
-    axs[0].legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=3)
+        ax.set_yticks([-1.5, 0, 1.5])
+    axs[0].legend(loc="lower center", bbox_to_anchor=(0.5, 1.02), ncol=1)
     axs[-1].set_xlabel(xlabel)
     axs[-1].set_xlim(17.5, 7.5)
 
