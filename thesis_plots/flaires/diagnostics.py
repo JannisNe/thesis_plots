@@ -27,16 +27,17 @@ def redshift_bias():
     zbin_mids = (zbins[1:] + zbins[:-1]) / 2
 
     fig, ax = plt.subplots()
-    for v, label, c in zip(
+    for v, label, c, exp in zip(
             ["peak_temperature", "radius_at_peak"],
-            ["T [K]", "R [pc]"],
+            ["$(T/T_0)^4$", "$(R/R_0)^2$"],
             ["C0", "C1"],
+            [4, 2]
     ):
         q = grouped[v].quantile([0.16, 0.5, 0.84])
         q /= q.loc[0.05, 0.5]
-        ax.plot(zbin_mids, q.loc[:, 0.5].values, marker="", ls="-", color=c, label=label)
-        ax.plot(zbin_mids, q.loc[:, 0.16].values, marker="", ls="--", color=c)
-        ax.plot(zbin_mids, q.loc[:, 0.84].values, marker="", ls="--", color=c)
+        ax.plot(zbin_mids, q.loc[:, 0.5].values ** exp, marker="", ls="-", color=c, label=label)
+        ax.plot(zbin_mids, q.loc[:, 0.16].values ** exp, marker="", ls="--", color=c)
+        ax.plot(zbin_mids, q.loc[:, 0.84].values ** exp, marker="", ls="--", color=c)
 
     ax.axhline(1, ls=":", color="grey")
     ax.legend(bbox_to_anchor=(.5, 1), loc="lower center", ncol=2)
