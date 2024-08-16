@@ -1,6 +1,7 @@
 import logging
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerTuple
+from matplotlib import ticker
 import pandas as pd
 from scipy import stats
 import numpy as np
@@ -36,13 +37,15 @@ def redshift_bias():
         q = grouped[v].quantile([0.16, 0.5, 0.84])
         q /= q.loc[0.05, 0.5]
         ax.plot(zbin_mids, q.loc[:, 0.5].values ** exp, marker="", ls="-", color=c, label=label)
-        ax.plot(zbin_mids, q.loc[:, 0.16].values ** exp, marker="", ls="--", color=c)
-        ax.plot(zbin_mids, q.loc[:, 0.84].values ** exp, marker="", ls="--", color=c)
+        ax.fill_between(zbin_mids, q.loc[:, 0.16].values ** exp, q.loc[:, 0.84].values ** exp, color=c, alpha=.5, ec="none")
 
-    ax.axhline(1, ls=":", color="grey")
     ax.legend(bbox_to_anchor=(.5, 1), loc="lower center", ncol=2)
+    ax.set_yscale("log")
+    ax.set_yticks([1, 2, 5, 10])
+    ax.set_yticklabels(["1", "2", "5", "10"])
     ax.set_xlabel("redshift")
     ax.set_ylabel("relative evolution")
+
 
     return fig
 
