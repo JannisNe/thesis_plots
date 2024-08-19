@@ -167,12 +167,12 @@ def black_hole_mass():
 
     fig, ax = plt.subplots()
     for w, m in mass.items():
-        ax.plot(abs_mag, m, label=labels[w])
-    ax.set_xlabel("M$_\mathrm{W1}$")
-    ax.set_ylabel("m$_\mathrm{BH}$")
-    ax.axhline(1e8, color="grey", ls="--")
+        ax.plot(abs_mag, np.log10(m), label=labels[w])
+    ax.set_xlabel(r"M$_\mathrm{W1}$")
+    ax.set_ylabel(r"$\log_{10}(m_\mathrm{BH} / m_\odot)$")
+    ax.axhline(8, color="grey", ls="--")
     ax.annotate("Hills mass", (abs_mag[-1], 1e8), xytext=(0, 0), textcoords="offset points", ha="right", va="bottom", color="grey")
     ax.legend(bbox_to_anchor=(0.5, 1), loc="lower center", ncol=2)
-    ax.set_yscale("log")
+    # ax.set_yscale("log")
 
     return fig
