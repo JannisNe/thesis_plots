@@ -50,12 +50,10 @@ def coincidences():
     ax.scatter(*ic_center, color="C0", s=10, alpha=1, marker="X", edgecolors="none", transform=_t)
     ax.add_patch(gcn_rect)
     ax.add_patch(gcn_circ)
-    ax.scatter(sdssJ1649["ra"], sdssJ1649["dec"], color="C1", s=10, alpha=1, marker="X", edgecolors="none",
+    ax.scatter(sdssJ1649["ra"], sdssJ1649["dec"], color="C1", s=10, alpha=1, marker="s", edgecolors="none",
                transform=_t, label="SDSS J1649+2625")
-    ax.annotate(sdssJ1649["name"], (sdssJ1649["ra"], sdssJ1649["dec"]), (0, -5), textcoords="offset points",
-                xycoords=_t, va="top", ha="right")
-    ax.scatter(*em_counterpart["tywin"][1], color="C2", s=10, alpha=1, marker="X", edgecolors="none", transform=_t)
-    ax.annotate("AT2019fdr", em_counterpart["tywin"][1], (0, 5), textcoords="offset points", xycoords=_t)
+    ax.scatter(*em_counterpart["tywin"][1], color="C2", s=10, alpha=1, marker="o", edgecolors="none", transform=_t,
+               label="AT2019fdr")
     logger.debug(f"ax xticks: {ax.get_xticks()}")
     logger.debug(f"ax xticklabels: {ax.get_xticklabels()}")
     ax.set_xlabel("RA")
@@ -64,4 +62,5 @@ def coincidences():
         comp_with = "xtick.bottom" if i == 0 else "ytick.left"
         a.set_ticks_visible(plt.rcParams[comp_with])
         a.set_ticks(spacing=3*u.deg)
+    ax.legend(bbox_to_anchor=(0.5, 1.1), loc="lower center", borderaxespad=0.0, ncol=1)
     return plt.gcf()
