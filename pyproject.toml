@@ -6,10 +6,11 @@ authors = ["JannisNe <necker@physik.hu-berlin.de>"]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
-air-flares = {git = "https://gitlab.desy.de/jannisnecker/air_flares"}
+air-flares = {git = "git@gitlab.desy.de:jannisnecker/air_flares.git"}
 kcorrect = "^5.1.2"
 typer = "^0.12.3"
 rich = "^13.7.1"
+ligo-skymap = "v1.1.2"
 
 [tool.poetry.scripts]
 thesis-plots = "thesis_plots.cli:main"
