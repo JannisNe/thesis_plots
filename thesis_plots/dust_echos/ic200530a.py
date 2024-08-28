@@ -47,12 +47,12 @@ def coincidences():
                           edgecolor="C0", facecolor="none", transform=_t, label="Millipede")
     gcn_circ = SphericalCircle(ic_center_coord, ic200530a_src_error * u.deg, edgecolor="C0", facecolor="none",
                                transform=_t, ls="--", label="SRC_ERROR")
-    ax.scatter(*ic_center, color="C0", s=10, alpha=1, marker="X", edgecolors="none", transform=_t)
+    ax.scatter(*ic_center, color="C0", alpha=1, marker="X", edgecolors="none", transform=_t, label="IC200530A")
     ax.add_patch(gcn_rect)
     ax.add_patch(gcn_circ)
-    ax.scatter(sdssJ1649["ra"], sdssJ1649["dec"], color="C1", s=10, alpha=1, marker="s", edgecolors="none",
+    ax.scatter(sdssJ1649["ra"], sdssJ1649["dec"], color="C1", alpha=1, marker="s", edgecolors="k",
                transform=_t, label="SDSS J1649+2625")
-    ax.scatter(*em_counterpart["tywin"][1], color="C2", s=10, alpha=1, marker="o", edgecolors="none", transform=_t,
+    ax.scatter(*em_counterpart["tywin"][1], color="C2", alpha=1, marker="o", edgecolors="k", transform=_t,
                label="AT2019fdr")
     logger.debug(f"ax xticks: {ax.get_xticks()}")
     logger.debug(f"ax xticklabels: {ax.get_xticklabels()}")
