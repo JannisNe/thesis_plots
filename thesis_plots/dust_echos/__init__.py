@@ -1,1 +1,1 @@
-from thesis_plots.dust_echos import ic200530a
+from thesis_plots.dust_echos import ic200530a, model
