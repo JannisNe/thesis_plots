@@ -32,17 +32,20 @@ def ts_distribution():
     background_filename = Path(__file__).parent / "data" / "0.pkl"
     with open(background_filename, "rb") as f:
         ts_background = pickle.load(f)["TS"]
+    med_ts = np.median(ts_background)
 
     unblinding_filename = Path(__file__).parent / "data" / "unblinding_results.pkl"
     with open(unblinding_filename, "rb") as f:
         u = pickle.load(f)
+
+    logger.info(f"background median TS: {med_ts}")
+    logger.info(f"observed TS: {u['TS']}")
 
     fig, ax = plt.subplots()
     ax.hist(ts_background, bins=10, density=True, label='background \ndistribution', alpha=1)
 
     ls = '-'
     ax.axvline(u["TS"], label="$\lambda_\mathrm{observed}$", c=f"C1", ls=ls)
-    med_ts = np.median(ts_background)
     ax.axvline(med_ts, label="$\lambda_\mathrm{median}$", color='k', alpha=1, ls='--')
     ax.set_yscale('log')
     ax.legend(bbox_to_anchor=(0.5, 1.1), loc="lower center", borderaxespad=0.0, ncol=1)
