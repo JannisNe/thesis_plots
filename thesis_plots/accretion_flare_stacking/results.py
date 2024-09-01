@@ -45,8 +45,8 @@ def ts_distribution():
     ax.hist(ts_background, bins=10, density=True, label='background \ndistribution', alpha=1)
 
     ls = '-'
-    ax.axvline(u["TS"], label="$\lambda_\mathrm{observed}$", c=f"C1", ls=ls)
-    ax.axvline(med_ts, label="$\lambda_\mathrm{median}$", color='k', alpha=1, ls='--')
+    ax.axvline(u["TS"], label="$\lambda_\mathrm{obs}$", c=f"C1", ls=ls)
+    ax.axvline(med_ts, label="$\lambda_\mathrm{bkg}$", color='k', alpha=1, ls='--')
     ax.set_yscale('log')
     ax.legend(bbox_to_anchor=(0.5, 1.1), loc="lower center", borderaxespad=0.0, ncol=1)
     ax.set_xlabel(r"$\lambda$")
