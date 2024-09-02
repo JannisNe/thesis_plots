@@ -23,7 +23,9 @@ def alert_number_constraint():
     ax.set_ylabel(r'$N_{\nu}(E>100\,\mathrm{TeV})$')
     ax.set_xlabel(r"$\gamma$")
     ax.axhline(3, label=r'$N_{\nu}$=3', c='gray', ls='--')
-    ax.legend(loc="lower left")
+    ax.axvline(2, c="C2", ls="-.", label="X-ray / OUV")
+    ax.axvline(1, c="C3", ls=":", label="IR")
+    ax.legend(loc="lower center", ncol=4, bbox_to_anchor=(0.5, 1.05))
     return fig
 
 
