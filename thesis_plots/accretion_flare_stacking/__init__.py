@@ -1,1 +1,1 @@
-from thesis_plots.accretion_flare_stacking import results
+from thesis_plots.accretion_flare_stacking import results, data
