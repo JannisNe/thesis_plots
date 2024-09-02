@@ -80,7 +80,8 @@ def distribution_dec_energy():
     }
     fig, axs = plt.subplots(nrows=3, ncols=2, gridspec_kw=gridspec_kw)
     # Main 2D histogram plot
-    hist2d = axs[1][0].hist2d(decs, energies, bins=[sindec_bins, energy_bins], norm=norm)
+    cmap = "Blues"
+    axs[1][0].hist2d(decs, energies, bins=[sindec_bins, energy_bins], norm=norm, cmap=cmap)
     axs[1][0].set_xticks([-1, -0.5, 0, 0.5, 1])
     axs[1][0].set_yticks([1, 3, 5, 7, 9])
     axs[1][0].set_xlabel(r"$\sin(\delta)$")
@@ -102,7 +103,8 @@ def distribution_dec_energy():
 
     # Custom colorbar below the main plot
     cax = fig.add_subplot(axs[2][0])
-    cbar = fig.colorbar(cm.ScalarMappable(norm=norm), ax=cax, orientation="horizontal")
+    mappable = cm.ScalarMappable(norm=norm, cmap=cmap)
+    cbar = fig.colorbar(mappable, ax=cax, orientation="horizontal")
     cbar.set_label("Counts")
     cax.set_xticks([])  # Hide x-ticks on the colorbar subplot
     cax.set_yticks([])  # Hide y-ticks on the colorbar subplot
