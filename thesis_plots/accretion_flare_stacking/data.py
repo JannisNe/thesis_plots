@@ -72,25 +72,49 @@ def distribution_dec_energy():
     norm = colors.SymLogNorm(linthresh=1, linscale=1, vmin=0, vmax=100000)
 
     gridspec_kw = {
-        "hspace": 0.,
+        "hspace": 0,
         "wspace": 0.,
-        "height_ratios": [1, 2, .5],
+        "height_ratios": [1, 2, .8],
         "width_ratios": [2, 1],
+
     }
     fig, axs = plt.subplots(nrows=3, ncols=2, gridspec_kw=gridspec_kw)
-    axs[1][0].hist2d(decs, energies, bins=[sindec_bins, energy_bins], norm=norm)
-    cbar = fig.colorbar(cm.ScalarMappable(norm=norm), ax=axs[2][0], orientation="horizontal")
-    cbar.set_label("Counts")
-    axs[0][0].sharex(axs[1][0])
-    axs[0][0].hist(decs, bins=sindec_bins, density=True)
-    axs[1][1].sharey(axs[1][0])
-    axs[1][1].hist(energies, bins=energy_bins, orientation="horizontal", density=True)
-    for ax in [axs[2][0], axs[1][1], axs[0][0], axs[2][1], axs[0][1]]:
-        ax.spines[['right', 'top', "left", "bottom"]].set_visible(False)
-        ax.set_yticks([])
-        ax.set_xticks([])
-    axs[1][0].set_xticks([-1, -.5, 0, .5, 1])
-    axs[1][0].set_yticks([1, 3, 5, 7])
+    # Main 2D histogram plot
+    hist2d = axs[1][0].hist2d(decs, energies, bins=[sindec_bins, energy_bins], norm=norm)
+    axs[1][0].set_xticks([-1, -0.5, 0, 0.5, 1])
+    axs[1][0].set_yticks([1, 3, 5, 7, 9])
     axs[1][0].set_xlabel(r"$\sin(\delta)$")
     axs[1][0].set_ylabel(r"$\log(E/\mathrm{GeV})$")
+
+    # Top marginal histogram
+    axs[0][0].hist(decs, bins=sindec_bins, density=True)
+    axs[0][0].set_xticks([])  # Hide x-ticks on the top marginal plot
+    axs[0][0].set_yticks([])  # Hide y-ticks on the top marginal plot
+    axs[0][0].spines[['right', 'top', "left"]].set_visible(False)
+    axs[0][0].set_xlim(-1, 1)
+
+    # Right marginal histogram
+    axs[1][1].hist(energies, bins=energy_bins, orientation="horizontal", density=True)
+    axs[1][1].set_xticks([])  # Hide x-ticks on the right marginal plot
+    axs[1][1].set_yticks([])  # Hide y-ticks on the right marginal plot
+    axs[1][1].spines[['right', 'top', "bottom"]].set_visible(False)
+    axs[1][1].set_ylim(axs[1][0].get_ylim())
+
+    # Custom colorbar below the main plot
+    cax = fig.add_subplot(axs[2][0])
+    cbar = fig.colorbar(cm.ScalarMappable(norm=norm), ax=cax, orientation="horizontal")
+    cbar.set_label("Counts")
+    cax.set_xticks([])  # Hide x-ticks on the colorbar subplot
+    cax.set_yticks([])  # Hide y-ticks on the colorbar subplot
+    cax.spines[['right', 'top', "left", "bottom"]].set_visible(False)
+
+    # Hide unnecessary subplots
+    axs[2][1].axis('off')
+    axs[2][0].axis('off')
+    axs[0][1].axis('off')
+
+    # Manually enable ticks on the main plot and remove ticks on the side plot
+    axs[1][0].set_xticks([-1, -0.5, 0, 0.5, 1])
+    axs[1][0].set_yticks([1, 3, 5, 7])
+
     return fig
