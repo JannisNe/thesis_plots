@@ -2,11 +2,11 @@ import logging
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
+from astropy.constants.codata2018 import alpha
 from matplotlib import cm, colors
 import pandas as pd
 import os
-import ipdb
-from networkx.algorithms.bipartite import density
+from astropy.time import Time
 
 from thesis_plots.plotter import Plotter
 
@@ -54,6 +54,10 @@ def distribution_dec_energy():
     data_files = list(ps_v004p00_dir.glob(f"IC86_201*_exp.npy"))
     logger.debug(f"Found {len(data_files)} data files")
     data = np.concatenate([np.load(f) for f in data_files])
+    start_mdj = Time("2018-05-23").mjd
+    end_mjs = Time("2020-05-29").mjd
+    mask = (data["time"] > start_mdj) & (data["time"] < end_mjs)
+    data = data[mask]
     logger.debug(f"Loaded data files")
     decs = np.sin(data["dec"])
     energies = data["logE"]
@@ -69,7 +73,7 @@ def distribution_dec_energy():
         )
     )
     energy_bins = np.arange(1.0, 9.5 + 0.01, 0.125)
-    norm = colors.SymLogNorm(linthresh=1, linscale=1, vmin=0, vmax=100000)
+    norm = colors.SymLogNorm(linthresh=1, linscale=1, vmin=0, vmax=5000)
 
     gridspec_kw = {
         "hspace": 0,
@@ -81,7 +85,8 @@ def distribution_dec_energy():
     fig, axs = plt.subplots(nrows=3, ncols=2, gridspec_kw=gridspec_kw)
     # Main 2D histogram plot
     cmap = "Blues"
-    axs[1][0].hist2d(decs, energies, bins=[sindec_bins, energy_bins], norm=norm, cmap=cmap)
+    h2d = axs[1][0].hist2d(decs, energies, bins=[sindec_bins, energy_bins], norm=norm, cmap=cmap)
+    logger.debug(max(h2d[0].flatten()))
     axs[1][0].set_xticks([-1, -0.5, 0, 0.5, 1])
     axs[1][0].set_yticks([1, 3, 5, 7, 9])
     axs[1][0].set_xlabel(r"$\sin(\delta)$")
@@ -118,5 +123,12 @@ def distribution_dec_energy():
     # Manually enable ticks on the main plot and remove ticks on the side plot
     axs[1][0].set_xticks([-1, -0.5, 0, 0.5, 1])
     axs[1][0].set_yticks([1, 3, 5, 7])
+
+    # indicated most southern acretion flare
+    dec_min = -11
+    sin_dec_min = np.sin(np.radians(dec_min))
+    axs[1][0].axvline(sin_dec_min, color="grey", ls="--")
+    axs[1][0].annotate(rf"$\delta=${dec_min:.0f}$^\circ$", (sin_dec_min, max(axs[1][0].get_ylim())), xytext=(3, -3),
+                       textcoords="offset points", color="grey", ha="left", va="top", rotation=90)
 
     return fig
