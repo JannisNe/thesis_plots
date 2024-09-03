@@ -2,13 +2,12 @@ import logging
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import lines, patches
-from matplotlib.legend_handler import HandlerPatch
+from matplotlib import patches
 import pandas as pd
-from pymupdf.table import bbox_to_rect
 
 from thesis_plots.plotter import Plotter
 from thesis_plots.icecube_diffuse_flux import get_diffuse_flux_functions
+from thesis_plots.arrow_handler import HandlerArrow
 
 
 logger = logging.getLogger(__name__)
@@ -18,6 +17,13 @@ logger = logging.getLogger(__name__)
 sens_flux_100tev_times_esq = 5.8e-9
 sens_gamma = -2.5
 sens_erange = (5.5e2, 4.4e5)
+
+
+model_colors = {
+    "IR": "C3",
+    "X-ray": "C2",
+    "OUV": "C0",
+}
 
 
 @Plotter.register()
@@ -46,7 +52,7 @@ def winter_lunardini():
 
     fig, ax = plt.subplots()
     for ls, (key, v) in zip(["--", ":", "-."], data.items()):
-        ax.plot(v["E"], v["flux"], label=key, ls=ls, zorder=2)
+        ax.plot(v["E"], v["flux"], label=key, ls=ls, zorder=2, c=model_colors[key])
     for iy, iexp in zip(y, exp):
         ax.plot(x, iy, ls="--", color="grey", zorder=0)
         ax.annotate(f"$\Phi \propto E^{ {iexp} }$", (x[-1], iy[-1]), color="grey", bbox=dict(facecolor="white", pad=-.5),
@@ -60,25 +66,6 @@ def winter_lunardini():
     ax.set_xlim(1e3, 1e9)
     ax.set_xlabel("Energy [GeV]")
     ax.set_ylabel(r"$\Phi\,E^2$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
-
-    # Define a custom handler to ensure the arrow is correctly scaled in the legend
-    class HandlerArrow(HandlerPatch):
-        def create_artists(self, legend, orig_handle,
-                           xdescent, ydescent, width, height, fontsize, trans):
-            pos_a = (xdescent + 0.5 * width, ydescent + height * 0.9)
-            pos_b = (xdescent + 0.5 * width, ydescent + height * 0.1)
-            logger.debug(f"Creating arrow from {pos_a} to {pos_b}")
-            arrow = patches.FancyArrowPatch(
-                pos_a, pos_b,
-                arrowstyle=orig_handle.get_arrowstyle(),
-                mutation_scale=orig_handle.get_mutation_scale(),
-                color=orig_handle.get_facecolor(),
-                shrinkA=orig_handle.shrinkA,
-                shrinkB=orig_handle.shrinkB,
-                alpha=orig_handle.get_alpha(),
-            )
-            arrow.set_transform(trans)
-            return [arrow]
 
     ulim_handle = patches.FancyArrowPatch((0, 0), (0, -0.5), color="grey", arrowstyle="-|>",
                                           mutation_scale=10, shrinkA=-2, shrinkB=0)

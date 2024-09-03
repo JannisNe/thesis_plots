@@ -2,10 +2,13 @@ import logging
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import patches
 import pandas as pd
 import pickle
 
 from thesis_plots.plotter import Plotter
+from thesis_plots.dust_echos.model import model_colors
+from thesis_plots.arrow_handler import HandlerArrow
 
 
 logger = logging.getLogger(__name__)
@@ -19,13 +22,19 @@ def alert_number_constraint():
     Ns = df.N
 
     fig, ax = plt.subplots()
-    ax.errorbar(gammas, Ns, yerr=0.2, uplims=True, label='limits')
+    ax.errorbar(gammas, Ns, yerr=0.2, uplims=True)
     ax.set_ylabel(r'$N_{\nu}(E>100\,\mathrm{TeV})$')
     ax.set_xlabel(r"$\gamma$")
-    ax.axhline(3, label=r'$N_{\nu}$=3', c='gray', ls='--')
-    ax.axvline(2, c="C2", ls="-.", label="X-ray / OUV")
-    ax.axvline(1, c="C3", ls=":", label="IR")
-    ax.legend(loc="lower center", ncol=4, bbox_to_anchor=(0.5, 1.05))
+    ax.axhline(3, c='gray', ls='-', alpha=0.5)
+    ax.annotate(r'$N_{\nu}$=3', (max(ax.get_xlim()), 3), xytext=(-2, 2), textcoords="offset points", ha="right",
+                va="bottom", color='gray')
+    ax.axvline(2, c=model_colors["X-ray"], ls=":", label="X-ray / OUV")
+    ax.axvline(1, c=model_colors["IR"], ls="--", label="IR")
+    limit_handle = patches.FancyArrowPatch((1.5, 3), (1.5, 3.5), arrowstyle="-|>", mutation_scale=10, color="C0")
+    handles = ax.get_legend_handles_labels()[0] + [limit_handle]
+    labels = ax.get_legend_handles_labels()[1] + [r"limits"]
+    ax.legend(handles, labels, loc="lower center", ncol=4, bbox_to_anchor=(0.5, 1.01),
+              handler_map={patches.FancyArrowPatch: HandlerArrow()})
     return fig
 
 
