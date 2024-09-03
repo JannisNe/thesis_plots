@@ -94,22 +94,20 @@ def diffuse_flux():
         energy_range = pickle.load(f)
     best_f, lower_f, upper_f, e_range = get_diffuse_flux_functions("joint_15")
 
-    fig, axs = plt.subplots(ncols=2, sharex=True, sharey=True, gridspec_kw={"wspace": 0.0})
-    for ax in axs:
-        diffuse_handle = ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
-                                         color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
+    fig, ax = plt.subplots()
+    diffuse_handle = ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
+                                     color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
     for i, gamma in enumerate(energy_range):
-        ax = axs[i]
         x = np.logspace(*np.log10(energy_range[gamma]), 3)
         y = fluxes[str(gamma)] * x**(2 - gamma)
-        ax.errorbar(x, y, yerr=0.2 * y, uplims=True, zorder=1)
-        for model in models[gamma]:
-            ax.plot(model_data[model]["E"], model_data[model]["flux"], c=model_colors[model], ls=model_ls[model])
+        ax.errorbar(x, y, yerr=0.2 * y, uplims=True, zorder=1, c="C0")
 
-        ax.set_xscale("log")
-        ax.set_yscale("log")
-        ax.set_xlim(1e3, 1e9)
-        ax.set_ylim(bottom=1e-12)
+    for model in model_ls:
+        ax.plot(model_data[model]["E"], model_data[model]["flux"], c=model_colors[model], ls=model_ls[model])
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim(1e3, 1e9)
+    ax.set_ylim(bottom=1e-12)
 
     model_handles = [
         Line2D([], [], color=model_colors[model], ls=model_ls[model], label=model)
@@ -126,8 +124,8 @@ def diffuse_flux():
         "Upper Limit"
     ]
 
-    axs[0].set_ylabel(r"$\Phi\,E^2$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
-    axs[1].legend(legend_handles, legend_labels, loc="lower center", ncol=5, bbox_to_anchor=(0., 1.01),
+    ax.set_ylabel(r"$\Phi\,E^2$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
+    ax.legend(legend_handles, legend_labels, loc="lower center", ncol=5, bbox_to_anchor=(0.5, 1.01),
                   handler_map={patches.FancyArrowPatch: HandlerArrow()})
-    fig.supxlabel("Energy [GeV]", va="top")
+    ax.set_xlabel("Energy [GeV]", va="top")
     return fig
