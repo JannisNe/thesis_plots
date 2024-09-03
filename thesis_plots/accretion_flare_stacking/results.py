@@ -5,10 +5,12 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 import pandas as pd
 import pickle
+import json
 
 from thesis_plots.plotter import Plotter
 from thesis_plots.dust_echos.model import model_colors
 from thesis_plots.arrow_handler import HandlerArrow
+from thesis_plots.icecube_diffuse_flux import get_diffuse_flux_functions
 
 
 logger = logging.getLogger(__name__)
@@ -62,4 +64,49 @@ def ts_distribution():
     ax.legend(bbox_to_anchor=(0.5, 1.1), loc="lower center", borderaxespad=0.0, ncol=1)
     ax.set_xlabel(r"$\lambda$")
     ax.set_ylabel("density")
+    return fig
+
+
+@Plotter.register("wide")
+def diffuse_flux():
+    model_dir = Path(__file__).parent.parent / "dust_echos" / "data"
+    model_filenames = {
+        "IR": "winter_lunardini_ir_diffuse_flux.csv",
+        "X-ray": "winter_lunardini_xray_diffuse_flux.csv",
+        "OUV": "winter_lunardini_ouv_diffuse_flux.csv",
+    }
+    model_data = {
+        key: pd.read_csv(model_dir / fn, decimal=",", delimiter=";", names=["E", "flux"])
+        for key, fn in model_filenames.items()
+    }
+    models = {
+        1: ["IR", "OUV"],
+        2: ["X-ray"],
+    }
+
+    data_dir = Path(__file__).parent / "data"
+    with (data_dir / "cumulative_fluxes.json").open("r") as f:
+        fluxes = json.load(f)
+    with open(data_dir / "energy_range_nan.pkl", "rb") as f:
+        energy_range = pickle.load(f)
+    best_f, lower_f, upper_f, e_range = get_diffuse_flux_functions("joint_15")
+
+    fig, axs = plt.subplots(ncols=2, sharex=True, sharey=True, gridspec_kw={"wspace": 0.0})
+    for ax in axs:
+        ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
+                        color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
+    for i, gamma in enumerate(energy_range):
+        ax = axs[i]
+        x = np.logspace(*np.log10(energy_range[gamma]), 3)
+        y = fluxes[str(gamma)] * x**(2 - gamma)
+        ax.errorbar(x, y, yerr=0.2 * y, uplims=True, zorder=1)
+        for model in models[gamma]:
+            ax.plot(model_data[model]["E"], model_data[model]["flux"], label=model, c=model_colors[model], ls="--")
+
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+
+    axs[0].set_ylabel(r"$\Phi\,E^2$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
+    axs[1].legend(loc="lower center", ncol=2, bbox_to_anchor=(0.5, 1.01))
+    axs[1].set_xlabel("Energy [GeV]")
     return fig
