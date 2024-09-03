@@ -21,8 +21,8 @@ sens_erange = (5.5e2, 4.4e5)
 
 model_colors = {
     "IR": "C3",
-    "X-ray": "C2",
-    "OUV": "C0",
+    "X-ray": "C0",
+    "OUV": "C2",
 }
 
 
