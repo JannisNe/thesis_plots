@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import lines, patches
 from matplotlib.legend_handler import HandlerPatch
 import pandas as pd
+from pymupdf.table import bbox_to_rect
 
 from thesis_plots.plotter import Plotter
 from thesis_plots.icecube_diffuse_flux import get_diffuse_flux_functions
@@ -50,7 +51,7 @@ def winter_lunardini():
         ax.plot(x, iy, ls="--", color="grey", zorder=0)
         ax.annotate(f"$\Phi \propto E^{ {iexp} }$", (x[-1], iy[-1]), color="grey", bbox=dict(facecolor="white", pad=-.5),
                     zorder=1)
-    ax.errorbar(x_sens, y_sens, yerr=.2 * y_sens, zorder=3, uplims=True, c="grey")
+    ax.errorbar(x_sens, y_sens, yerr=.2 * y_sens, zorder=1, uplims=True, c="grey")
     ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
                     color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
     ax.set_xscale("log")
@@ -74,15 +75,20 @@ def winter_lunardini():
                 color=orig_handle.get_facecolor(),
                 shrinkA=orig_handle.shrinkA,
                 shrinkB=orig_handle.shrinkB,
+                alpha=orig_handle.get_alpha(),
             )
             arrow.set_transform(trans)
             return [arrow]
 
     ulim_handle = patches.FancyArrowPatch((0, 0), (0, -0.5), color="grey", arrowstyle="-|>",
-                                          mutation_scale=10, shrinkA=0, shrinkB=0)
+                                          mutation_scale=10, shrinkA=-2, shrinkB=0)
     legend_handles = ax.get_legend_handles_labels()[0] + [ulim_handle]
     legend_labels = ax.get_legend_handles_labels()[1] + ["TDE Upper Limit"]
+    _sort = [0, 3, 1, 4, 2]
 
-    ax.legend(handles=legend_handles, labels=legend_labels, ncol=3, bbox_to_anchor=(0.5, 1.), loc="lower center",
-              handler_map={ulim_handle: HandlerArrow()})
+    legend1 = ax.legend(legend_handles[3:], legend_labels[3:], loc="lower center", ncol=2, bbox_to_anchor=(0.5, 1.),
+                        handler_map={patches.FancyArrowPatch: HandlerArrow()})
+    legend2 = ax.legend(legend_handles[:3], legend_labels[:3], loc="lower center", ncol=3, bbox_to_anchor=(0.5, 1.1))
+
+    ax.add_artist(legend1)
     return fig
