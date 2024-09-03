@@ -2,6 +2,8 @@ import logging
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import lines, patches
+from matplotlib.legend_handler import HandlerPatch
 import pandas as pd
 
 from thesis_plots.plotter import Plotter
@@ -41,7 +43,6 @@ def winter_lunardini():
 
     best_f, lower_f, upper_f, e_range = get_diffuse_flux_functions("joint_15")
 
-
     fig, ax = plt.subplots()
     for ls, (key, v) in zip(["--", ":", "-."], data.items()):
         ax.plot(v["E"], v["flux"], label=key, ls=ls, zorder=2)
@@ -49,7 +50,7 @@ def winter_lunardini():
         ax.plot(x, iy, ls="--", color="grey", zorder=0)
         ax.annotate(f"$\Phi \propto E^{ {iexp} }$", (x[-1], iy[-1]), color="grey", bbox=dict(facecolor="white", pad=-.5),
                     zorder=1)
-    ax.errorbar(x_sens, y_sens, yerr=.2 * y_sens, label="IceCube Sensitivity", zorder=3, uplims=True)
+    ax.errorbar(x_sens, y_sens, yerr=.2 * y_sens, zorder=3, uplims=True, c="grey")
     ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
                     color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
     ax.set_xscale("log")
@@ -58,5 +59,30 @@ def winter_lunardini():
     ax.set_xlim(1e3, 1e9)
     ax.set_xlabel("Energy [GeV]")
     ax.set_ylabel(r"$\Phi\,E^2$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
-    ax.legend(ncol=3, bbox_to_anchor=(0.5, 1.), loc="lower center")
+
+    # Define a custom handler to ensure the arrow is correctly scaled in the legend
+    class HandlerArrow(HandlerPatch):
+        def create_artists(self, legend, orig_handle,
+                           xdescent, ydescent, width, height, fontsize, trans):
+            pos_a = (xdescent + 0.5 * width, ydescent + height * 0.9)
+            pos_b = (xdescent + 0.5 * width, ydescent + height * 0.1)
+            logger.debug(f"Creating arrow from {pos_a} to {pos_b}")
+            arrow = patches.FancyArrowPatch(
+                pos_a, pos_b,
+                arrowstyle=orig_handle.get_arrowstyle(),
+                mutation_scale=orig_handle.get_mutation_scale(),
+                color=orig_handle.get_facecolor(),
+                shrinkA=orig_handle.shrinkA,
+                shrinkB=orig_handle.shrinkB,
+            )
+            arrow.set_transform(trans)
+            return [arrow]
+
+    ulim_handle = patches.FancyArrowPatch((0, 0), (0, -0.5), color="grey", arrowstyle="-|>",
+                                          mutation_scale=10, shrinkA=0, shrinkB=0)
+    legend_handles = ax.get_legend_handles_labels()[0] + [ulim_handle]
+    legend_labels = ax.get_legend_handles_labels()[1] + ["TDE Upper Limit"]
+
+    ax.legend(handles=legend_handles, labels=legend_labels, ncol=3, bbox_to_anchor=(0.5, 1.), loc="lower center",
+              handler_map={ulim_handle: HandlerArrow()})
     return fig
