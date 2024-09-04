@@ -43,6 +43,7 @@ def energy_range():
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_ylim(ylim[gamma])
+        ax.annotate(f"$\gamma = {gamma}$", (0.05, 0.95), xycoords="axes fraction", ha="left", va="top")
 
     legend_handles = [
         low_handle[0],
