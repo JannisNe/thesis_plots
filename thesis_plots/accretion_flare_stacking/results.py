@@ -124,7 +124,7 @@ def diffuse_flux():
         "Upper Limit"
     ]
 
-    ax.set_ylabel(r"$\Phi\,E^2$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
+    ax.set_ylabel(r"$E^2\Phi_\mu^{\nu + \bar{\nu}}$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
     ax.legend(legend_handles, legend_labels, loc="lower center", ncol=5, bbox_to_anchor=(0.5, 1.01),
                   handler_map={patches.FancyArrowPatch: HandlerArrow()})
     ax.set_xlabel("Energy [GeV]", va="top")

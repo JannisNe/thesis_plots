@@ -65,7 +65,7 @@ def winter_lunardini():
     ax.set_ylim(bottom=1e-12)
     ax.set_xlim(1e3, 1e9)
     ax.set_xlabel("Energy [GeV]")
-    ax.set_ylabel(r"$\Phi\,E^2$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
+    ax.set_ylabel(r"$E^2 \Phi_\mu^{\nu + \bar{\nu}}$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
 
     ulim_handle = patches.FancyArrowPatch((0, 0), (0, -0.5), color="grey", arrowstyle="-|>",
                                           mutation_scale=10, shrinkA=-2, shrinkB=0)
