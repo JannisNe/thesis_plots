@@ -169,6 +169,7 @@ def energy_pdf():
     # hist data
     data_hist, _ = np.histogramdd((np.sin(data["dec"]), data["logE"]), bins=[sindec_bins, energy_bins])
     data_hist = data_hist.T
+    data_hist[(data_hist == 0) & (mc_hist > 0)] = 1
     data_hist_normed = data_hist / data_hist.sum(axis=0)
 
     # ratio
