@@ -192,7 +192,7 @@ def energy_pdf():
     ax_sig.pcolormesh(sindec_bins, energy_bins, mc_hist_normed, cmap="gist_heat", norm=norm)
     ax_bkg = fig.add_subplot(gs01[1, 1], sharey=ax_sig, sharex=ax_sig)
     ax_bkg.pcolormesh(sindec_bins, energy_bins, data_hist_normed, cmap="gist_heat", norm=norm)
-    ax_bkg.set_yticks([])
+    ax_bkg.yaxis.set_tick_params(labelleft=False)
     ax_sig.set_xticks([-1, -0.5, 0, 0.5, 1])
     ax_sig.set_xticklabels(["-1", "-0.5", "0", "0.5", "1"])
 
@@ -207,7 +207,7 @@ def energy_pdf():
     ax_ratio = fig.add_subplot(gs02[1], sharex=ax_sig, sharey=ax_sig)
     ratio_norm = colors.LogNorm(vmin=1e-3, vmax=1e3)
     ax_ratio.pcolormesh(sindec_bins, energy_bins, ratio, cmap="RdBu_r", norm=ratio_norm)
-    ax_ratio.set_yticks([])
+    ax_ratio.yaxis.set_tick_params(labelleft=False)
     cax_ratio = fig.add_subplot(gs02[0])
     mappable = cm.ScalarMappable(norm=ratio_norm, cmap="RdBu_r")
     cbar_ratio = fig.colorbar(mappable, ax=cax_ratio, orientation="horizontal", location="top", fraction=.3)
