@@ -1,8 +1,5 @@
 import logging
 from pathlib import Path
-from shutil import which
-
-import ipdb
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm, colors
@@ -10,7 +7,7 @@ from matplotlib.gridspec import GridSpec
 import pandas as pd
 import os
 from astropy.time import Time
-from matplotlib.pyplot import tick_params
+from scipy.interpolate import InterpolatedUnivariateSpline
 
 from thesis_plots.plotter import Plotter
 
@@ -227,4 +224,42 @@ def energy_pdf():
     ax_sig.set_ylabel(r"$\log(E/\mathrm{GeV})$")
     ax_sig.set_ylim(2, 7)
 
+    return fig
+
+
+@Plotter.register(["margin", "notopright"])
+def background_spatial():
+    ps_v004p00_dir = get_icecube_data_dir()
+    data_files = list(ps_v004p00_dir.glob(f"IC86_201*_exp.npy"))
+    logger.debug(f"Found {len(data_files)} data files")
+    data = np.concatenate([np.load(f) for f in data_files])
+    start_mdj = Time("2018-05-23").mjd
+    end_mjs = Time("2020-05-29").mjd
+    mask = (data["time"] > start_mdj) & (data["time"] < end_mjs)
+    data = data[mask]
+    logger.debug(f"Loaded data")
+    sindecs = np.sin(data["dec"])
+
+    sindec_bins, energy_bins = get_binning()
+
+    hist, bins = np.histogram(
+        sindecs,
+        density=True,
+        bins=sindec_bins,
+    )
+
+    bins = np.concatenate([bins[:1], bins, bins[-1:]])
+    hist = np.concatenate([hist[:1], hist, hist[-1:]])
+
+    bkg_spline = InterpolatedUnivariateSpline((bins[1:] + bins[:-1]) / 2.0, hist, k=2)
+    x = np.linspace(-1, 1, 1000)
+    y = bkg_spline(x)
+
+    fig, ax = plt.subplots()
+    ax.bar(bins[:-1], hist, width=np.diff(bins), align="edge", label="data", ec="white")
+    ax.plot(x, y, c="C1", label="interpolation")
+    ax.set_xlim(-1, 1)
+    ax.set_xlabel(r"$\sin(\delta)$")
+    ax.set_ylabel(r"density")
+    ax.legend(bbox_to_anchor=(0.5, 1.1), loc="lower center", borderaxespad=0.0, ncol=1)
     return fig
