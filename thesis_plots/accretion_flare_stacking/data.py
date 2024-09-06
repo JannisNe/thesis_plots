@@ -1,12 +1,16 @@
 import logging
 from pathlib import Path
+from shutil import which
+
+import ipdb
 import numpy as np
 import matplotlib.pyplot as plt
-from astropy.constants.codata2018 import alpha
 from matplotlib import cm, colors
+from matplotlib.gridspec import GridSpec
 import pandas as pd
 import os
 from astropy.time import Time
+from matplotlib.pyplot import tick_params
 
 from thesis_plots.plotter import Plotter
 
@@ -19,6 +23,21 @@ def get_icecube_data_dir():
     if not icecube_dataset_dir:
         raise ValueError("FLARESTACK_DATASET_DIR not set. You need access to IceCube data to make this plot.")
     return Path(icecube_dataset_dir) / "ps_tracks" / "version-004-p00"
+
+
+def get_binning():
+    sindec_bins = np.unique(
+        np.concatenate(
+            [
+                np.linspace(-1.0, -0.93, 4 + 1),
+                np.linspace(-0.93, -0.3, 10 + 1),
+                np.linspace(-0.3, 0.05, 9 + 1),
+                np.linspace(0.05, 1.0, 18 + 1),
+            ]
+        )
+    )
+    energy_bins = np.arange(1.0, 9.5 + 0.01, 0.125)
+    return sindec_bins, energy_bins
 
 
 def alert_number_ps_tracks():
@@ -62,17 +81,7 @@ def distribution_dec_energy():
     decs = np.sin(data["dec"])
     energies = data["logE"]
 
-    sindec_bins = np.unique(
-        np.concatenate(
-            [
-                np.linspace(-1.0, -0.93, 4 + 1),
-                np.linspace(-0.93, -0.3, 10 + 1),
-                np.linspace(-0.3, 0.05, 9 + 1),
-                np.linspace(0.05, 1.0, 18 + 1),
-            ]
-        )
-    )
-    energy_bins = np.arange(1.0, 9.5 + 0.01, 0.125)
+    sindec_bins, energy_bins = get_binning()
     norm = colors.SymLogNorm(linthresh=1, linscale=1, vmin=0, vmax=5000)
 
     gridspec_kw = {
@@ -124,11 +133,97 @@ def distribution_dec_energy():
     axs[1][0].set_xticks([-1, -0.5, 0, 0.5, 1])
     axs[1][0].set_yticks([1, 3, 5, 7])
 
-    # indicated most southern acretion flare
+    # indicated most southern accretion flare
     dec_min = -11
     sin_dec_min = np.sin(np.radians(dec_min))
     axs[1][0].axvline(sin_dec_min, color="grey", ls="--")
     axs[1][0].annotate(rf"$\delta=${dec_min:.0f}$^\circ$", (sin_dec_min, max(axs[1][0].get_ylim())), xytext=(3, -3),
                        textcoords="offset points", color="grey", ha="left", va="top", rotation=90)
+
+    return fig
+
+
+@Plotter.register("wide")
+def energy_pdf():
+    gamma = 2
+    ps_v004p00_dir = get_icecube_data_dir()
+    data_files = list(ps_v004p00_dir.glob(f"IC86_201*_exp.npy"))
+    logger.debug(f"Found {len(data_files)} data files")
+    data = np.concatenate([np.load(f) for f in data_files])
+    start_mdj = Time("2018-05-23").mjd
+    end_mjs = Time("2020-05-29").mjd
+    mask = (data["time"] > start_mdj) & (data["time"] < end_mjs)
+    data = data[mask]
+    logger.debug(f"Loaded data")
+    mc_file = ps_v004p00_dir / "IC86_2016_MC.npy"
+    mc = np.load(mc_file)
+    mc_weights = mc["ow"] * mc["trueE"] ** -gamma
+
+    sindec_bins, energy_bins = get_binning()
+
+    # hist mc
+    mc_hist, _ = np.histogramdd((np.sin(mc["dec"]), mc["logE"]), bins=[sindec_bins, energy_bins], weights=mc_weights)
+    mc_hist = mc_hist.T
+    mc_hist_normed = mc_hist / mc_hist.sum(axis=0)
+
+    # hist data
+    data_hist, _ = np.histogramdd((np.sin(data["dec"]), data["logE"]), bins=[sindec_bins, energy_bins])
+    data_hist = data_hist.T
+    data_hist_normed = data_hist / data_hist.sum(axis=0)
+
+    # ratio
+    ratio = mc_hist_normed / data_hist_normed
+    ratio[np.isnan(ratio)] = 0
+    ratio[np.isinf(ratio)] = 0
+
+    # ipdb.set_trace()
+
+    vmin = 1e-4
+    vmax = max([mc_hist_normed.max(), data_hist_normed.max()])
+    logger.debug(f"vmin: {vmin}, vmax: {vmax}")
+    norm = colors.LogNorm(vmin=vmin, vmax=vmax)
+
+    height = plt.rcParams["figure.figsize"][1] / 2
+    fs = (plt.rcParams["figure.figsize"][0], height)
+    fig = plt.figure(figsize=fs)
+    gs0 = GridSpec(1, 3, figure=fig, width_ratios=[1, 1, 1])
+    gs01 = gs0[:2].subgridspec(2, 2, hspace=0, wspace=0.1, height_ratios=[.15, 1])
+    gs02 = gs0[2].subgridspec(2, 1, height_ratios=[.15, 1], hspace=0)
+
+    ax_sig = fig.add_subplot(gs01[1, 0])
+    ax_sig.pcolormesh(sindec_bins, energy_bins, mc_hist_normed, cmap="gist_heat", norm=norm)
+    ax_bkg = fig.add_subplot(gs01[1, 1], sharey=ax_sig, sharex=ax_sig)
+    ax_bkg.pcolormesh(sindec_bins, energy_bins, data_hist_normed, cmap="gist_heat", norm=norm)
+    ax_bkg.set_yticks([])
+    ax_sig.set_xticks([-1, -0.5, 0, 0.5, 1])
+    ax_sig.set_xticklabels(["-1", "-0.5", "0", "0.5", "1"])
+
+    # show colorbar
+    cax = fig.add_subplot(gs01[0, :])
+    mappable = cm.ScalarMappable(norm=norm, cmap="gist_heat")
+    cbar = fig.colorbar(mappable, ax=cax, orientation="horizontal", location="top", fraction=.3)
+    cbar.ax.tick_params(size=0, which="both")
+    cbar.set_label("column-normalized density")
+    cax.axis("off")
+
+    ax_ratio = fig.add_subplot(gs02[1], sharex=ax_sig, sharey=ax_sig)
+    ratio_norm = colors.LogNorm(vmin=1e-3, vmax=1e3)
+    ax_ratio.pcolormesh(sindec_bins, energy_bins, ratio, cmap="RdBu_r", norm=ratio_norm)
+    ax_ratio.set_yticks([])
+    cax_ratio = fig.add_subplot(gs02[0])
+    mappable = cm.ScalarMappable(norm=ratio_norm, cmap="RdBu_r")
+    cbar_ratio = fig.colorbar(mappable, ax=cax_ratio, orientation="horizontal", location="top", fraction=.3)
+    cbar_ratio.set_label("Signal/Background")
+    cbar_ratio.ax.tick_params(size=0)
+    cax_ratio.axis("off")
+
+    axs = [ax_sig, ax_bkg, ax_ratio]
+    ax_sig.annotate("Signal", (0, 1),
+                    xycoords="axes fraction", xytext=(2, 2), textcoords="offset points", ha="left", va="bottom")
+    ax_bkg.annotate("Background", (1, 1),
+                    xycoords="axes fraction", xytext=(-2, 2), textcoords="offset points", ha="right", va="bottom")
+    ax_bkg.set_xlabel(r"$\sin(\delta)$")
+    ax_sig.set_ylabel(r"$\log(E/\mathrm{GeV})$")
+    ax_sig.set_ylim(2, 7)
 
     return fig
