@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import patches, lines
+from matplotlib import patches
 import pandas as pd
 import pickle
 import json
@@ -37,7 +37,7 @@ def alert_number_constraint():
     ax.axvline(1, c=model_colors["IR"], ls="--", label="IR")
     limit_handle = patches.FancyArrowPatch((1.5, 3), (1.5, 3.5), arrowstyle="-|>", mutation_scale=10, color="C0")
     handles = ax.get_legend_handles_labels()[0] + [limit_handle]
-    labels = ax.get_legend_handles_labels()[1] + [r"limits"]
+    labels = ax.get_legend_handles_labels()[1] + [r"Upper limits"]
     ax.legend(handles, labels, loc="lower center", ncol=4, bbox_to_anchor=(0.5, 1.01),
               handler_map={patches.FancyArrowPatch: HandlerArrow()})
     return fig
