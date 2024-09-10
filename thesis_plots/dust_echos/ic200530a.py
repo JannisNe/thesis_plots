@@ -46,7 +46,7 @@ def coincidences():
     gcn_rect = Quadrangle([ic_rect_corner_coords.ra, ic_rect_corner_coords.dec], dxdy[0], dxdy[1],
                           edgecolor="C0", facecolor="none", transform=_t, label="Millipede")
     gcn_circ = SphericalCircle(ic_center_coord, ic200530a_src_error * u.deg, edgecolor="C0", facecolor="none",
-                               transform=_t, ls="--", label="SRC_ERROR")
+                               transform=_t, ls="--", label="circularized mean")
     ax.scatter(*ic_center, color="C0", alpha=1, marker="X", edgecolors="none", transform=_t, label="IC200530A")
     ax.add_patch(gcn_rect)
     ax.add_patch(gcn_circ)
