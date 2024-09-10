@@ -6,6 +6,7 @@ from matplotlib import patches, lines
 import pandas as pd
 import pickle
 import json
+from scipy.interpolate import interp1d
 
 from matplotlib.lines import Line2D
 
@@ -96,14 +97,26 @@ def diffuse_flux():
 
     fig, ax = plt.subplots()
     diffuse_handle = ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
-                                     color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
+                                     color="black", alpha=.2, label="Diffuse Flux", zorder=1, ec="none")
     for i, gamma in enumerate(energy_range):
         x = np.logspace(*np.log10(energy_range[gamma]), 3)
         y = fluxes[str(gamma)] * x**(2 - gamma)
-        ax.errorbar(x, y, yerr=0.2 * y, uplims=True, zorder=1, c="C0")
+        ax.errorbar(x, y, yerr=0.2 * y, uplims=True, zorder=3, c="C0")
+
+        if gamma == 1:
+            fct = interp1d(model_data["IR"]["E"], model_data["IR"]["flux"], fill_value="extrapolate")
+            ir_100tev = (fct(1e5) / 1e5**2) * 500
+            gamma1_at_100tev = fluxes[str(gamma)] * 1e5**(-gamma)
+            logger.info(
+                f""
+                f"IR model at 100 TeV: {ir_100tev:.2e}, "
+                f"gamma=1 at 100 TeV: {gamma1_at_100tev:.2e}, "
+                f"ratio: {gamma1_at_100tev / ir_100tev:.4e}"
+            )
 
     for model in model_ls:
-        ax.plot(model_data[model]["E"], model_data[model]["flux"], c=model_colors[model], ls=model_ls[model])
+        ax.plot(model_data[model]["E"], model_data[model]["flux"], c=model_colors[model], ls=model_ls[model],
+                zorder=2)
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlim(1e3, 1e9)
