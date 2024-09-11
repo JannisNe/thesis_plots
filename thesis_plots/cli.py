@@ -4,6 +4,7 @@ import logging
 from typing import Optional
 from typing_extensions import Annotated
 from rich import tree, console
+from pathlib import Path
 from thesis_plots.plotter import Plotter
 
 
@@ -28,6 +29,29 @@ def walk_modules(names: list[str], the_tree: tree.Tree, length: int, parent: str
             walk_modules(non_functions, sub_tree, length, parent=m if not parent else f"{parent}.{m}")
 
 
+def get_tree(name: list[str] | None = None) -> tree.Tree:
+    if name is not None:
+        names = [k for k in Plotter.registry.keys() if any([iname in k for iname in name])]
+    else:
+        names = Plotter.registry.keys()
+    logger.debug(f"listing plots: {names}")
+    length = max([4 * (n.split(":")[0].count(".") + 1) + 2 + len(n.split(":")[1]) for n in names])
+    logger.debug(f"length: {length}")
+    _tree = tree.Tree("[bold white]Plots Tree" + "".join([" "] * (length + 3)) + "Plot Keys")
+    walk_modules(names, _tree, length)
+    return _tree
+
+
+def export_names():
+    logger.info("exporting available plots")
+    svg_path = Path(__file__).parent.parent / "available_plots.svg"
+    c = console.Console(record=True)
+    c.print(get_tree())
+    with svg_path.open("w") as f:
+        f.write(c.export_svg(title="Available Plots"))
+    logger.info(f"exported to {svg_path}")
+
+
 def run(
         log_level: Annotated[str, typer.Option("--log-level", "-l")] = "INFO",
         name: Annotated[
@@ -38,23 +62,22 @@ def run(
         show: bool = False,
         list_plots: Annotated[
             bool, typer.Option("--list", "-L", is_flag=True, help="list available plots and exit")
-        ] = False
+        ] = False,
+        export: Annotated[
+            bool, typer.Option("--export-names", "-E", help="export names to a file")
+        ] = None
 ):
     logging.getLogger("thesis_plots").setLevel(log_level.upper())
     logging.getLogger("timewise").setLevel(log_level.upper())
     plotter = Plotter()
 
     if list_plots:
-        if name is not None:
-            names = [k for k in Plotter.registry.keys() if any([iname in k for iname in name])]
-        else:
-            names = Plotter.registry.keys()
-        logger.debug(f"listing plots: {names}")
-        length = max([4 * (n.split(":")[0].count(".") + 1) + 2 + len(n.split(":")[1]) for n in names])
-        logger.debug(f"length: {length}")
-        _tree = tree.Tree("[bold white]Plots Tree" + "".join([" "] * (length + 3)) + "Plot Keys")
-        walk_modules(names, _tree, length)
+        _tree = get_tree(name)
         console.Console().print(_tree, new_line_start=True)
+        raise typer.Exit()
+
+    if export:
+        export_names()
         raise typer.Exit()
 
     plotter.plot(name=name, save=save, show=show)
