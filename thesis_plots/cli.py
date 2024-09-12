@@ -93,7 +93,7 @@ def run(
             bool, typer.Option("--list", "-L", is_flag=True, help="list available plots and exit")
         ] = False,
         export: Annotated[
-            bool, typer.Option("--export-names", "-E", help="export names to a file")
+            bool, typer.Option("--export-names", "-E", help="export available plots to README")
         ] = None
 ):
     logging.getLogger("thesis_plots").setLevel(log_level.upper())
