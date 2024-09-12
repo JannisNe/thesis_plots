@@ -1,10 +1,12 @@
 import numpy as np
 import typer
+import toml
 import logging
 from typing import Optional
 from typing_extensions import Annotated
 from rich import tree, console
 from pathlib import Path
+import thesis_plots
 from thesis_plots.plotter import Plotter
 
 
@@ -44,12 +46,39 @@ def get_tree(name: list[str] | None = None) -> tree.Tree:
 
 def export_names():
     logger.info("exporting available plots")
-    svg_path = Path(__file__).parent.parent / "available_plots.svg"
+
+    # create the tree
     c = console.Console(record=True)
     c.print(get_tree())
-    with svg_path.open("w") as f:
-        f.write(c.export_svg(title="Available Plots"))
-    logger.info(f"exported to {svg_path}")
+    tree_str = c.export_text()
+    tree_lines = tree_str.split("\n")
+    tree_lines = [f"    {l}" for l in tree_lines]
+    tree_lines = ["# Available Plots", "```bash"] + tree_lines + ["```"]
+    tree_lines = [(l + "\n") for l in tree_lines]
+
+    # load readme file
+    thesis_plots_dir = Path(thesis_plots.__file__).parent.parent
+    pyproject_file = thesis_plots_dir / "pyproject.toml"
+    logger.debug(f"loading pyproject file: {pyproject_file}")
+    with pyproject_file.open("r") as f:
+        pyproject = toml.load(f)
+    readme_file = thesis_plots_dir / pyproject["tool"]["poetry"]["readme"]
+    logger.debug(f"loading readme file: {readme_file}")
+    with readme_file.open("r") as f:
+        readme = f.readlines()
+
+    # insert the tree into the readme
+    for i, line in enumerate(readme):
+        if "# Available Plots" in line:
+            logger.debug(f"found available plots section at line {i}")
+            break
+    logger.debug(f"inserting tree at line {i}")
+    readme = readme[:i] + tree_lines
+
+    # write the readme file
+    with readme_file.open("w") as f:
+        f.writelines(readme)
+    logger.info(f"exported available plots to {readme_file}")
 
 
 def run(
