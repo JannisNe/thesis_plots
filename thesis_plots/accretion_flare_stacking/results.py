@@ -83,10 +83,10 @@ def diffuse_flux():
         key: pd.read_csv(model_dir / fn, decimal=",", delimiter=";", names=["E", "flux"])
         for key, fn in model_filenames.items()
     }
-    models = {
-        1: ["IR"],
-        1.5: ["OUV"],
-        2.5: ["X-ray"],
+    gammas = {
+        "X-ray": 2.5,
+        "OUV": 1.5,
+        "IR": 1,
     }
 
     data_dir = Path(__file__).parent / "data"
@@ -96,37 +96,38 @@ def diffuse_flux():
         energy_range = pickle.load(f)
     best_f, lower_f, upper_f, e_range = get_diffuse_flux_functions("joint_15")
 
-    fig, ax = plt.subplots()
-    diffuse_handle = ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
-                                     color="black", alpha=.2, label="Diffuse Flux", zorder=1, ec="none")
-    for i, gamma in enumerate(energy_range):
+    fig, axs = plt.subplots(ncols=3, sharex=True, sharey=True, gridspec_kw={"wspace": 0.0},
+                            figsize=(plt.rcParams["figure.figsize"][0], plt.rcParams["figure.figsize"][1] * 2/3))
+
+    for ax in axs:
+        diffuse_handle = ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
+                                         color="black", alpha=.2, label="Diffuse Flux", zorder=1, ec="none")
+    for i, (model, gamma) in enumerate(gammas.items()):
+        ax = axs[i]
         x = np.logspace(*np.log10(energy_range[gamma]), 3)
         y = fluxes[str(gamma)] * x**(2 - gamma)
         ax.errorbar(x, y, yerr=0.2 * y, uplims=True, zorder=3, c="C0")
 
-        if gamma in models:
-            for model in models[gamma]:
-                fct = interp1d(model_data[model]["E"], model_data[model]["flux"], fill_value="extrapolate")
-                ir_100tev = (fct(1e5) / 1e5**2) * 500
-                gamma1_at_100tev = fluxes[str(gamma)] * 1e5**(-gamma)
-                logger.info(
-                    f""
-                    f"{model} model at 100 TeV: {ir_100tev:.2e}, "
-                    f"gamma={gamma} at 100 TeV: {gamma1_at_100tev:.2e}, "
-                    f"ratio: {gamma1_at_100tev / ir_100tev:.4e}"
-                )
-
-    for model in model_ls:
+        fct = interp1d(model_data[model]["E"], model_data[model]["flux"], fill_value="extrapolate")
+        ir_100tev = (fct(1e5) / 1e5**2) * 500
+        gamma1_at_100tev = fluxes[str(gamma)] * 1e5**(-gamma)
+        logger.info(
+            f""
+            f"{model} model at 100 TeV: {ir_100tev:.2e}, "
+            f"gamma={gamma} at 100 TeV: {gamma1_at_100tev:.2e}, "
+            f"ratio: {gamma1_at_100tev / ir_100tev:.4e}"
+        )
         ax.plot(model_data[model]["E"], model_data[model]["flux"], c=model_colors[model], ls=model_ls[model],
                 zorder=2)
-    ax.set_xscale("log")
-    ax.set_yscale("log")
-    ax.set_xlim(1e3, 1e9)
-    ax.set_ylim(bottom=1e-12)
+
+    axs[0].set_xscale("log")
+    axs[0].set_yscale("log")
+    axs[0].set_xlim(10**3.8, 10**7.5)
+    axs[0].set_ylim(bottom=1e-11)
 
     model_handles = [
         Line2D([], [], color=model_colors[model], ls=model_ls[model], label=model)
-        for model in model_ls
+        for model in gammas
     ]
     legend_handles = [
         diffuse_handle,
@@ -135,12 +136,12 @@ def diffuse_flux():
     ]
     legend_labels = [
         "Diffuse Flux",
-        *model_ls.keys(),
+        *gammas.keys(),
         "Upper Limit"
     ]
 
-    ax.set_ylabel(r"$E^2\Phi_\mu^{\nu + \bar{\nu}}$ [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
-    ax.legend(legend_handles, legend_labels, loc="lower center", ncol=5, bbox_to_anchor=(0.5, 1.01),
+    axs[0].set_ylabel(r"$E^2\Phi_\mu^{\nu + \bar{\nu}}$ [GeV cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
+    axs[1].legend(legend_handles, legend_labels, loc="lower center", ncol=5, bbox_to_anchor=(0.5, 1.01),
                   handler_map={patches.FancyArrowPatch: HandlerArrow()})
-    ax.set_xlabel("Energy [GeV]", va="top")
+    axs[1].set_xlabel("E [GeV]", va="top")
     return fig
