@@ -50,18 +50,14 @@ def winter_lunardini():
     best_f, lower_f, upper_f, e_range = get_diffuse_flux_functions("joint_15")
 
     fig, ax = plt.subplots()
-    modelx = np.logspace(4, 6, 10)
+    modelx = np.logspace(5, 6, 10)
     for ls, (key, v) in zip(["--", ":", "-."], data.items()):
         ax.plot(v["E"], v["flux"], label=key, ls=ls, zorder=2, c=model_colors[key])
         norm_arg = (1e6 - v["E"]).abs().idxmin()
         norm = v["flux"].loc[norm_arg] * 2
         logger.debug(f"Normalisation for {key}: {norm}")
         modely = norm * (modelx / 1e6) ** (model_gammas[key] + 2)
-        ax.plot(modelx, modely, ls=":", c="grey", zorder=2)
-    # for iy, iexp in zip(y, exp):
-    #     ax.plot(x, iy, ls="--", color="grey", zorder=0)
-    #     ax.annotate(f"$\Phi \propto E^{ {iexp} }$", (x[-1], iy[-1]), color="grey", bbox=dict(facecolor="white", pad=-.5),
-    #                 zorder=1)
+        ax.plot(modelx, modely, ls="-", c="grey", zorder=2, alpha=0.5)
     ax.errorbar(x_sens, y_sens, yerr=.2 * y_sens, zorder=1, uplims=True, c="grey")
     ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
                     color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
