@@ -84,8 +84,9 @@ def diffuse_flux():
         for key, fn in model_filenames.items()
     }
     models = {
-        1: ["IR", "OUV"],
-        2: ["X-ray"],
+        1: ["IR"],
+        1.5: ["OUV"],
+        2.5: ["X-ray"],
     }
 
     data_dir = Path(__file__).parent / "data"
@@ -103,16 +104,17 @@ def diffuse_flux():
         y = fluxes[str(gamma)] * x**(2 - gamma)
         ax.errorbar(x, y, yerr=0.2 * y, uplims=True, zorder=3, c="C0")
 
-        if gamma == 1:
-            fct = interp1d(model_data["IR"]["E"], model_data["IR"]["flux"], fill_value="extrapolate")
-            ir_100tev = (fct(1e5) / 1e5**2) * 500
-            gamma1_at_100tev = fluxes[str(gamma)] * 1e5**(-gamma)
-            logger.info(
-                f""
-                f"IR model at 100 TeV: {ir_100tev:.2e}, "
-                f"gamma=1 at 100 TeV: {gamma1_at_100tev:.2e}, "
-                f"ratio: {gamma1_at_100tev / ir_100tev:.4e}"
-            )
+        if gamma in models:
+            for model in models[gamma]:
+                fct = interp1d(model_data[model]["E"], model_data[model]["flux"], fill_value="extrapolate")
+                ir_100tev = (fct(1e5) / 1e5**2) * 500
+                gamma1_at_100tev = fluxes[str(gamma)] * 1e5**(-gamma)
+                logger.info(
+                    f""
+                    f"{model} model at 100 TeV: {ir_100tev:.2e}, "
+                    f"gamma={gamma} at 100 TeV: {gamma1_at_100tev:.2e}, "
+                    f"ratio: {gamma1_at_100tev / ir_100tev:.4e}"
+                )
 
     for model in model_ls:
         ax.plot(model_data[model]["E"], model_data[model]["flux"], c=model_colors[model], ls=model_ls[model],

@@ -24,6 +24,11 @@ model_colors = {
     "X-ray": "C0",
     "OUV": "C2",
 }
+model_gammas = {
+    "IR": -1,
+    "X-ray": -2.5,
+    "OUV": -1.5,
+}
 
 
 @Plotter.register()
@@ -38,12 +43,6 @@ def winter_lunardini():
         key: pd.read_csv(data_dir / fn, decimal=",", delimiter=";", names=["E", "flux"])
         for key, fn in model_filenames.items()
     }
-    exp = np.array([-1, -2, -3])
-    start_x = 800 # data["IR"]["E"].iloc[0]
-    end_x = 3000
-    start_y = 10**-10.8  #data["IR"]["flux"].iloc[0]
-    x = np.logspace(np.log10(start_x), np.log10(end_x), 100)
-    y = start_y * (x / start_x) ** (exp[:, np.newaxis] + 2) * 1.5
     x_sens = np.logspace(np.log10(sens_erange[0]), np.log10(sens_erange[1]), 3)
     logger.debug(x_sens)
     y_sens = sens_flux_100tev_times_esq * (x_sens / 100e3) ** (sens_gamma + 2)
@@ -51,12 +50,18 @@ def winter_lunardini():
     best_f, lower_f, upper_f, e_range = get_diffuse_flux_functions("joint_15")
 
     fig, ax = plt.subplots()
+    modelx = np.logspace(4, 6, 10)
     for ls, (key, v) in zip(["--", ":", "-."], data.items()):
         ax.plot(v["E"], v["flux"], label=key, ls=ls, zorder=2, c=model_colors[key])
-    for iy, iexp in zip(y, exp):
-        ax.plot(x, iy, ls="--", color="grey", zorder=0)
-        ax.annotate(f"$\Phi \propto E^{ {iexp} }$", (x[-1], iy[-1]), color="grey", bbox=dict(facecolor="white", pad=-.5),
-                    zorder=1)
+        norm_arg = (1e6 - v["E"]).abs().idxmin()
+        norm = v["flux"].loc[norm_arg] * 2
+        logger.debug(f"Normalisation for {key}: {norm}")
+        modely = norm * (modelx / 1e6) ** (model_gammas[key] + 2)
+        ax.plot(modelx, modely, ls=":", c="grey", zorder=2)
+    # for iy, iexp in zip(y, exp):
+    #     ax.plot(x, iy, ls="--", color="grey", zorder=0)
+    #     ax.annotate(f"$\Phi \propto E^{ {iexp} }$", (x[-1], iy[-1]), color="grey", bbox=dict(facecolor="white", pad=-.5),
+    #                 zorder=1)
     ax.errorbar(x_sens, y_sens, yerr=.2 * y_sens, zorder=1, uplims=True, c="grey")
     ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
                     color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
