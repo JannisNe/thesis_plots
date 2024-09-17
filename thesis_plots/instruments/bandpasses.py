@@ -77,9 +77,7 @@ def bandpasses():
     axs[1].set_xticks([], minor=False)
     axs[1].set_xticklabels([f"{i:.0f}" for i in xticks_ir], minor=True)
 
-    # axs[1].set_yticks(np.array([4, 5, 6, 7, 8]) * 1e3)
-
     axs[-1].set_xlabel("Wavelength [nm]")
-    fig.supylabel("relative Transmission")
+    fig.supylabel("Relative Transmission")
 
     return fig
