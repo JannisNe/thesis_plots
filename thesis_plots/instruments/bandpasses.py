@@ -1,5 +1,5 @@
 import logging
-
+import numpy as np
 import pandas as pd
 import requests
 from astropy.table import Table
@@ -45,14 +45,13 @@ def bandpasses():
     for ax, regime in zip(axs, ["optical", "infrared"]):
         m = bands.regime == regime
         insts = bands[m].label_inst.unique()
-        N_inst = len(insts)
         for j, inst in enumerate(insts):
             inst_m = bands[m].label_inst == inst
             _h = []
             for i, r in bands[m & inst_m].iterrows():
                 data = get_filter(r.fac, r.inst, r.band)
                 t = data["Transmission"] / max(data["Transmission"])
-                l, = ax.plot(data["Wavelength"], t, color=r.color, ls=r.ls)
+                l, = ax.plot(data["Wavelength"] / 10, t, color=r.color, ls=r.ls)
                 _h.append(l)
             if inst == "ASAS-SN":
                 anchor = (0, 1)
@@ -69,7 +68,18 @@ def bandpasses():
         ax.set_xscale("log")
         ax.set_ylim(bottom=0)
 
-    axs[-1].set_xlabel("Wavelength [$10^4$ AA]")
+    xticks_opt = np.array([4, 5, 6, 7, 8, 9]) * 1e2
+    axs[0].set_xticks(xticks_opt, minor=True)
+    axs[0].set_xticklabels([f"{i:.0f}" for i in xticks_opt], minor=True)
+
+    xticks_ir = np.array([3, 5, 10, 30]) * 1e3
+    axs[1].set_xticks(xticks_ir, minor=True)
+    axs[1].set_xticks([], minor=False)
+    axs[1].set_xticklabels([f"{i:.0f}" for i in xticks_ir], minor=True)
+
+    # axs[1].set_yticks(np.array([4, 5, 6, 7, 8]) * 1e3)
+
+    axs[-1].set_xlabel("Wavelength [nm]")
     fig.supylabel("relative Transmission")
 
     return fig
