@@ -14,7 +14,7 @@ def piechart():
     sizes = [12, 1, 56, 14, 2]
     explode = [0, 0, 0.05, 0, 0]
     labels_with_numbers = [f"{l} ({n})" if n < 3 else l for l, n in zip(labels, sizes)]
-    colors = [f"C{i}" for i in range(len(sizes))]# [6, 8, 5, 1, 7]]
+    colors = [f"C{i}" for i in range(len(sizes))]
 
     def make_autopct(values):
         def my_autopct(pct):
