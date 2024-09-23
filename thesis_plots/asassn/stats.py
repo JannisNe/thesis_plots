@@ -1,6 +1,5 @@
 import logging
 from matplotlib import pyplot as plt
-import ipdb
 
 from thesis_plots.plotter import Plotter
 
@@ -32,7 +31,6 @@ def piechart():
         shadow=False,
         startangle=100,
         pctdistance=0.75,
-        # textprops={'fontsize': big_fontsize},
         colors=colors,
         explode=explode
     )
