@@ -26,6 +26,9 @@ conda install -c conda-forge healpy --no-deps
     │       ├──  alert_number_constraint......................accretion_flare_stacking.results:alert_number_constraint
     │       ├──  ts_distribution..............................accretion_flare_stacking.results:ts_distribution
     │       └──  diffuse_flux.................................accretion_flare_stacking.results:diffuse_flux
+    ├──  asassn
+    │   └──  stats
+    │       └──  piechart.....................................asassn.stats:piechart
     ├──  dust_echos
     │   ├──  ic200530a
     │   │   └──  coincidences.................................dust_echos.ic200530a:coincidences
@@ -75,6 +78,9 @@ conda install -c conda-forge healpy --no-deps
     ├──  flarestack
     │   └──  sensitivity
     │       └──  example......................................flarestack.sensitivity:example
+    ├──  instruments
+    │   └──  bandpasses
+    │       └──  bandpasses...................................instruments.bandpasses:bandpasses
     └──  resimulations
         ├──  calibration
         │   ├──  metric_histogram_bran........................resimulations.calibration:metric_histogram_bran
