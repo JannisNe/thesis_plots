@@ -2,7 +2,7 @@ import logging
 from astropy.io import fits
 import matplotlib.pyplot as plt
 from thesis_plots.plotter import Plotter
-from thesis_plots.ztf.data import data_dir
+from thesis_plots.ztf.data import data_dir, load_lines
 
 
 logger = logging.getLogger(__name__)
