@@ -81,29 +81,38 @@ conda install -c conda-forge healpy --no-deps
     ├──  instruments
     │   └──  bandpasses
     │       └──  bandpasses...................................instruments.bandpasses:bandpasses
-    └──  resimulations
-        ├──  calibration
-        │   ├──  metric_histogram_bran........................resimulations.calibration:metric_histogram_bran
-        │   ├──  metric_histogram_txs.........................resimulations.calibration:metric_histogram_txs
-        │   ├──  metric_histogram_tywin.......................resimulations.calibration:metric_histogram_tywin
-        │   ├──  metric_calibration...........................resimulations.calibration:metric_calibration
-        │   ├──  original_resimulations_ratios................resimulations.calibration:original_resimulations_ratios
-        │   └──  tywin_original_resimulations_charge..........resimulations.calibration:tywin_original_resimulations_charge
-        ├──  performance
-        │   ├──  performance_tywin............................resimulations.performance:performance_tywin
-        │   └──  performance_txs..............................resimulations.performance:performance_txs
-        ├──  results
-        │   ├──  abs_log_ratios_tywin.........................resimulations.results:abs_log_ratios_tywin
-        │   ├──  abs_log_ratios_lancel........................resimulations.results:abs_log_ratios_lancel
-        │   ├──  abs_log_ratios_bran..........................resimulations.results:abs_log_ratios_bran
-        │   ├──  abs_log_ratios_txs...........................resimulations.results:abs_log_ratios_txs
-        │   ├──  tywin_abs_log_ratio_only.....................resimulations.results:tywin_abs_log_ratio_only
-        │   ├──  charge_plot..................................resimulations.results:charge_plot
-        │   └──  alert_scatter_combined.......................resimulations.results:alert_scatter_combined
-        └──  visualisation
-            ├──  circle_plane.................................resimulations.visualisation:circle_plane
-            ├──  toy_event....................................resimulations.visualisation:toy_event
-            ├──  diagram......................................resimulations.visualisation:diagram
-            └──  error........................................resimulations.visualisation:error
+    ├──  resimulations
+    │   ├──  calibration
+    │   │   ├──  metric_histogram_bran........................resimulations.calibration:metric_histogram_bran
+    │   │   ├──  metric_histogram_txs.........................resimulations.calibration:metric_histogram_txs
+    │   │   ├──  metric_histogram_tywin.......................resimulations.calibration:metric_histogram_tywin
+    │   │   ├──  metric_calibration...........................resimulations.calibration:metric_calibration
+    │   │   ├──  original_resimulations_ratios................resimulations.calibration:original_resimulations_ratios
+    │   │   └──  tywin_original_resimulations_charge..........resimulations.calibration:tywin_original_resimulations_charge
+    │   ├──  performance
+    │   │   ├──  performance_tywin............................resimulations.performance:performance_tywin
+    │   │   └──  performance_txs..............................resimulations.performance:performance_txs
+    │   ├──  results
+    │   │   ├──  abs_log_ratios_tywin.........................resimulations.results:abs_log_ratios_tywin
+    │   │   ├──  abs_log_ratios_lancel........................resimulations.results:abs_log_ratios_lancel
+    │   │   ├──  abs_log_ratios_bran..........................resimulations.results:abs_log_ratios_bran
+    │   │   ├──  abs_log_ratios_txs...........................resimulations.results:abs_log_ratios_txs
+    │   │   ├──  tywin_abs_log_ratio_only.....................resimulations.results:tywin_abs_log_ratio_only
+    │   │   ├──  charge_plot..................................resimulations.results:charge_plot
+    │   │   └──  alert_scatter_combined.......................resimulations.results:alert_scatter_combined
+    │   └──  visualisation
+    │       ├──  circle_plane.................................resimulations.visualisation:circle_plane
+    │       ├──  toy_event....................................resimulations.visualisation:toy_event
+    │       ├──  diagram......................................resimulations.visualisation:diagram
+    │       └──  error........................................resimulations.visualisation:error
+    └──  ztf
+        ├──  ZTF19aavnpjv
+        │   └──  spectrum.....................................ztf.ZTF19aavnpjv:spectrum
+        ├──  ZTF19adgzidh
+        │   ├──  spectrum.....................................ztf.ZTF19adgzidh:spectrum
+        │   └──  lightcurve...................................ztf.ZTF19adgzidh:lightcurve
+        └──  ZTF23abidzvf
+            ├──  spectrum.....................................ztf.ZTF23abidzvf:spectrum
+            └──  lightcurve...................................ztf.ZTF23abidzvf:lightcurve
     
 ```
