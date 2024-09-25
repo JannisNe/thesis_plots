@@ -44,3 +44,23 @@ def spectrum():
     ax.set_xlim(3500, 9680)
     ax.set_ylim(0, 10)
     return fig
+
+
+@Plotter.register()
+def lightcurve():
+    file = data_dir / "photometry.csv"
+    logger.debug(f"loading data from {file}")
+    data = pd.read_csv(file, parse_dates=["created_at", "UTC"])
+    ul_mask = data.mag.isna()
+    band_masks = {b: data["filter"] == b for b in data["filter"].unique()}
+
+    fig, ax = plt.subplots()
+    for band, mask in band_masks.items():
+        band_data = data[mask]
+        ax.errorbar(band_data.UTC, band_data.mag, yerr=band_data.magerr, fmt="o", label=band)
+        ax.scatter(band_data.UTC[ul_mask[mask]], band_data.limiting_mag[ul_mask[mask]], marker="v", color="C1", alpha=0.5, s=10)
+    ax.set_xlabel("UTC")
+    ax.set_ylabel("magnitude")
+    ax.invert_yaxis()
+    ax.legend()
+    return fig
