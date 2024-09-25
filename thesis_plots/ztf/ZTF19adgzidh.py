@@ -31,13 +31,21 @@ def spectrum():
     for line, label in zip(spectral_lines["H"][:3], [r"$\alpha$", r"$\beta$", r"$\gamma$"]):
         x = line * (1 + z)
         ax.axvline(x, lw=.5, color="C1", zorder=2)
-        ax.annotate("H" + label, (x, 40), color="C1", ha="right", va="top", textcoords="offset points", xytext=(-2, -2))
+        _label = "H" + label
+        logger.debug(f"line {_label} at {x}")
+        ax.annotate(_label, (x, 40), color="C1", ha="right", va="top", textcoords="offset points", xytext=(-2, -2))
 
     for i, line in enumerate(spectral_lines["OIII"][:2]):
         x = line * (1 + z)
+        logger.debug(f"line [OIII] at {x}")
         ax.axvline(x, lw=.5, color="C2", zorder=2)
         if i == 0:
             ax.annotate(r"[OIII]", (x, 40), color="C2", ha="left", va="top", textcoords="offset points", xytext=(2, -2))
+
+    mgx = spectral_lines["MgII"][0] * (1 + z)
+    logger.debug(f"line MgII at {mgx}")
+    ax.axvline(mgx, lw=.5, color="C3", zorder=2)
+    ax.annotate(r"MgII", (mgx, 40), color="C3", ha="left", va="top", textcoords="offset points", xytext=(2, -2))
 
     ax.set_xlim(3500, 9800)
     ax.set_ylim(0, 40)
