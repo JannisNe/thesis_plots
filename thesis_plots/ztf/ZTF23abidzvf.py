@@ -1,18 +1,22 @@
 import logging
 from astropy.io import fits
 import pandas as pd
+from datetime import datetime
 import matplotlib.pyplot as plt
 from thesis_plots.plotter import Plotter
-from thesis_plots.ztf.data import data_dir, load_lines
+from thesis_plots.ztf.data import data_dir, load_lines, band_colors
 
 
 logger = logging.getLogger(__name__)
 
 
 z = 0.1503
+neutrino_time_str = "2023-10-04 14:39:41.18"
+neutrino_time = datetime.strptime(neutrino_time_str, "%Y-%m-%d %H:%M:%S.%f")
+neutrino_name = "IC231004A"
 
 
-@Plotter.register()
+@Plotter.register("half")
 def spectrum():
     data_file_alfosc = data_dir / "coadd1d_ZTF23abidzvf_ALFOSC_20231017_20231017.fits"
     logger.debug(f"loading data from {data_file_alfosc}")
@@ -46,21 +50,27 @@ def spectrum():
     return fig
 
 
-@Plotter.register()
+@Plotter.register("half")
 def lightcurve():
-    file = data_dir / "photometry.csv"
+    file = data_dir / "ZTF23abidzvf_photometry.csv"
     logger.debug(f"loading data from {file}")
     data = pd.read_csv(file, parse_dates=["created_at", "UTC"])
     ul_mask = data.mag.isna()
-    band_masks = {b: data["filter"] == b for b in data["filter"].unique()}
+    band_masks = {b: data["filter"] == b for b in ["ztfg", "ztfi", "ztfr"]}
 
     fig, ax = plt.subplots()
     for band, mask in band_masks.items():
-        band_data = data[mask]
-        ax.errorbar(band_data.UTC, band_data.mag, yerr=band_data.magerr, fmt="o", label=band)
-        ax.scatter(band_data.UTC[ul_mask[mask]], band_data.limiting_mag[ul_mask[mask]], marker="v", color="C1", alpha=0.5, s=10)
+        color = band_colors[band[-1]]
+        band_data = data[mask & ~ul_mask]
+        if len(band_data) == 0:
+            continue
+        ax.errorbar(band_data.UTC, band_data.mag, yerr=band_data.magerr, fmt="o", label=band, color=color, ms=2, elinewidth=0.5)
+    ax.axvline(neutrino_time, color="C0", ls="--", label=neutrino_name)
     ax.set_xlabel("UTC")
     ax.set_ylabel("magnitude")
+    for label in ax.get_xticklabels():
+        label.set_rotation(45)
+        label.set_ha("right")
     ax.invert_yaxis()
-    ax.legend()
+    ax.legend(bbox_to_anchor=(0.5, 1), loc='lower center', ncol=3)
     return fig
