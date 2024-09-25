@@ -1,7 +1,6 @@
 import logging
 from astropy.io import fits
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 from thesis_plots.plotter import Plotter
 from thesis_plots.ztf.data import data_dir, load_lines
@@ -30,15 +29,6 @@ def spectrum():
 
     flux = coadd_alfosc["flux"]
     wave = coadd_alfosc["wave_grid_mid"]
-    window_width_alfosc = 20
-    cumsum_flux = np.cumsum(np.insert(flux, 0, 0))
-    flux_smooth = (cumsum_flux[window_width_alfosc:] - cumsum_flux[:-window_width_alfosc]) / window_width_alfosc
-    wave_smooth = wave[window_width_alfosc // 2:len(wave) - window_width_alfosc // 2 + 1]
-
-    window_width_lris = 30
-    cumsum_flux_lris = np.cumsum(np.insert(flux_lris, 0, 0))
-    flux_smooth_lris = (cumsum_flux_lris[window_width_lris:] - cumsum_flux_lris[:-window_width_lris]) / window_width_lris
-    wave_smooth_lris = wave_lris[window_width_lris // 2:len(wave_lris) - window_width_lris // 2 + 1]
     offset_lris = 4
 
     spectral_lines = load_lines()
@@ -47,9 +37,7 @@ def spectrum():
     ax.set_xlabel(r'$\lambda$ [$\AA$]')
     ax.set_ylabel(r"$F_\lambda$ [$10^{-17}$ erg s$^{-1}$ cm$^{-2}$ $\AA ^{-1}$]")
     ax.plot(wave, flux, lw=.5, alpha=1, color="C0", zorder=10, label="ALFOSC")
-    # ax.plot(wave_smooth, flux_smooth, lw=0.8, color="C3", zorder=10)
     ax.plot(wave_lris, flux_lris * 1e17 + offset_lris, lw=0.5, color="C1", zorder=10, label="LRIS + offset")
-    # ax.plot(wave_smooth_lris, flux_smooth_lris * 1e17 + offset_lris, lw=0.8, color="C4", zorder=10)
     for i, line in enumerate(spectral_lines["He"]):
         ax.axvline(line * (1+z), color="C3", lw=0.5, ls="--", zorder=5, label="He$I$" if i == 0 else None)
     ax.legend(bbox_to_anchor=(0.5, 1), loc='lower center', ncol=3)
