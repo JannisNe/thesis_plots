@@ -39,7 +39,7 @@ use_cols_gcn = [
 
 
 @Plotter.register("half")
-def make_spec_summary_plot() -> None:
+def average() -> None:
     """
     Histogram summary of follow up since start of v2 alerts.
     """
@@ -158,7 +158,7 @@ def make_spec_summary_plot() -> None:
     classp = mpatches.Patch(facecolor=classified_colors['yes'], label='yes', alpha=alpha)
     not_classp = mpatches.Patch(facecolor=classified_colors['no'], label='no', alpha=alpha)
 
-    md_head, = ax.plot([], [], ls='', label='detected on >2 nights')
+    md_head, = ax.plot([], [], ls='', label='detected twice')
     mdp = mpatches.Patch(facecolor='grey', hatch=detections_hatch['yes'], label='yes', alpha=alpha)
     nmdp = mpatches.Patch(facecolor='grey', hatch=detections_hatch['no'], label='no', alpha=alpha)
 
@@ -166,7 +166,7 @@ def make_spec_summary_plot() -> None:
     ax.set_xticklabels(['17.5 - 19', '19 - 20.5', '>20.5'])
 
     ax.legend(handles=[class_head, md_head, classp, mdp, not_classp, nmdp], ncol=3,
-              loc='lower center', bbox_to_anchor=(0.5, 1))
+              loc='lower center', bbox_to_anchor=(0.43, 1))
     # ax.set_ylim(0, 4)
 
     ax.set_xlabel('Peak $r$-band magnitude')
@@ -176,7 +176,7 @@ def make_spec_summary_plot() -> None:
 
 
 @Plotter.register("half")
-def make_performance_over_time_plot():
+def timeresolved():
     gcn_fn, fu_fn, not_fu_fn = get_files()
     fu = pd.read_csv(fu_fn, skiprows=3, skipfooter=4, engine='python')
     not_fu = pd.read_csv(not_fu_fn, skiprows=2)
@@ -188,27 +188,24 @@ def make_performance_over_time_plot():
     bins = np.array([datetime.strptime(f"{y}0{m}01", "%y%m%d").date() for y in range(17, 25) for m in [1, 7]])
     bindif = bins[1:] - bins[:-1]
     binmids = bins[:-1] + (bindif) / 2
-    colors = ["forestgreen", "indianred", "grey"]
-    fig, ax = plt.subplots(nrows=2, sharex='all')
+    colors = ["C2", "C3", "grey"]
+
+    fig, ax = plt.subplots(nrows=2, sharex='all', gridspec_kw={'hspace': .1})
     h, b, p = ax[0].hist([fu.dates, not_fu.dates[not_fu.maintenance], not_fu.dates[~not_fu.maintenance]],
                          histtype='barstacked',
-                         label=["followed-up", "ZTF down", "other reason"],
+                         label=["followed-up", "ZTF down", "other"],
                          bins=bins,
-                        color=colors)
+                         color=colors)
 
     total = h[-1]
-    perc_fu = h[0] / total
     perc_not_fu_main = (h[1] - h[0]) / total
-    perc_not_fu = (h[2] - h[1]) / total
 
     for i in range(len(h)):
         ax[1].bar(binmids, h[len(h)-i-1] / h[-1], width=bindif, color=colors[len(h)-i-1])
 
     for i, p in enumerate(perc_not_fu_main):
         if p:
-            x = binmids[i]
-            y = perc_fu[i] + p/2
-            ax[1].annotate(f"{p*100:.0f}%", xy=(x,y), ha='center', va='center', color='k')
+            logger.info(f"{p*100:.0f}% missed at {binmids[i]}")
 
     ax[0].set_ylabel("count")
     ax[1].set_ylabel("percentage")
