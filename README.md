@@ -107,7 +107,8 @@ conda install -c conda-forge healpy --no-deps
     │       └──  error........................................resimulations.visualisation:error
     └──  ztf
         ├──  ZTF19aavnpjv
-        │   └──  spectrum.....................................ztf.ZTF19aavnpjv:spectrum
+        │   ├──  spectrum.....................................ztf.ZTF19aavnpjv:spectrum
+        │   └──  lightcurve...................................ztf.ZTF19aavnpjv:lightcurve
         ├──  ZTF19adgzidh
         │   ├──  spectrum.....................................ztf.ZTF19adgzidh:spectrum
         │   └──  lightcurve...................................ztf.ZTF19adgzidh:lightcurve
