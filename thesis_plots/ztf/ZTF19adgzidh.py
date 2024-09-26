@@ -1,6 +1,7 @@
 import logging
 from astropy.io import fits
 import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
 import pandas as pd
 from thesis_plots.plotter import Plotter
 from thesis_plots.ztf.data import data_dir, load_lines, band_colors
@@ -72,11 +73,9 @@ def lightcurve():
             continue
         ax.errorbar(band_data.UTC, band_data.mag, yerr=band_data.magerr, fmt="o", label=band, color=color, ms=2, elinewidth=0.5)
     ax.axvline(neutrino_time, color="C0", ls="--", label=neutrino_name)
-    ax.set_xlabel("UTC")
+    ax.set_xlabel("Months in 2022")
     ax.set_ylabel("magnitude")
-    for label in ax.get_xticklabels():
-        label.set_rotation(45)
-        label.set_ha("right")
+    ax.xaxis.set_major_formatter(DateFormatter("%m"))
     ax.invert_yaxis()
     ax.set_xlim(pd.Timestamp("2022-03"), pd.Timestamp("2022-11"))
     ax.legend(bbox_to_anchor=(0.5, 1), loc='lower center', ncol=3)
