@@ -112,8 +112,11 @@ conda install -c conda-forge healpy --no-deps
         ├──  ZTF19adgzidh
         │   ├──  spectrum.....................................ztf.ZTF19adgzidh:spectrum
         │   └──  lightcurve...................................ztf.ZTF19adgzidh:lightcurve
-        └──  ZTF23abidzvf
-            ├──  spectrum.....................................ztf.ZTF23abidzvf:spectrum
-            └──  lightcurve...................................ztf.ZTF23abidzvf:lightcurve
+        ├──  ZTF23abidzvf
+        │   ├──  spectrum.....................................ztf.ZTF23abidzvf:spectrum
+        │   └──  lightcurve...................................ztf.ZTF23abidzvf:lightcurve
+        └──  summary
+            ├──  average......................................ztf.summary:average
+            └──  timeresolved.................................ztf.summary:timeresolved
     
 ```
