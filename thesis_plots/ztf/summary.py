@@ -209,6 +209,7 @@ def timeresolved():
 
     ax[0].set_ylabel("count")
     ax[1].set_ylabel("percentage")
+    ax[1].set_xlabel("date")
     ax[0].legend(bbox_to_anchor=(0.5, 1), loc='lower center', ncol=3)
 
     return fig
