@@ -47,7 +47,7 @@ def lightcurve():
         band_data = data[mask & ~ul_mask]
         if len(band_data) == 0:
             continue
-        ax.errorbar(band_data.UTC, band_data.mag, yerr=band_data.magerr, fmt="o", label=band, color=color, ms=2, elinewidth=0.5)
+        ax.errorbar(band_data.UTC, band_data.mag, yerr=band_data.magerr, fmt="o", label=band[-1], color=color, ms=2, elinewidth=0.5)
     ax.axvline(neutrino_time, color="C0", ls="--", label=neutrino_name)
     ax.set_xlabel("Days in April 2022")
     ax.set_xlim(right=pd.Timestamp("2022-04-30"))
