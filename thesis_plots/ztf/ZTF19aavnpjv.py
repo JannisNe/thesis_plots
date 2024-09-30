@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from thesis_plots.plotter import Plotter
-from thesis_plots.ztf.data import data_dir, band_colors
+from thesis_plots.ztf.data import data_dir, band_colors, load_lines
 
 
 logger = logging.getLogger(__name__)
@@ -23,11 +23,18 @@ def spectrum():
         coadd_sepc = h[1].data
     flux = coadd_sepc["flux"]
     wave = coadd_sepc["wave_grid_mid"]
+    lines = load_lines()
 
     fig, ax = plt.subplots()
     ax.set_xlabel(r'$\lambda$ [$\AA$]')
     ax.set_ylabel(r"$F_\lambda$ [$10^{-17}$ erg s$^{-1}$ cm$^{-2}$ $\AA ^{-1}$]")
     ax.plot(wave, flux, lw=0.5, color="C0", zorder=10)
+    for i, line in enumerate(lines["H"][:2]):
+        greek = [r"$\alpha$", r"$\beta$"][i]
+        ax.axvline(line, color="C1", ls="--", lw=0.5)
+        ax.annotate(f"H{greek}", (line, 20), color="C1", ha="right", va="top", textcoords="offset points", xytext=(-2, -2))
+    ax.axvline(lines["He"][4], color="C2", ls="--", lw=0.5)
+    ax.annotate("HeI", (lines["He"][4], 20), color="C2", ha="right", va="top", textcoords="offset points", xytext=(-2, -2))
     ax.set_xlim(3500, 9680)
     ax.set_ylim(0, 20)
     return fig
