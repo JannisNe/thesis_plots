@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.dates as mdates
 from datetime import datetime, date
 
 from thesis_plots.ztf.data import data_dir
@@ -209,7 +210,11 @@ def timeresolved():
 
     ax[0].set_ylabel("count")
     ax[1].set_ylabel("percentage")
-    ax[1].set_xlabel("date")
+    ax[1].set_xlabel("year")
+    locator = mdates.AutoDateLocator(minticks=3, maxticks=7)
+    formatter = mdates.ConciseDateFormatter(locator)
+    ax[1].xaxis.set_major_locator(locator)
+    ax[1].xaxis.set_major_formatter(formatter)
     ax[0].legend(bbox_to_anchor=(0.5, 1), loc='lower center', ncol=3)
 
     return fig
