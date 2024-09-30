@@ -186,6 +186,14 @@ def timeresolved():
     fu["dates"] = [datetime.strptime(ev[2:-1], "%y%m%d").date() for ev in fu.Event.iloc]
     not_fu["maintenance"] = not_fu["Code"] == 3
 
+    total = len(fu) + len(not_fu)
+    good = len(fu)
+    missed = sum(not_fu.maintenance)
+    invalid = sum(~not_fu.maintenance)
+    logger.info(f"{missed} missed follow-ups out of {total} ({missed/total*100:.0f}%)")
+    logger.info(f"{invalid} invalid follow-ups out of {total} ({invalid/total*100:.0f}%)")
+    logger.info(f"{good} good follow-ups out of {total} ({good/total*100:.0f}%)")
+
     bins = np.array([datetime.strptime(f"{y}0{m}01", "%y%m%d").date() for y in range(17, 25) for m in [1, 7]])
     bindif = bins[1:] - bins[:-1]
     binmids = bins[:-1] + (bindif) / 2
