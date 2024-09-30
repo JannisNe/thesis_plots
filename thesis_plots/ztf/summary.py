@@ -176,7 +176,7 @@ def average() -> None:
     return fig
 
 
-@Plotter.register("half")
+@Plotter.register(["half", "notopright"])
 def timeresolved():
     gcn_fn, fu_fn, not_fu_fn = get_files()
     fu = pd.read_csv(fu_fn, skiprows=3, skipfooter=4, engine='python')
