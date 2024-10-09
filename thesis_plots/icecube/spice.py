@@ -18,9 +18,10 @@ def spice321():
     fig, ax = plt.subplots()
     ax.plot(data["scat"], data["depth"], label="Scattering", ls="-")
     ax.plot(data["abs"], data["depth"], label="Absorption", ls="--")
+    ax.fill_between([0, 0.18], [2000, 2000], [2100, 2100], color="grey", alpha=0.3, label="dust layer", ec="none")
     ax.set_ylabel("Depth [m]")
     ax.set_xlabel("Coefficient [1/m]")
     ax.set_xlim(0, 0.18)
-    ax.set_ylim(2500, 1400)
+    ax.set_ylim(2450, 1450)
     ax.legend()
     return fig
