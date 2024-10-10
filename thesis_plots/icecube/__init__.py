@@ -1,1 +1,1 @@
-from thesis_plots.icecube import spice
+from thesis_plots.icecube import spice, steamshovel

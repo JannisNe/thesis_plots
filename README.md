@@ -79,8 +79,10 @@ conda install -c conda-forge healpy --no-deps
     │   └──  sensitivity
     │       └──  example......................................flarestack.sensitivity:example
     ├──  icecube
-    │   └──  spice
-    │       └──  spice321.....................................icecube.spice:spice321
+    │   ├──  spice
+    │   │   └──  spice321.....................................icecube.spice:spice321
+    │   └──  steamshovel
+    │       └──  colorbar.....................................icecube.steamshovel:colorbar
     ├──  instruments
     │   └──  bandpasses
     │       └──  bandpasses...................................instruments.bandpasses:bandpasses
