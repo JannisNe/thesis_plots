@@ -79,6 +79,8 @@ conda install -c conda-forge healpy --no-deps
     │   └──  sensitivity
     │       └──  example......................................flarestack.sensitivity:example
     ├──  icecube
+    │   ├──  coordinate_system_zenith_azimuth..............icecube:coordinate_system_zenith_azimuth
+    │   ├──  coordinate_system_phi_theta...................icecube:coordinate_system_phi_theta
     │   ├──  spice
     │   │   └──  spice321.....................................icecube.spice:spice321
     │   └──  steamshovel
