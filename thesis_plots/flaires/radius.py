@@ -12,7 +12,7 @@ from thesis_plots.flaires.data.load import load_data
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register()
+@Plotter.register(orientation="square")
 def validation():
     data = load_data()
     info = data["radius_info"]
