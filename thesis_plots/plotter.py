@@ -60,13 +60,13 @@ class Plotter:
 
     @classmethod
     def set_orientation(cls, orientation: str):
-        assert orientation in ["landscape", "portrait"]
+        assert orientation in ["landscape", "portrait", "square"]
         figsize = plt.rcParams["figure.figsize"]
         current_orientation = "landscape" if figsize[0] > figsize[1] else "portrait"
         if current_orientation != orientation:
             logger.debug(f"changing orientation to {orientation}")
-            ratio = figsize[1] / figsize[0]
-            exponent = 1 if orientation == "landscape" else -1
+            ratio = figsize[1] / figsize[0] if orientation != "square" else 1
+            exponent = 1 if orientation == "landscape" else -1  # 1 landscape, -1 portrait, meaningless for square
             plt.rcParams["figure.figsize"] = (figsize[0], figsize[0] * ratio ** exponent)
 
     def get_filename(self, name: str):
