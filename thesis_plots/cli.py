@@ -46,6 +46,7 @@ def get_tree(name: list[str] | None = None) -> tree.Tree:
 
 def export_names():
     logger.info("exporting available plots")
+    heading = "## Available Plots"
 
     # create the tree
     c = console.Console(record=True)
@@ -53,7 +54,7 @@ def export_names():
     tree_str = c.export_text()
     tree_lines = tree_str.split("\n")
     tree_lines = [f"    {l}" for l in tree_lines]
-    tree_lines = ["# Available Plots", "```bash"] + tree_lines + ["```"]
+    tree_lines = [heading, "```bash"] + tree_lines + ["```"]
     tree_lines = [(l + "\n") for l in tree_lines]
 
     # load readme file
@@ -69,7 +70,7 @@ def export_names():
 
     # insert the tree into the readme
     for i, line in enumerate(readme):
-        if "# Available Plots" in line:
+        if heading in line:
             logger.debug(f"found available plots section at line {i}")
             break
     logger.debug(f"inserting tree at line {i}")

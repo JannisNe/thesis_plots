@@ -1,4 +1,8 @@
-# Installation
+# Plots for `Searching for High-Energy Neutrinos from Transient Sources with IceCube`
+
+Plots for the thesis `Searching for High-Energy Neutrinos from Transient Sources with IceCube`. The latex project is available [here](Searching for High-Energy Neutrinos from Transient Sources with IceCube).
+
+## Installation
 
 Install via `poetry`:
 
@@ -12,7 +16,36 @@ On an arm Mac, you likely have to install `healpy` via `conda`:
 conda install -c conda-forge healpy --no-deps
 ```
 
-# Available Plots
+## Usage
+
+Make all plots:
+```bash
+thesis-plots
+````
+
+Make a specific plot:
+```bash
+thesis-plots <plot_key>
+```
+`<plot_key>` can also be a partial key which will be matched against all keys starting with the partial key.
+
+List all available plots:
+```bash
+thesis-plots --list
+```
+
+List all available plots with a partial key:
+```bash
+thesis-plots <partial_key> --list
+```
+
+Get more help:
+```bash
+thesis-plots --help
+```
+
+
+## Available Plots
 ```bash
     Plots Tree                                                Plot Keys
     ├──  accretion_flare_stacking
