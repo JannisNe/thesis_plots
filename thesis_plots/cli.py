@@ -24,7 +24,7 @@ def walk_modules(names: list[str], the_tree: tree.Tree, length: int, parent: str
         for f in functions:
             _f = f.split(":")[1]
             logger.debug(f"adding function {_f}")
-            filled = "".ljust(length - len(_f) - 4 * level, ".")
+            filled = "".ljust(length - len(_f) - 4 * (level - 1), ".")
             ps = parent.strip(".") + "." if parent else ""
             fs = f.strip(".")
             logger.debug(f"parent: {ps}, function: {fs}")
