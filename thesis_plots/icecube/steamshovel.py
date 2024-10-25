@@ -19,17 +19,12 @@ def colorbar():
     mappable = cm.ScalarMappable(norm=norm, cmap=cmap)
 
     # Create a horizontal colorbar
-    cbar = fig.colorbar(mappable, cax=fig.add_axes([0.0, 0., 1, 1]), orientation='horizontal', extend="max")
+    cax = fig.add_axes([0.0, 0., 1, 1])
+    cbar = fig.colorbar(mappable, cax=cax, orientation='horizontal', extend="max", ticks=[])
     cbar.set_label('time')
-
-    # Remove ticks and tick labels
-    cbar.ax.tick_params(size=0, labelsize=0)
 
     # Make the colorbar pointed at the right end
     cbar.ax.xaxis.set_ticks_position('none')  # Remove any ticks
     cbar.outline.set_edgecolor('none')  # Set outline color for the bar
-
-    # Hide the axis since we are only interested in the colorbar
-    # ax.axis('off')
 
     return fig
