@@ -1,6 +1,6 @@
 # Plots for `Searching for High-Energy Neutrinos from Transient Sources with IceCube`
 
-Plots for the thesis `Searching for High-Energy Neutrinos from Transient Sources with IceCube`. The latex project is available [here](Searching for High-Energy Neutrinos from Transient Sources with IceCube).
+Plots for the thesis `Searching for High-Energy Neutrinos from Transient Sources with IceCube`. The latex project is available [here](https://github.com/JannisNe/thesis).
 
 ## Installation
 
