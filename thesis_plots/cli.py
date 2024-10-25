@@ -13,9 +13,9 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-def walk_modules(names: list[str], the_tree: tree.Tree, length: int, parent: str = ""):
+def walk_modules(names: list[str], the_tree: tree.Tree, length: int, parent: str = "", level: int = 0):
     modules = np.unique([n.split(":")[0].split(".")[0] for n in names])
-    logger.debug(f"walking modules: {modules}, parent: {parent}")
+    logger.debug(f"walking modules: {modules}, parent: {parent}, level: {level}")
     for m in modules:
         logger.debug(f"adding module {m}")
         sub_tree = the_tree.add(f"[bold blue] {m}")
@@ -24,11 +24,14 @@ def walk_modules(names: list[str], the_tree: tree.Tree, length: int, parent: str
         for f in functions:
             _f = f.split(":")[1]
             logger.debug(f"adding function {_f}")
-            filled = "".ljust(length - len(_f), ".")
-            sub_tree.add(f"[yellow] {_f}[/yellow]{filled}[bold magenta]{parent}.{f}")
+            filled = "".ljust(length - len(_f) - 4 * level, ".")
+            ps = parent.strip(".") + "." if parent else ""
+            fs = f.strip(".")
+            logger.debug(f"parent: {ps}, function: {fs}")
+            sub_tree.add(f"[yellow] {_f}[/yellow]{filled}[bold magenta]{ps}{fs}")
         non_functions = [n.removeprefix(m).removeprefix(".") for n in members if n not in functions]
         if len(non_functions) > 0:
-            walk_modules(non_functions, sub_tree, length, parent=m if not parent else f"{parent}.{m}")
+            walk_modules(non_functions, sub_tree, length, parent=m if not parent else f"{parent}.{m}", level=level + 1)
 
 
 def get_tree(name: list[str] | None = None) -> tree.Tree:
