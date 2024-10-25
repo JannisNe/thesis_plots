@@ -18,6 +18,9 @@ conda install -c conda-forge healpy --no-deps
 
 ## Usage
 
+Set the environment variable `THESIS_PLOTS` to configure the output directory (defaults to `thesis_plots` in the current working directory).
+
+
 Make all plots:
 ```bash
 thesis-plots
