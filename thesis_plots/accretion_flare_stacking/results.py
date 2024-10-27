@@ -33,8 +33,9 @@ def alert_number_constraint():
     ax.axhline(3, c='gray', ls='-', alpha=0.5)
     ax.annotate(r'$N_{\nu}$=3', (max(ax.get_xlim()), 3), xytext=(-2, 2), textcoords="offset points", ha="right",
                 va="bottom", color='gray')
-    ax.axvline(2, c=model_colors["OUV"], ls=":", label="X-ray / OUV")
     ax.axvline(1, c=model_colors["IR"], ls="--", label="IR")
+    ax.axvline(1.5, c=model_colors["OUV"], ls=":", label="OUV")
+    ax.axvline(2.5, c=model_colors["X-ray"], ls="-.", label="X-ray")
     limit_handle = patches.FancyArrowPatch((1.5, 3), (1.5, 3.5), arrowstyle="-|>", mutation_scale=10, color="C0")
     handles = ax.get_legend_handles_labels()[0] + [limit_handle]
     labels = ax.get_legend_handles_labels()[1] + [r"Upper limits"]
