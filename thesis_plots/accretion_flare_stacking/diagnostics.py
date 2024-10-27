@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import json
 import pickle
 from pathlib import Path
-
-from IPython.core.pylabtools import figsize
+import numpy as np
 
 from thesis_plots.plotter import Plotter
 
@@ -22,31 +21,30 @@ def energy_range():
     with open(energy_range_final_file, "rb") as f:
         energy_range_final = pickle.load(f)
 
-    ylim = {
-        "1": (8e-16, 1e-14),
-        "2": (4e-9, 1e-8)
-    }
-
     height = plt.rcParams["figure.figsize"][1] * 2 / 3
     width = plt.rcParams["figure.figsize"][0]
-    fig, axs = plt.subplots(ncols=2, sharex=True, gridspec_kw={"wspace": 0.3}, figsize=(width, height))
-    for ax, (gamma, res) in zip(axs, energy_range_results.items()):
-        e_min_gev = res["e_min_gev"]
-        e_max_gev = res["e_max_gev"]
-        sens_min = res["sens_min"]
-        sens_max = res["sens_max"]
+    fig, axs = plt.subplots(ncols=3, sharex=True, sharey=True, gridspec_kw={"wspace": 0.05}, figsize=(width, height))
+    for i, gamma in enumerate(["1", "1.5", "2"]):
+        ax = axs[i]
+        res = energy_range_results[gamma]
         nominal_sens = res["nominal_sensitivity"]
+        e_min_gev = np.array(res["e_min_gev"])
+        e_max_gev = np.array(res["e_max_gev"])
+        sens_min = np.array(res["sens_min"]) / nominal_sens
+        sens_max = np.array(res["sens_max"]) / nominal_sens
         erange = energy_range_final[float(gamma)]
 
-        low_handle = ax.plot(e_min_gev, sens_min, ls="--", marker="o", ms=2, c="C0")
-        hi_handle = ax.plot(e_max_gev, sens_max, ls="-", marker="o", ms=2, c="C0")
+        emin_mask = e_min_gev <= 1e7
+        low_handle = ax.plot(e_min_gev[emin_mask], sens_min[emin_mask], ls="--", marker="o", ms=2, c="C0")
+        emax_mask = e_max_gev <= 1e7
+        hi_handle = ax.plot(e_max_gev[emax_mask], sens_max[emax_mask], ls="-", marker="o", ms=2, c="C0")
         range_handle = ax.fill_betweenx(
-           ylim[gamma], [erange[0]], [erange[1]], color="black", alpha=0.2, zorder=0, ec="none",
+            (.5, 3), [erange[0]], [erange[1]], color="black", alpha=0.2, zorder=0, ec="none",
         )
-        ax.axhline(nominal_sens, label="nominal sensitivity", color="black")
+        ax.axhline(1, label="nominal sensitivity", color="black")
         ax.set_xscale("log")
         ax.set_yscale("log")
-        ax.set_ylim(ylim[gamma])
+        ax.set_ylim((.8, 3))
         ax.annotate(f"$\gamma = {gamma}$", (0.05, 0.95), xycoords="axes fraction", ha="left", va="top")
 
     legend_handles = [
@@ -63,6 +61,11 @@ def energy_range():
     ]
     fig.legend(legend_handles, legend_labels, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.1))
 
-    fig.supxlabel(r"$E_\mathrm{cut}$ [GeV]", va="top", ha="center")
-    axs[0].set_ylabel("Sensitivity flux [GeV$^{-1}$ cm$^{-2}$ s$^{-1}$]")
+    fig.supxlabel(r"$E_\mathrm{cut}$ [GeV]", va="top", ha="center", y=-0.05)
+    axs[0].set_ylabel("Sensitivity / Nominal Sensitivity")
+    axs[0].set_xlim(5e2, 10**7.2)
+    axs[0].set_xticks([1e3, 1e4, 1e5, 1e6, 1e7])
+
+    axs[0].set_yticks([1, 2, 3])
+    axs[0].set_yticklabels(["1", "2", "3"])
     return fig
