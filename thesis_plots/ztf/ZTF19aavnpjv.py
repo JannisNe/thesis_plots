@@ -60,6 +60,7 @@ def lightcurve():
     ax.set_xlim(right=pd.Timestamp("2022-04-30"))
     ax.set_ylabel("magnitude")
     ax.xaxis.set_major_formatter(DateFormatter("%d"))
+    ax.set_xlim(pd.Timestamp("2022-04-01"), pd.Timestamp("2022-04-30"))
     ax.invert_yaxis()
     ax.legend(bbox_to_anchor=(0.5, 1), loc='lower center', ncol=3)
     return fig
