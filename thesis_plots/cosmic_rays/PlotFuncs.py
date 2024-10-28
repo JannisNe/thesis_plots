@@ -116,12 +116,13 @@ class TheCrSpectrum:
         E_LHC = 0.5 * s_LHC / proton_mass
         annotations = [
             ('LHC', E_LHC, 1e-7, E_LHC, 1e-6),
-            ('Knee', 2.8e6, 1., 2.5e5, 1.3e-1),
+            ('1. Knee', 2.8e6, 1., 2.5e5, 1.3e-1),
+            ('2. Knee', 8e7, 2e-2, 5e5, 5e-3),
             ('Ankle', 0.4e10, 2e-4, 1e9, 1e-5),
         ]
         for text, x, y, xtext, ytext in annotations:
             ax.annotate(text, xy=(x, y), xytext=(xtext, ytext), horizontalalignment="center",
-                        arrowprops=dict(arrowstyle="-|>", color='tab:gray', lw=0.5, shrinkA=0, shrinkB=0.5)
+                        arrowprops=dict(arrowstyle="-|>", color='k', lw=0.5, shrinkA=0, shrinkB=0.5)
                         )
         
         texts = [
