@@ -81,7 +81,6 @@ class TheCrSpectrum:
     
     def FigSetup(self, shape='Rectangular'):
         """Sets up the figure based on the shape."""
-        # figsize = (16.5, 5) if shape == 'Wide' else (10.0, 10.5)
         fig, ax = plt.subplots()
         self.SetAxes(ax)
         return fig, ax
@@ -126,12 +125,8 @@ class TheCrSpectrum:
                         )
         
         texts = [
-            # (r'$e^-$+$e^+$', 0.5e2, 6e0),
-            # (r'$e^+$', 0.85e1, 2e0),
-            # (r'$\bar{p}$', 2.2, 1.4e-2),
             (r'$p$', 7, 0.7e3),
             (r'$\nu + \bar{\nu}$', 0.5e6, 2.5e-4),
-            # (r'$\gamma$', 0.5e2, 1.8e-2),
             (r'$\gamma$ IGRB', 11, 3e-5),
         ]
         for text, x, y in texts:
@@ -152,8 +147,6 @@ class TheCrSpectrum:
         ax.fill_between(E, E2dNdEdOmega, 1e4, alpha=0.12, lw=0, facecolor='tab:gray', edgecolor='tab:gray')
 
         ax.fill_between(E, E2dNdEdOmega, 1e-10, alpha=0.06, lw=0, facecolor='tab:gray', edgecolor='tab:gray')
-
-        # ax.text(1.1e12, 2e-1, r'github.com/carmeloevoli/The_CR_Spectrum', rotation=-90, fontsize=11, color='tab:gray')
 
     def experiment_legend(self, ax):
         """Adds legend for experiments."""
@@ -198,8 +191,6 @@ class TheCrSpectrum:
         """Plot ... with error bars."""
         filename = self.data_dir / 'FERMI_igrb_energy.txt'
         self.plot_data_diffuse(ax, filename, self.colors['FERMI'])
-        # filename = 'data/tables/FERMI_inner_energy.txt'
-        # self.plot_data_diffuse(ax, filename, self.colors['FERMI'])
 
     def plot_data(self, ax, filename, fmt, color, zorder=1):
         """Plot data with error bars."""
