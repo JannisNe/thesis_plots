@@ -2,6 +2,9 @@ from thesis_plots.plotter import Plotter
 from thesis_plots.cosmic_rays.PlotFuncs import TheCrSpectrum
 
 
+# all credit goes to: https://github.com/carmeloevoli/The_CR_Spectrum/tree/master
+
+
 @Plotter.register("wide")
 def spectrum():
     # Initialize the plot class
