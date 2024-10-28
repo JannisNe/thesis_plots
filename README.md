@@ -65,6 +65,8 @@ thesis-plots --help
     ├──  asassn
     │   └──  stats
     │       └──  piechart.....................................asassn.stats:piechart
+    ├──  cosmic_rays
+    │   └──  spectrum.........................................cosmic_rays:spectrum
     ├──  dust_echos
     │   ├──  ic200530a
     │   │   └──  coincidences.................................dust_echos.ic200530a:coincidences
