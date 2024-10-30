@@ -126,6 +126,8 @@ thesis-plots --help
     ├──  instruments
     │   └──  bandpasses
     │       └──  bandpasses...................................instruments.bandpasses:bandpasses
+    ├──  neutrinos
+    │   └──  spectrum.........................................neutrinos:spectrum
     ├──  resimulations
     │   ├──  calibration
     │   │   ├──  metric_histogram_bran........................resimulations.calibration:metric_histogram_bran
