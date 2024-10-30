@@ -35,14 +35,16 @@ def spectrum():
     for i, nn in enumerate(data.columns.get_level_values(0).unique()):
         logger.debug(f"plotting {nn}")
         d = data[nn].astype(float).sort_values("X").apply(gaussian_filter, sigma=.6)
-        ax.plot(d["X"], d["Y"], label=nn, lw=4, c=f"C{i}")
+        ax.plot(d["X"] * 1e-9, d["Y"], label=nn, lw=4, c=f"C{i}")
         t, xy, xytext = annotations[nn]
         a = {"arrowstyle": "-|>", "mutation_scale": 10, "color": f"C{i}"} if xytext else None
-        ax.annotate(t, xy, xytext=xytext, textcoords="data", color=f"C{i}", ha="left", va="bottom", arrowprops=a)
+        _xy = (xy[0] / 1e9, xy[1])
+        _xytext = (xytext[0] / 1e9, xytext[1]) if xytext else None
+        ax.annotate(t, _xy, xytext=_xytext, textcoords="data", color=f"C{i}", ha="left", va="bottom", arrowprops=a)
 
     ax.set_yscale("log")
     ax.set_xscale("log")
-    ax.set_xlabel("Neutrino Energy [eV]")
+    ax.set_xlabel("Neutrino Energy [GeV]")
     ax.set_ylabel("Flux [MeV$^{-1}$ cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
 
     return fig
