@@ -27,7 +27,7 @@
     "class": "BrokenPowerLaw",
     "best_fit_parameters": [1.31, 2.74, 4.39, 1.77e-18],
     "reference_energy_gev": 1e5,
-    "energy_range_gev": [23.7e3, 4.7e6],
+    "energy_range_gev": [13.7e3, 4.7e6],
     "year": 2023,
     "journal": "PoS(ICRC2023)"
   },

@@ -23,10 +23,6 @@ def all_measurements():
         slower = s.lower(68, srange) * srange ** 2
         label = f"{s.journal} ({s.year})" if name != "joint23_spl" else s.journal
         ax.fill_between(srange, slower, supper, label=label, fc=fc[i], ec=ec[i], zorder=1, lw=2, alpha=alpha[i], ls=ls[i])
-    sbpl = load_spectrum("joint23_bpl")
-    sbplrange = sbpl.get_energy_range()
-    bestbpl = sbpl.best(sbplrange) * sbplrange ** 2
-    ax.plot(sbplrange, bestbpl, label="joint23_bpl", color="C3", zorder=2, lw=2, ls="-")
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel("Energy [GeV]")

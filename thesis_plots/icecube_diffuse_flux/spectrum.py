@@ -118,6 +118,6 @@ class BrokenPowerLaw(Spectrum):
         break_energy = 10 ** log_break_energy
         normg = gamma1 if break_energy > self.reference_energy_gev else gamma2
         normb = norm * (self.reference_energy_gev / break_energy) ** normg
-        pl1 = normb * (e_gev / self.reference_energy_gev) ** -gamma1
-        pl2 = normb * (e_gev / self.reference_energy_gev) ** -gamma2
+        pl1 = normb * (e_gev / break_energy) ** -gamma1
+        pl2 = normb * (e_gev / break_energy) ** -gamma2
         return np.where(e_gev < break_energy, pl1, pl2)
