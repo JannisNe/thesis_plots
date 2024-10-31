@@ -68,6 +68,9 @@ class Spectrum(abc.ABC):
     def best(self, e_gev: npt.NDArray[float]) -> npt.NDArray[float]:
         return self._broadcast_flux(e_gev, *self.best_fit.values())
 
+    def get_energy_range(self, log=True, n=100):
+        return np.logspace(*np.log10(self.energy_range_gev), n) if log else np.linspace(*self.energy_range_gev, n)
+
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         cls.registry[cls.__name__] = cls
