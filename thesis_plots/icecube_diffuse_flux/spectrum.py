@@ -16,7 +16,7 @@ class Spectrum(abc.ABC):
 
     def __init__(self,
                  best_fit_parameters: Iterable,
-                 energy_range: tuple[float, float],
+                 energy_range_gev: tuple[float, float],
                  reference_energy_gev: float,
                  contour_file68: str | Path | None = None,
                  contour_file95: str | Path | None = None,
@@ -24,7 +24,7 @@ class Spectrum(abc.ABC):
                  ):
         self._best_fit_parameters = best_fit_parameters
         self.reference_energy_gev = reference_energy_gev
-        self.energy_range = energy_range
+        self.energy_range_gev = energy_range_gev
         self.contour_files = {}
         for cl, fn in zip([68, 95], [contour_file68, contour_file95]):
             if fn:
@@ -38,6 +38,10 @@ class Spectrum(abc.ABC):
     @abc.abstractmethod
     def flux(self, e_gev: npt.NDArray[float], *parameters) -> npt.NDArray[float]:
         pass
+
+    def _broadcast_flux(self, e_gev: npt.NDArray[float] | float, *parameters) -> npt.NDArray[float]:
+        _e_gev = np.atleast_1d(e_gev)[..., np.newaxis]
+        return self.flux(_e_gev, *parameters).squeeze()
 
     @property
     @abc.abstractmethod
@@ -54,13 +58,15 @@ class Spectrum(abc.ABC):
         return df[self.paramater_names]
 
     def upper(self, cl: float, e_gev: npt.NDArray[float]) -> npt.NDArray[float]:
-        return np.max(self.flux(e_gev, *self.contour(cl).values.T), axis=0)
+        f = self._broadcast_flux(e_gev, *self.contour(cl).values.T)
+        return np.max(f, axis=f.ndim - 1)
 
     def lower(self, cl: float, e_gev: npt.NDArray[float]) -> npt.NDArray[float]:
-        return np.min(self.flux(e_gev, *self.contour(cl).values.T), axis=0)
+        f = self._broadcast_flux(e_gev, *self.contour(cl).values.T)
+        return np.min(f, axis=f.ndim - 1)
 
     def best(self, e_gev: npt.NDArray[float]) -> npt.NDArray[float]:
-        return self.flux(e_gev, *self.best_fit.values())
+        return self._broadcast_flux(e_gev, *self.best_fit.values())
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -91,4 +97,5 @@ class SinglePowerLaw(Spectrum):
 
     def flux(self, e_gev: npt.NDArray[float], *parameters) -> npt.NDArray[float]:
         gamma, norm = parameters
+        _e_gev = np.atleast_1d(e_gev)
         return norm * (e_gev / self.reference_energy_gev) ** -gamma
