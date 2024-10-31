@@ -8,9 +8,9 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register("wide")
+@Plotter.register()
 def all_measurements():
-    ls = ["-", ":", "-.", "-"]
+    ls = ["-", ":", "--", "-"]
     fc = ["k", "none", "none", "none"]
     ec = ["none", "C0", "C1", "C2"]
     alpha = [0.5, 1, 1, 1]
@@ -27,5 +27,5 @@ def all_measurements():
     ax.set_yscale("log")
     ax.set_xlabel("Energy [GeV]")
     ax.set_ylabel(r"$E^2 \Phi^{\nu + \bar{\nu}}_\mathrm{per \; flavor}$ [GeV cm$^{-2}$ s$^{-1}$ sr$^{-1}$]")
-    ax.legend()
+    ax.legend(ncols=2, bbox_to_anchor=(0.5, 1.01), loc="lower center")
     return fig
