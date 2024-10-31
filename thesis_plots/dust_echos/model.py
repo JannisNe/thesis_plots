@@ -6,7 +6,7 @@ from matplotlib import patches
 import pandas as pd
 
 from thesis_plots.plotter import Plotter
-from thesis_plots.icecube_diffuse_flux import get_diffuse_flux_functions
+from thesis_plots.icecube_diffuse_flux import load_spectrum
 from thesis_plots.arrow_handler import HandlerArrow
 
 
@@ -47,7 +47,10 @@ def winter_lunardini():
     logger.debug(x_sens)
     y_sens = sens_flux_100tev_times_esq * (x_sens / 100e3) ** (sens_gamma + 2)
 
-    best_f, lower_f, upper_f, e_range = get_diffuse_flux_functions("joint_15")
+    s = load_spectrum("joint15")
+    srange = s.get_energy_range()
+    slower = s.lower(68, srange) * srange ** 2
+    supper = s.upper(68, srange) * srange ** 2
 
     fig, ax = plt.subplots()
     modelx = np.logspace(5, 6, 10)
@@ -59,7 +62,7 @@ def winter_lunardini():
         modely = norm * (modelx / 1e6) ** (model_gammas[key] + 2)
         ax.plot(modelx, modely, ls="-", c="grey", zorder=2, alpha=0.5)
     ax.errorbar(x_sens, y_sens, yerr=.2 * y_sens, zorder=1, uplims=True, c="grey")
-    ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
+    ax.fill_between(srange, slower, supper,
                     color="black", alpha=.2, label="Diffuse Flux", zorder=4, ec="none")
     ax.set_xscale("log")
     ax.set_yscale("log")

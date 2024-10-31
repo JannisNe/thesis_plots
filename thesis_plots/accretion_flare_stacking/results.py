@@ -13,7 +13,7 @@ from matplotlib.lines import Line2D
 from thesis_plots.plotter import Plotter
 from thesis_plots.dust_echos.model import model_colors
 from thesis_plots.arrow_handler import HandlerArrow
-from thesis_plots.icecube_diffuse_flux import get_diffuse_flux_functions
+from thesis_plots.icecube_diffuse_flux import load_spectrum
 
 
 logger = logging.getLogger(__name__)
@@ -95,13 +95,17 @@ def diffuse_flux():
         fluxes = json.load(f)
     with open(data_dir / "energy_range_nan.pkl", "rb") as f:
         energy_range = pickle.load(f)
-    best_f, lower_f, upper_f, e_range = get_diffuse_flux_functions("joint_15")
+
+    s = load_spectrum("joint15")
+    srange = s.get_energy_range()
+    slower = s.lower(68, srange) * srange ** 2
+    supper = s.upper(68, srange) * srange ** 2
 
     fig, axs = plt.subplots(ncols=3, sharex=True, sharey=True, gridspec_kw={"wspace": 0.0},
                             figsize=(plt.rcParams["figure.figsize"][0], plt.rcParams["figure.figsize"][1] * 2/3))
 
     for ax in axs:
-        diffuse_handle = ax.fill_between(e_range, lower_f(e_range) * e_range ** 2, upper_f(e_range) * e_range ** 2,
+        diffuse_handle = ax.fill_between(srange, slower, supper,
                                          color="black", alpha=.2, label="Diffuse Flux", zorder=1, ec="none")
     for i, (model, gamma) in enumerate(gammas.items()):
         ax = axs[i]
