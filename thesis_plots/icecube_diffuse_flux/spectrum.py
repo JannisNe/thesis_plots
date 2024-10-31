@@ -104,5 +104,20 @@ class SinglePowerLaw(Spectrum):
 
     def flux(self, e_gev: npt.NDArray[float], *parameters) -> npt.NDArray[float]:
         gamma, norm = parameters
-        _e_gev = np.atleast_1d(e_gev)
         return norm * (e_gev / self.reference_energy_gev) ** -gamma
+
+
+class BrokenPowerLaw(Spectrum):
+
+    @property
+    def paramater_names(self):
+        return ["gamma1", "gamma2", "log10_break_energy_gev", "norm"]
+
+    def flux(self, e_gev: npt.NDArray[float], *parameters) -> npt.NDArray[float]:
+        gamma1, gamma2, log_break_energy, norm = parameters
+        break_energy = 10 ** log_break_energy
+        normg = gamma1 if break_energy > self.reference_energy_gev else gamma2
+        normb = norm * (self.reference_energy_gev / break_energy) ** normg
+        pl1 = normb * (e_gev / self.reference_energy_gev) ** -gamma1
+        pl2 = normb * (e_gev / self.reference_energy_gev) ** -gamma2
+        return np.where(e_gev < break_energy, pl1, pl2)
