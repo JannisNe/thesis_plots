@@ -16,7 +16,7 @@
     "class": "SinglePowerLaw",
     "best_fit_parameters": [2.52, 1.8e-18],
     "reference_energy_gev": 1e5,
-    "energy_range_gev": [15, 2.8e6],
+    "energy_range_gev": [2.5e3, 6.3e6],
     "contour_file68": "joint23_spl_contour68.csv",
     "csv_kwargs": {"delimiter": ";", "decimal": ",", "names":  ["gamma", "norm"]},
     "year": 2023,
