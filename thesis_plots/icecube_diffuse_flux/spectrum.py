@@ -20,7 +20,9 @@ class Spectrum(abc.ABC):
                  reference_energy_gev: float,
                  contour_file68: str | Path | None = None,
                  contour_file95: str | Path | None = None,
-                 csv_kwargs: dict | None = None
+                 csv_kwargs: dict | None = None,
+                 year: int | None = None,
+                 journal: str | None = None
                  ):
         self._best_fit_parameters = best_fit_parameters
         self.reference_energy_gev = reference_energy_gev
@@ -34,6 +36,8 @@ class Spectrum(abc.ABC):
             else:
                 logger.debug(f"no contour file for {cl} percent")
         self.csv_kwargs = csv_kwargs if csv_kwargs else {}
+        self.year = year
+        self.journal = journal
 
     @abc.abstractmethod
     def flux(self, e_gev: npt.NDArray[float], *parameters) -> npt.NDArray[float]:

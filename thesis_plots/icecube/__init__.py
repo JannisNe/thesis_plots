@@ -1,9 +1,8 @@
-from thesis_plots.icecube import spice, steamshovel
+from thesis_plots.icecube import spice, steamshovel, diffuse
 
 import logging
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d import proj3d
 from matplotlib.patches import FancyArrowPatch
 
