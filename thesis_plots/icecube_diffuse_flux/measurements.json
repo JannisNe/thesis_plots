@@ -30,7 +30,7 @@
     "reference_energy_gev": 1e5,
     "energy_range_gev": [200e3, 8e6],
     "contour_file68": "nt22_contour68.csv",
-    "csv_kwargs": {"delimiter": ",", "decimal": ",", "names":  ["gamma", "norm"]},
+    "csv_kwargs": {"delimiter": ";", "decimal": ",", "names":  ["gamma", "norm"]},
     "year": 2022,
     "journal": "ApJ 928"
   },
@@ -42,7 +42,7 @@
     "reference_energy_gev": 1e5,
     "energy_range_gev": [16e3, 2.6e6],
     "contour_file68": "hese20_contour68.csv",
-    "csv_kwargs": {"delimiter": ",", "decimal": ",", "names":  ["gamma", "norm"]},
+    "csv_kwargs": {"delimiter": ";", "decimal": ",", "names":  ["gamma", "norm"]},
     "year": 2020,
     "journal": "PRL 125"
   }
