@@ -119,6 +119,8 @@ thesis-plots --help
     ├──  icecube
     │   ├──  coordinate_system_zenith_azimuth.................icecube:coordinate_system_zenith_azimuth
     │   ├──  coordinate_system_phi_theta......................icecube:coordinate_system_phi_theta
+    │   ├──  diffuse
+    │   │   └──  all_measurements.............................icecube.diffuse:all_measurements
     │   ├──  spice
     │   │   └──  spice321.....................................icecube.spice:spice321
     │   └──  steamshovel
