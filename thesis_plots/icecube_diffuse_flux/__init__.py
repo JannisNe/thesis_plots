@@ -1,7 +1,6 @@
 import json
 from pathlib import Path
 
-from thesis_plots.icecube_diffuse_flux.joint15 import get_joint15
 from thesis_plots.icecube_diffuse_flux.spectrum import Spectrum
 
 
