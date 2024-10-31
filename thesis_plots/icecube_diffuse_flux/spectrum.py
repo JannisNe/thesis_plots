@@ -14,16 +14,17 @@ logger = logging.getLogger(__name__)
 class Spectrum(abc.ABC):
     registry = {}
 
-    def __init__(self,
-                 best_fit_parameters: Iterable,
-                 energy_range_gev: tuple[float, float],
-                 reference_energy_gev: float,
-                 contour_file68: str | Path | None = None,
-                 contour_file95: str | Path | None = None,
-                 csv_kwargs: dict | None = None,
-                 year: int | None = None,
-                 journal: str | None = None
-                 ):
+    def __init__(
+            self,
+            best_fit_parameters: Iterable,
+            energy_range_gev: tuple[float, float],
+            reference_energy_gev: float,
+            contour_file68: str | Path | None = None,
+            contour_file95: str | Path | None = None,
+            csv_kwargs: dict | None = None,
+            year: int | None = None,
+            journal: str | None = None
+    ):
         self._best_fit_parameters = best_fit_parameters
         self.reference_energy_gev = reference_energy_gev
         self.energy_range_gev = energy_range_gev
