@@ -1,7 +1,7 @@
 import logging
 import abc
 import numpy as np
-from mypy.server.objgraph import Iterable
+from typing import Iterable
 from numpy import typing as npt
 import pandas as pd
 from pathlib import Path
