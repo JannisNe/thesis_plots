@@ -99,12 +99,12 @@ class Spectrum(abc.ABC):
     def plot_cl(self, cl: float, ax, log=True, energy_scaling=0, **kwargs):
         e = self.get_energy_range(log=log)
         scale = e ** energy_scaling
-        ax.fill_between(e, self.lower(cl, e) * scale, self.upper(cl, e) * scale, **kwargs)
+        return ax.fill_between(e, self.lower(cl, e) * scale, self.upper(cl, e) * scale, **kwargs)
 
     def plot(self, ax, log=True, energy_scaling=0, **kwargs):
         e = self.get_energy_range(log=log)
         scale = e ** energy_scaling
-        ax.plot(e, self.best(e) * scale, **kwargs)
+        return ax.plot(e, self.best(e) * scale, **kwargs)
 
 
 class SinglePowerLaw(Spectrum):
