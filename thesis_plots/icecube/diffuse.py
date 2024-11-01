@@ -18,11 +18,8 @@ def all_measurements():
     fig, ax = plt.subplots()
     for i, name in enumerate(["joint15", "nt22", "joint23_spl"]):
         s = load_spectrum(name)
-        srange = s.get_energy_range()
-        supper = s.upper(68, srange) * srange ** 2
-        slower = s.lower(68, srange) * srange ** 2
         label = f"{s.journal} ({s.year})" if name != "joint23_spl" else s.journal
-        ax.fill_between(srange, slower, supper, label=label, fc=fc[i], ec=ec[i], zorder=1, lw=2, alpha=alpha[i], ls=ls[i])
+        s.plot_cl(68, ax, energy_scaling=2, label=label, fc=fc[i], ec=ec[i], zorder=1, lw=2, alpha=alpha[i], ls=ls[i])
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel("Energy [GeV]")
