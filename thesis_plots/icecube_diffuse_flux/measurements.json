@@ -2,7 +2,7 @@
   "joint15":
     {
       "class":  "SinglePowerLaw",
-      "best_fit_parameters": [2.5, 6.7e-18],
+      "best_fit_parameters": [2.5, 2.23e-18],
       "reference_energy_gev": 1e5,
       "energy_range_gev": [25e3, 2.8e6],
       "contour_file68": "joint15_contour68.csv",
