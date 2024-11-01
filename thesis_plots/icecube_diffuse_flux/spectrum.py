@@ -132,3 +132,14 @@ class BrokenPowerLaw(Spectrum):
         pl1 = normb * (e_gev / break_energy) ** -gamma1
         pl2 = normb * (e_gev / break_energy) ** -gamma2
         return np.where(e_gev < break_energy, pl1, pl2)
+
+
+class LogParabola(Spectrum):
+
+    @property
+    def paramater_names(self):
+        return ["gamma", "beta", "norm"]
+
+    def flux(self, e_gev: npt.NDArray[float], *parameters) -> npt.NDArray[float]:
+        gamma, beta, norm = parameters
+        return norm * (e_gev / self.reference_energy_gev) ** (-gamma - beta * np.log10(e_gev / self.reference_energy_gev))
