@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import ligo.skymap.plot
 from astropy.io import fits
 import numpy as np
-from astropy.visualization.wcsaxes import SphericalCircle, Quadrangle
+from astropy.visualization.wcsaxes import Quadrangle
+from astropy import units as u
 
 from thesis_plots.cache import DiskCache
 from thesis_plots.plotter import Plotter
@@ -38,7 +39,6 @@ def get_alert():
             with tarfile.open(fileobj=file_stream, mode='r:*') as tar:
                 # Search for the file with the specified filename in the tar archive
                 for member in tar:
-                    logger.debug(f"Found {member.name}")
                     if member.name == in_fn:
                         logger.debug(f"Extracting {member.name} from tar archive")
                         # Stream the file content to disk
@@ -58,17 +58,17 @@ def get_alert():
 def example_alert():
     alert_fn = get_alert()
     logger.debug(f"Using alert file {alert_fn}")
-    hp_map = hp.read_map(alert_fn, verbose=False)
+    hp_map = hp.read_map(alert_fn)
     with fits.open(alert_fn) as h:
         header = h[1].header
-    center_ra = header["RA"]
-    center_dec = header["DEC"]
-    comment = header["COMMENT"]
+    center_ra = header["RA"] * u.deg
+    center_dec = header["DEC"] * u.deg
+    comment = header["COMMENTS"]
     dllh = float(comment.split("(")[-1].strip(")"))
-    ra_err_minus = header["RA_ERR_MINUS"]
-    ra_err_plus = header["RA_ERR_PLUS"]
-    dec_err_minus = header["DEC_ERR_MINUS"]
-    dec_err_plus = header["DEC_ERR_PLUS"]
+    ra_err_minus = header["RA_ERR_MINUS"] * u.deg
+    ra_err_plus = header["RA_ERR_PLUS"] * u.deg
+    dec_err_minus = header["DEC_ERR_MINUS"] * u.deg
+    dec_err_plus = header["DEC_ERR_PLUS"] * u.deg
     left_lower_corner_ra = center_ra - ra_err_minus
     left_lower_corner_dec = center_dec - dec_err_minus
     dra = ra_err_plus - ra_err_minus
@@ -80,7 +80,7 @@ def example_alert():
     lon = np.degrees(phi)
 
     fig = plt.figure()
-    ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra}d {center_dec}d", radius="4 deg")
+    ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra.value}d {center_dec.value}d", radius="4 deg")
     _t = ax.get_transform('world')
     ax.plot(lon, lat, 'o', transform=_t)
     gcn_rect = Quadrangle([left_lower_corner_ra, left_lower_corner_dec], dra, ddec,
