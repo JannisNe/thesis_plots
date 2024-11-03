@@ -71,18 +71,18 @@ def example_alert():
     dec_err_plus = header["DEC_ERR_PLUS"] * u.deg
     left_lower_corner_ra = center_ra - ra_err_minus
     left_lower_corner_dec = center_dec - dec_err_minus
-    dra = ra_err_plus - ra_err_minus
-    ddec = dec_err_plus - dec_err_minus
+    dra = ra_err_plus + ra_err_minus
+    ddec = dec_err_plus + dec_err_minus
 
-    pixels_above_threshold = np.where(hp_map > dllh)[0]
+    pixels_above_threshold = np.where((hp_map >= dllh) & (hp_map < (dllh + 20)))[0]
     theta, phi = hp.pix2ang(hp.npix2nside(len(hp_map)), pixels_above_threshold)
     lat = 90 - np.degrees(theta)
     lon = np.degrees(phi)
 
     fig = plt.figure()
-    ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra.value}d {center_dec.value}d", radius="4 deg")
+    ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra.value}d {center_dec.value}d", radius="10 deg")
     _t = ax.get_transform('world')
-    ax.plot(lon, lat, 'o', transform=_t)
+    ax.contour_hpx(hp_map, levels=[dllh], colors="C0", label="Alert")
     gcn_rect = Quadrangle([left_lower_corner_ra, left_lower_corner_dec], dra, ddec,
                           edgecolor="C0", facecolor="none", transform=_t, label="Millipede")
     ax.add_patch(gcn_rect)
