@@ -1,4 +1,4 @@
-from thesis_plots.icecube import spice, steamshovel, diffuse
+from thesis_plots.icecube import spice, steamshovel, diffuse, realtime
 
 import logging
 import matplotlib.pyplot as plt
