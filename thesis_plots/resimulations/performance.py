@@ -10,7 +10,7 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register(arg_loop=["tywin", "txs"])
+@Plotter.register("half", arg_loop=["tywin", "txs"])
 def performance(event_name: str):
     data_dir = Path(__file__).parent / "data"
     old_time = pd.read_csv(data_dir / f"old_scheme_time_{event_name}.csv", index_col=0)
