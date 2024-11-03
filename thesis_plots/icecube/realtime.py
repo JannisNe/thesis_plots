@@ -4,6 +4,7 @@ import requests
 import io
 import healpy as hp
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import ligo.skymap.plot
 from astropy.io import fits
 import numpy as np
@@ -80,12 +81,21 @@ def example_alert():
     lon = np.degrees(phi)
 
     fig = plt.figure()
-    ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra.value}d {center_dec.value}d", radius="10 deg")
+    ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra.value + 2.5}d {center_dec.value}d", radius="6 deg")
     _t = ax.get_transform('world')
-    ax.contour_hpx(hp_map, levels=[dllh], colors="C0", label="Alert")
+    ax.contour_hpx(hp_map, levels=[dllh], colors="C0")
     gcn_rect = Quadrangle([left_lower_corner_ra, left_lower_corner_dec], dra, ddec,
-                          edgecolor="C0", facecolor="none", transform=_t, label="Millipede")
+                          edgecolor="C1", facecolor="none", transform=_t, ls="--")
     ax.add_patch(gcn_rect)
     ax.set_xlabel("RA")
     ax.set_ylabel("Dec")
+    handles = [
+        Line2D([0], [0], color="C0", lw=1, label="Contour"),
+        Line2D([0], [0], color="C1", lw=1, ls="--", label="Bounding rectangle"),
+    ]
+    ax.legend(handles=handles, loc="lower center", ncol=1, bbox_to_anchor=(0.5, 1.01))
+    for i, a in enumerate(ax.coords):
+        comp_with = "xtick.bottom" if i == 0 else "ytick.left"
+        a.set_ticks_visible(plt.rcParams[comp_with])
+        a.set_ticks(spacing=4*u.deg)
     return fig
