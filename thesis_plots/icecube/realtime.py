@@ -17,16 +17,20 @@ from thesis_plots.plotter import Plotter
 logger = logging.getLogger(__name__)
 
 
-def get_alert():
+icecat_urls = {
+    2019: "https://dataverse.harvard.edu/api/access/datafile/6933695",
+    2020: "https://dataverse.harvard.edu/api/access/datafile/6933687"
+}
+
+
+def get_alert(year, run_id, event_id):
     cache = DiskCache()
     key = cache.get_key(get_alert, [], {})
     out_fn = cache.get_cache_file(key)
 
     if not out_fn.exists():
-        url = "https://dataverse.harvard.edu/api/access/datafile/6933695"
+        url = icecat_urls[year]
         logger.debug(f"Downloading {url}")
-        run_id = 133119
-        event_id = 22683750
         in_fn = f"Run{run_id}_{event_id}_nside1024.fits.gz"
         # Open a streaming request to the URL
         with requests.get(url, stream=True) as response:
@@ -36,6 +40,7 @@ def get_alert():
             file_stream = io.BytesIO(response.raw.read())
 
             # Open the tar file from the stream
+            found = False
             with tarfile.open(fileobj=file_stream, mode='r:*') as tar:
                 # Search for the file with the specified filename in the tar archive
                 for member in tar:
@@ -47,20 +52,23 @@ def get_alert():
                                 # Read in chunks to avoid high memory usage
                                 for chunk in iter(lambda: file.read(1024 * 1024), b""):
                                     out_file.write(chunk)
+                        found = True
                         break
-                    raise FileNotFoundError(f"File {in_fn} not found in tar archive")
+            if not found:
+                raise FileNotFoundError(f"File {in_fn} not found in tar archive")
         logger.debug(f"Saved {out_fn}")
 
-    return out_fn
+    logger.debug(f"Using alert file {out_fn}")
+    hp_map = hp.read_map(out_fn)
+    with fits.open(out_fn) as h:
+        header = h[1].header
+
+    return hp_map, header
 
 
 @Plotter.register("margin")
 def example_alert():
-    alert_fn = get_alert()
-    logger.debug(f"Using alert file {alert_fn}")
-    hp_map = hp.read_map(alert_fn)
-    with fits.open(alert_fn) as h:
-        header = h[1].header
+    hp_map, header = get_alert(2019, 133119, 22683750)
     center_ra = header["RA"] * u.deg
     center_dec = header["DEC"] * u.deg
     comment = header["COMMENTS"]
