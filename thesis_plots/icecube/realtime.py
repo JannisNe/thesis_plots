@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import ligo.skymap.plot
 from astropy.io import fits
-import numpy as np
 from astropy.visualization.wcsaxes import Quadrangle
 from astropy import units as u
 
@@ -74,11 +73,6 @@ def example_alert():
     left_lower_corner_dec = center_dec - dec_err_minus
     dra = ra_err_plus + ra_err_minus
     ddec = dec_err_plus + dec_err_minus
-
-    pixels_above_threshold = np.where((hp_map >= dllh) & (hp_map < (dllh + 20)))[0]
-    theta, phi = hp.pix2ang(hp.npix2nside(len(hp_map)), pixels_above_threshold)
-    lat = 90 - np.degrees(theta)
-    lon = np.degrees(phi)
 
     fig = plt.figure()
     ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra.value + 2.5}d {center_dec.value}d", radius="6 deg")
