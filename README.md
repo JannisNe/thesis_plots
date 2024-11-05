@@ -121,6 +121,8 @@ thesis-plots --help
     │   ├──  coordinate_system_phi_theta......................icecube:coordinate_system_phi_theta
     │   ├──  diffuse
     │   │   └──  all_measurements.............................icecube.diffuse:all_measurements
+    │   ├──  realtime
+    │   │   └──  example_alert................................icecube.realtime:example_alert
     │   ├──  spice
     │   │   └──  spice321.....................................icecube.spice:spice321
     │   └──  steamshovel
