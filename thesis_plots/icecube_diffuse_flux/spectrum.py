@@ -30,15 +30,19 @@ class Spectrum(abc.ABC):
         self.energy_range_gev = energy_range_gev
         self.contour_files = {}
         for cl, fn in zip([68, 95], [contour_file68, contour_file95]):
-            if fn:
-                p = self.get_data_dir() / fn
-                assert p.exists(), f"file {p} does not exist"
-                self.contour_files[cl] = p
-            else:
-                logger.debug(f"no contour file for {cl} percent")
+            self.set_contour_file(cl, fn)
         self.csv_kwargs = csv_kwargs if csv_kwargs else {}
         self.year = year
         self.journal = journal
+
+    def set_contour_file(self, cl: float, fn: str | Path):
+        if fn is None:
+            logger.debug(f"no contour file for {cl} percent")
+            return
+        _fn = Path(fn)
+        _fn_abs = _fn.expanduser() if _fn.is_absolute() else self.get_data_dir() / _fn
+        assert _fn_abs.exists(), f"file {_fn_abs} does not exist"
+        self.contour_files[cl] = _fn_abs
 
     @abc.abstractmethod
     def flux(self, e_gev: npt.NDArray[float], *parameters) -> npt.NDArray[float]:
