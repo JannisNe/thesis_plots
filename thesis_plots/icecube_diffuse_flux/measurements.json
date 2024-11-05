@@ -46,7 +46,7 @@
     "class": "SinglePowerLaw",
     "best_fit_parameters": [2.37, 1.44e-18],
     "reference_energy_gev": 1e5,
-    "energy_range_gev": [200e3, 8e6],
+    "energy_range_gev": [15e3, 5e6],
     "contour_file68": "nt22_contour68.csv",
     "csv_kwargs": {"delimiter": ";", "decimal": ",", "names":  ["gamma", "norm"]},
     "year": 2022,
