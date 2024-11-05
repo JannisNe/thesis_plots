@@ -24,7 +24,7 @@ def energy_range():
     height = plt.rcParams["figure.figsize"][1] * 2 / 3
     width = plt.rcParams["figure.figsize"][0]
     fig, axs = plt.subplots(ncols=3, sharex=True, sharey=True, gridspec_kw={"wspace": 0.05}, figsize=(width, height))
-    for i, gamma in enumerate(["1", "1.5", "2"]):
+    for i, gamma in enumerate(["1", "1.5", "2.5"]):
         ax = axs[i]
         res = energy_range_results[gamma]
         nominal_sens = res["nominal_sensitivity"]
