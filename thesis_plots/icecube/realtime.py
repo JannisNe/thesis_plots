@@ -25,7 +25,7 @@ icecat_urls = {
 
 def get_alert(year, run_id, event_id):
     cache = DiskCache()
-    key = cache.get_key(get_alert, [], {})
+    key = cache.get_key(get_alert, [year, run_id, event_id], {})
     out_fn = cache.get_cache_file(key)
 
     if not out_fn.exists():
