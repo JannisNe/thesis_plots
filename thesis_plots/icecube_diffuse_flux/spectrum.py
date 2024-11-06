@@ -66,15 +66,15 @@ class Spectrum(abc.ABC):
         df = pd.read_csv(self.contour_files[cl], **self.csv_kwargs)
         return df[self.paramater_names]
 
-    def upper(self, cl: float, e_gev: npt.NDArray[float]) -> npt.NDArray[float]:
+    def upper(self, cl: float, e_gev: npt.NDArray[float] | float) -> npt.NDArray[float]:
         f = self._broadcast_flux(e_gev, *self.contour(cl).values.T)
         return np.max(f, axis=f.ndim - 1)
 
-    def lower(self, cl: float, e_gev: npt.NDArray[float]) -> npt.NDArray[float]:
+    def lower(self, cl: float, e_gev: npt.NDArray[float] | float) -> npt.NDArray[float]:
         f = self._broadcast_flux(e_gev, *self.contour(cl).values.T)
         return np.min(f, axis=f.ndim - 1)
 
-    def best(self, e_gev: npt.NDArray[float]) -> npt.NDArray[float]:
+    def best(self, e_gev: npt.NDArray[float] | float) -> npt.NDArray[float]:
         return self._broadcast_flux(e_gev, *self.best_fit.values())
 
     def get_energy_range(self, log=True, n=100):
