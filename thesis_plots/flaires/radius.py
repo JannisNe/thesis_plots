@@ -136,7 +136,13 @@ def correlations():
         ax.set_xlabel(xlabels[i])
         ax.set_xscale("log")
 
+    axs[-1].set_xlim(410, 3000)
+    axs[-1].set_xticks([600, 1000, 2000, 3000])
+    axs[-1].xaxis.set_major_formatter(plt.ScalarFormatter())
+    yticks = [0.04, 0.06, 0.1, 0.2, 0.4, 0.6, 1]
     axs[0].set_ylabel(r"R$_\mathrm{LC}$ [pc]")
     axs[0].set_yscale("log")
+    axs[0].set_yticks(yticks, minor=False)
+    axs[0].set_yticklabels([str(yt) for yt in yticks], minor=False)
 
     return fig
