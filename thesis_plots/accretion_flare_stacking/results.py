@@ -13,7 +13,7 @@ from matplotlib.lines import Line2D
 from thesis_plots.plotter import Plotter
 from thesis_plots.dust_echos.model import model_colors
 from thesis_plots.arrow_handler import HandlerArrow
-from thesis_plots.icecube_diffuse_flux import load_spectrum
+from thesis_plots.icecube_diffuse_flux import load_spectrum, Spectrum
 
 
 logger = logging.getLogger(__name__)
@@ -100,6 +100,8 @@ def diffuse_flux():
     srange = s.get_energy_range()
     slower = s.lower(68, srange) * srange ** 2
     supper = s.upper(68, srange) * srange ** 2
+    diffuse_100tev = s.best(1e5)
+    diffuse_1pev = s.best(1e6)
 
     fig, axs = plt.subplots(ncols=3, sharex=True, sharey=True, gridspec_kw={"wspace": 0.0},
                             figsize=(plt.rcParams["figure.figsize"][0], plt.rcParams["figure.figsize"][1] * 2/3))
@@ -116,12 +118,17 @@ def diffuse_flux():
         fct = interp1d(model_data[model]["E"], model_data[model]["flux"], fill_value="extrapolate")
         ir_100tev = (fct(1e5) / 1e5**2) * 500
         gamma1_at_100tev = fluxes[str(gamma)] * 1e5**(-gamma)
+        at1pev = fluxes[str(gamma)] * 1e6**(-gamma)
         logger.info(
             f""
             f"{model} model at 100 TeV: {ir_100tev:.2e}, "
             f"gamma={gamma} at 100 TeV: {gamma1_at_100tev:.2e}, "
             f"ratio: {gamma1_at_100tev / ir_100tev:.4e}"
         )
+        diffuse_perc_100tev = gamma1_at_100tev / diffuse_100tev * 100
+        diffuse_perc_1pev = at1pev / diffuse_1pev * 100
+        logger.info(f"   result: {diffuse_perc_100tev:.4f}% of diffuse flux at 100 TeV")
+        logger.info(f"   result: {diffuse_perc_1pev:.4f}% of diffuse flux at 1 PeV")
         ax.plot(model_data[model]["E"], model_data[model]["flux"], c=model_colors[model], ls=model_ls[model],
                 zorder=2)
 
