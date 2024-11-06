@@ -39,12 +39,12 @@ def energy_range():
         emax_mask = e_max_gev <= 1e7
         hi_handle = ax.plot(e_max_gev[emax_mask], sens_max[emax_mask], ls="-", marker="o", ms=2, c="C0")
         range_handle = ax.fill_betweenx(
-            (.5, 3), [erange[0]], [erange[1]], color="black", alpha=0.2, zorder=0, ec="none",
+            (.5, 8), [erange[0]], [erange[1]], color="black", alpha=0.2, zorder=0, ec="none",
         )
         ax.axhline(1, label="nominal sensitivity", color="black")
         ax.set_xscale("log")
         ax.set_yscale("log")
-        ax.set_ylim((.8, 3))
+        ax.set_ylim((.8, 8))
         ax.annotate(f"$\gamma = {gamma}$", (0.05, 0.95), xycoords="axes fraction", ha="left", va="top")
 
     legend_handles = [
@@ -63,9 +63,9 @@ def energy_range():
 
     fig.supxlabel(r"$E_\mathrm{cut}$ [GeV]", va="top", ha="center", y=-0.05)
     axs[0].set_ylabel("Sensitivity / Nominal Sensitivity")
-    axs[0].set_xlim(5e2, 10**7.2)
-    axs[0].set_xticks([1e3, 1e4, 1e5, 1e6, 1e7])
+    axs[0].set_xlim(3e1, 10**7.2)
+    axs[0].set_xticks([1e2, 1e3, 1e4, 1e5, 1e6, 1e7])
 
-    axs[0].set_yticks([1, 2, 3])
-    axs[0].set_yticklabels(["1", "2", "3"])
+    axs[0].set_yticks([1, 2, 3, 4, 6])
+    axs[0].set_yticklabels(["1", "2", "3", "4", "6"])
     return fig
