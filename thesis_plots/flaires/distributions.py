@@ -16,7 +16,7 @@ from air_flares.export.rates import control_region_mjd, get_wise_times
 logger = logging.getLogger(__name__)
 
 
-@Plotter.register("wide", orientation="portrait")
+@Plotter.register(orientation="portrait")
 def luminosity_function():
 
     data = load_data()
@@ -73,7 +73,7 @@ def luminosity_function():
         ax.set_xscale("log")
         ax.set_yscale("log")
 
-    fig.supylabel("Rate [galaxy$^{-1}$]", x=-.05, ha="left")
+    fig.supylabel("Rate [galaxy$^{-1}$]", x=-.1, ha="left")
     xlabel = r"L$_\mathrm{bol,\,peak}$ [erg s$^{-1}$]"
     axes[-1].set_xlabel(xlabel)
 
