@@ -32,7 +32,7 @@ def performance(event_name: str):
     fig, (ax, diff_ax) = plt.subplots(
         nrows=2, gridspec_kw={"hspace": 0, "height_ratios": [1, 3]}, sharey="row", sharex="col"
     )
-    for i, (t, m) in enumerate(zip(["Old scheme", "New scheme"], ["o", "s"])):
+    for i, (t, m) in enumerate(zip(["old scheme", "new scheme"], ["o", "s"])):
         offset = 0.05 if i == 0 else -0.05
         ax.errorbar(x + offset, y[i], yerr=yerr[i], label=t, ls="", marker=m, markersize=2, lw=1)
 
