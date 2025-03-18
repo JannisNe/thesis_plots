@@ -96,6 +96,7 @@ thesis-plots --help
     │   ├──  illustrations
     │   │   ├──  wise_blackbody...............................flaires.illustrations:wise_blackbody
     │   │   ├──  dust_echo....................................flaires.illustrations:dust_echo
+    │   │   ├──  dust_echo_defense............................flaires.illustrations:dust_echo_defense
     │   │   ├──  f_distribution...............................flaires.illustrations:f_distribution
     │   │   ├──  hdbscan......................................flaires.illustrations:hdbscan
     │   │   └──  black_hole_mass..............................flaires.illustrations:black_hole_mass
