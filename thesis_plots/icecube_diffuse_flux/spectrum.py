@@ -1,5 +1,6 @@
 import logging
 import abc
+import json
 import numpy as np
 from typing import Iterable
 from numpy import typing as npt
@@ -91,6 +92,14 @@ class Spectrum(abc.ABC):
         assert _class in cls.registry, f"unknown class {_class}"
         logger.debug(f"creating class {_class} with data {data}")
         return cls.registry[_class](**data)
+
+    @classmethod
+    def from_key(cls, key):
+        summary_file = cls.get_data_dir() / "measurements.json"
+        with summary_file.open("r") as f:
+            data = json.load(f)
+        assert key in data, f"{key} not in {summary_file}! Available keys: {data.keys()}"
+        return Spectrum.from_dict(data[key])
 
     @classmethod
     def get_data_dir(cls):
