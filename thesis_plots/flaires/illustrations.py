@@ -115,48 +115,55 @@ def dust_echo_defense():
     b = 50
     rot = -90
     dust_color = "grey"
-    ir_color = "C1"
-    opt_color = "C0"
+    light_color = "C1"
     annotation_c = "k"
     hratio = plt.rcParams["figure.figsize"][1] / plt.rcParams["figure.figsize"][0]
     lim = 1.1
-    line_angles = np.radians([rot - a - b/2, rot - a + b/2, rot + a - b/2, rot + a + b/2, rot + a, rot - a, rot])
-    line_angles_offset = line_angles + (np.radians(1) * np.array([1, -1, 1, -1, 0, 0, 0]))
+    line_angles = np.radians([rot - a - b/2, rot - a + b/2, rot + a - b/2, rot + a + b/2])
     sina = np.sin(line_angles)
     cosa = np.cos(line_angles)
-    sina_offset = np.sin(line_angles_offset)
-    cosa_offset = np.cos(line_angles_offset)
     bottom = 2 * hratio - 1
 
     my_patches = (
-        [patches.Circle((0, 0), 1, fill=False, edgecolor=dust_color, lw=4)] +
-        [patches.FancyArrowPatch((0, 0), (c, s), arrowstyle="-", shrinkA=0, shrinkB=0,
-                                 lw=1, mutation_scale=10, zorder=1, ls="-", color=opt_color)
-         for s, c in zip(sina_offset, cosa_offset)] +
-        [patches.FancyArrowPatch((c, s), (c, -bottom), arrowstyle="-|>",
-                                 lw=1, mutation_scale=10, zorder=5, ls="-", color=ir_color, shrinkA=0)
-         for s, c in zip(sina_offset[:-1], cosa_offset[:-1])] +
-        [patches.FancyArrowPatch((cosa_offset[-1], sina_offset[-1]), (cosa_offset[-1], -bottom), arrowstyle="-|>",
-                                 lw=1, mutation_scale=10, ls="--", color=opt_color, shrinkA=0)] +
-        [patches.Arc(
-            (0, 0), 2, 2, theta1=f * a - b/2 + rot, theta2=f * a + b/2 + rot,
-            color=ir_color, lw=4, zorder=2
-        )
-         for f in [-1, 1]]
+            [patches.Circle((0, 0), 1, fill=False, edgecolor=dust_color, lw=4)] +
+            [patches.FancyArrowPatch((0, 0), (c, s), arrowstyle="-", shrinkA=0, shrinkB=0,
+                                     lw=1, mutation_scale=10, zorder=5, ls="-", color=light_color)
+             for s, c in zip(sina, cosa)] +
+            [patches.FancyArrowPatch((c, s), (c, -bottom), arrowstyle="-|>",
+                                     lw=1, mutation_scale=10, zorder=5, ls="-", color=light_color, shrinkA=0)
+             for s, c in zip(sina, cosa)] +
+            [patches.Arc((0, 0), 2, 2, theta1=f * a - b/2 + rot, theta2=f * a + b/2 + rot, color=light_color, lw=4)
+             for f in [-1, 1]] +
+            [patches.Arc((0, 0), 2.2, 2.2, theta1=-a - b/2 + rot, theta2=-a + b/2 + rot,
+                         color="k", lw=1, zorder=10)] +
+            [patches.FancyArrowPatch((0, 0), (0, 1), arrowstyle="<|-|>", lw=1, mutation_scale=10, zorder=5,
+                                     color=annotation_c, ls="-", shrinkA=6)] +
+            [patches.FancyArrowPatch(
+                (cosa[1], sina[0]),
+                (cosa[1], sina[1]),
+                arrowstyle="<|-|>", lw=1, mutation_scale=10, zorder=5, color=annotation_c, ls="-", shrinkA=0, shrinkB=0),
+                patches.FancyArrowPatch(
+                    (cosa[0], sina[0]),
+                    (cosa[1], sina[0]),
+                    arrowstyle="-", lw=1, mutation_scale=10, zorder=5, color=annotation_c, ls="--", shrinkA=0, shrinkB=0),
+            ]
     )
 
     fig, ax = plt.subplots()
     for p in my_patches:
         ax.add_patch(p)
-    ax.scatter([0], [0], color=opt_color, s=100, zorder=10, marker="*")
-    ax.annotate("IR", (cosa[0], -bottom), xytext=(-15, 5), textcoords="offset points", ha="left",
-                va="bottom", color=ir_color, bbox=dict(facecolor="white", edgecolor="none", alpha=1, pad=0.5), zorder=20)
-    ax.annotate("OUV", (cosa[3] / 2, sina[3] / 2), xytext=(-1, -1), textcoords="offset points", ha="left",
-                va="bottom", color=opt_color, zorder=20)
-    ax.annotate("OUV\n(absorbed)", (cosa[-1], -bottom), xytext=(0, 20), textcoords="offset points", ha="center",
-                va="bottom", color=opt_color, zorder=20, bbox=dict(facecolor="white", edgecolor="none", alpha=1, pad=1))
-    ax.annotate("dust", (0, 1), xytext=(0, 1), textcoords="offset points", ha="center",
-                va="bottom", color=dust_color, zorder=20)
+    ax.scatter([0], [0], color=light_color, s=100, zorder=10, marker="*")
+    ax.annotate("$R_\mathrm{BB}$", (0, .5), xytext=(2, 0), textcoords="offset points", ha="left", va="center",
+                color=annotation_c)
+    ax.annotate("$c\Delta T_\mathrm{opt}$", (cosa[1], (sina[0] + sina[1]) / 2), xytext=(3, 3), textcoords="offset points", ha="left",
+                va="center", color=annotation_c, bbox=dict(facecolor="white", edgecolor="none", alpha=1, pad=0.5), zorder=20)
+    ax.annotate(
+        r"$A_\mathrm{BB}\approx2\pi R_\mathrm{BB} \cdot c\Delta T$",
+        (cosa[1]*1.1, sina[1]*1.1), xytext=(0, -7), textcoords="offset points", ha="center", va="center",
+        color=annotation_c, bbox=dict(facecolor="white", edgecolor="none", alpha=1, pad=0.5), zorder=9
+    )
+    ax.annotate(r"$A_\mathrm{eff} = 2\pi R^2_\mathrm{eff}$", (0, 1), xytext=(0, 3), textcoords="offset points",
+                ha="center", va="bottom", color=dust_color)
     ax.set_aspect("equal")
     ax.set_xlim(-lim, lim)
     ax.set_ylim(-lim * bottom, lim)
