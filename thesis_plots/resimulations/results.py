@@ -217,8 +217,8 @@ def alert_scatter(event_name: str):
     return fig
 
 
-@Plotter.register()
-def alert_scatter_combined():
+@Plotter.register(arg_loop=[True, False])
+def alert_scatter_combined(show_results):
     width = plt.rcParams["figure.figsize"][0]
     figsize = width, width
     fig, axss = plt.subplots(
@@ -258,8 +258,9 @@ def alert_scatter_combined():
             f"{sum(resims_inside_circular)} of {total} ({frac_inside:.2f}), "
             f"furthest offset: {furthest:.2f} deg, gcn dist: {gcn_dist:.2f} deg")
 
-        ax.scatter(*np.array(offsets).T, marker="o", label="Re-simulations", alpha=0.3, edgecolors="none", s=2)
-        ax.scatter(0, 0, marker="X", label="Best Fit", edgecolors="k", linewidths=0.5)
+        if show_results:
+            ax.scatter(*np.array(offsets).T, marker="o", label="Re-simulations", alpha=0.3, edgecolors="none", s=2)
+            ax.scatter(0, 0, marker="X", label="Best Fit", edgecolors="k", linewidths=0.5)
         ax.scatter(*em_counterpart_offset, marker="*", edgecolors="k", linewidths=0.5, label="EM counterpart")
         ax.scatter(*gcn_circular_offset, marker="X", edgecolors="k", label="GCN circular",
                    fc="none", alpha=0.5, ls="-")

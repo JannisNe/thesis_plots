@@ -150,8 +150,13 @@ thesis-plots --help
     │   │   ├──  abs_log_ratios_bran..........................resimulations.results:abs_log_ratios_bran
     │   │   ├──  abs_log_ratios_txs...........................resimulations.results:abs_log_ratios_txs
     │   │   ├──  tywin_abs_log_ratio_only.....................resimulations.results:tywin_abs_log_ratio_only
+    │   │   ├──  charge_plot_individual_tywin.................resimulations.results:charge_plot_individual_tywin
+    │   │   ├──  charge_plot_individual_lancel................resimulations.results:charge_plot_individual_lancel
+    │   │   ├──  charge_plot_individual_bran..................resimulations.results:charge_plot_individual_bran
+    │   │   ├──  charge_plot_individual_txs...................resimulations.results:charge_plot_individual_txs
     │   │   ├──  charge_plot..................................resimulations.results:charge_plot
-    │   │   └──  alert_scatter_combined.......................resimulations.results:alert_scatter_combined
+    │   │   ├──  alert_scatter_combined_True..................resimulations.results:alert_scatter_combined_True
+    │   │   └──  alert_scatter_combined_False.................resimulations.results:alert_scatter_combined_False
     │   └──  visualisation
     │       ├──  circle_plane.................................resimulations.visualisation:circle_plane
     │       ├──  toy_event....................................resimulations.visualisation:toy_event
