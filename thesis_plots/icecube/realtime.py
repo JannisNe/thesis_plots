@@ -5,6 +5,7 @@ import io
 import healpy as hp
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import matplotlib.ticker as plticker
 import ligo.skymap.plot
 from astropy.io import fits
 from astropy.visualization.wcsaxes import Quadrangle
@@ -66,8 +67,8 @@ def get_alert(year, run_id, event_id):
     return hp_map, header
 
 
-@Plotter.register("margin")
-def example_alert():
+@Plotter.register("margin", arg_loop=[True, False])
+def example_alert(contour):
     hp_map, header = get_alert(2019, 133119, 22683750)
     center_ra = header["RA"] * u.deg
     center_dec = header["DEC"] * u.deg
@@ -83,9 +84,11 @@ def example_alert():
     ddec = dec_err_plus + dec_err_minus
 
     fig = plt.figure()
-    ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra.value + 2.5}d {center_dec.value}d", radius="6 deg")
+    radius = "6 deg" if contour else "9 deg"
+    ax = plt.axes(projection="astro degrees zoom", center=f"{center_ra.value + 2.5}d {center_dec.value}d", radius=radius)
     _t = ax.get_transform('world')
-    ax.contour_hpx(hp_map, levels=[dllh], colors="C0")
+    if contour:
+        ax.contour_hpx(hp_map, levels=[dllh], colors="C0")
     gcn_rect = Quadrangle([left_lower_corner_ra, left_lower_corner_dec], dra, ddec,
                           edgecolor="C1", facecolor="none", transform=_t, ls="--")
     ax.add_patch(gcn_rect)
@@ -95,9 +98,12 @@ def example_alert():
         Line2D([0], [0], color="C0", lw=1, label="Contour"),
         Line2D([0], [0], color="C1", lw=1, ls="--", label="Bounding rectangle"),
     ]
-    ax.legend(handles=handles, loc="lower center", ncol=1, bbox_to_anchor=(0.5, 1.01))
+    if contour:
+        ax.legend(handles=handles, loc="lower center", ncol=1, bbox_to_anchor=(0.5, 1.01))
+    else:
+        ax.grid(ls=":", alpha=0.5)
     for i, a in enumerate(ax.coords):
         comp_with = "xtick.bottom" if i == 0 else "ytick.left"
         a.set_ticks_visible(plt.rcParams[comp_with])
-        a.set_ticks(spacing=4*u.deg)
+        a.set_ticks(spacing=4*u.deg if contour else 5*u.deg)
     return fig
