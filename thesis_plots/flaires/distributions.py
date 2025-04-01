@@ -130,7 +130,7 @@ def subsamples():
     return fig
 
 
-@Plotter.register("margin")
+@Plotter.register()
 def peak_times():
     data = load_data()
     luminosity_summary = data["luminosity_summary"]
@@ -161,7 +161,7 @@ def peak_times():
                 textcoords="offset points", ha="center", va="top", fontsize="small", color="grey")
     ax.axvline(pause_start, ls="--", color="grey", alpha=0.5)
     ax.axvline(pause_end, ls="--", color="grey", alpha=0.5)
-    ax.annotate("no\ndata", (pause_mid_date, ylim[1]), xytext=(0, -2),
+    ax.annotate("no data", (pause_mid_date, ylim[1]), xytext=(0, -2),
                 textcoords="offset points", ha="center", va="top", fontsize="small", color="grey")
     ax.set_ylim(ylim)
     ax.tick_params(axis='x', labelrotation=45)
@@ -245,14 +245,14 @@ def sjoerts_sample_news():
     return fig
 
 
-@Plotter.register("fullpage")
+@Plotter.register(orientation="portrait")
 def curves():
     data = load_data()
     luminosities = data["blackbody_luminosities"]
     type_masks = data["type_masks_lum_fct"]
     redshifts = data["redshifts"]
 
-    ykey = ["flux", "luminosity", "temperature", "radius"]
+    ykey = ["luminosity", "temperature"]
     yscale = ["log", "log", "log", "log"]
     ylabel = {
         "luminosity": r"$L_\mathrm{bol}$ [erg s$^{-1}$]",
@@ -264,7 +264,7 @@ def curves():
     logger.debug(f"ykey: {ykey}, scales: {yscale}")
 
     # plot lightcurves
-    fig, axs = plt.subplots(nrows=4, ncols=1, sharex=True, gridspec_kw={"hspace": 0})
+    fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True, gridspec_kw={"hspace": 0})
     axs = np.atleast_1d(axs)
 
     for i_ykey, i_yscale, ax in zip(ykey, yscale, axs):

@@ -1,0 +1,1 @@
+from thesis_plots.defense import lightcurve

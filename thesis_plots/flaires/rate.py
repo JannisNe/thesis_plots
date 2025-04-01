@@ -90,7 +90,7 @@ def rate():
     return fig
 
 
-@Plotter.register("wide")
+@Plotter.register()
 def evolution():
     data = load_data()
     rates = data["rates"]
@@ -165,7 +165,7 @@ def evolution():
     )
     ax.set_ylim(5e-2, 12)
     ax.set_xlim(min(z_mids), max(z_bins))
-    ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncols=3, mode="expand", borderaxespad=0.)
+    ax.legend(bbox_to_anchor=(0.5, 1.02), loc='lower center', ncols=3, borderaxespad=0.)
     ax.set_yscale("log")
     ax.set_xlabel("Redshift")
     ax.set_ylabel(r"Normalized Rate")
