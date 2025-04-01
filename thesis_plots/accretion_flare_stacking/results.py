@@ -28,10 +28,10 @@ def alert_number_constraint():
 
     fig, ax = plt.subplots()
     ax.errorbar(gammas, Ns, yerr=0.2, uplims=True)
-    ax.set_ylabel(r'$N_{\nu}(E>100\,\mathrm{TeV})$')
+    ax.set_ylabel(r'$N_{\mathrm{alerts}}$ proxy')
     ax.set_xlabel(r"$\gamma$")
     ax.axhline(3, c='gray', ls='-', alpha=0.5)
-    ax.annotate(r'$N_{\nu}$=3', (max(ax.get_xlim()), 3), xytext=(-2, 2), textcoords="offset points", ha="right",
+    ax.annotate(r'$N_{\mathrm{alerts}}$=3', (max(ax.get_xlim()), 3), xytext=(-2, 2), textcoords="offset points", ha="right",
                 va="bottom", color='gray')
     ax.axvline(1, c=model_colors["IR"], ls="--", label="IR")
     ax.axvline(1.5, c=model_colors["OUV"], ls=":", label="OUV")
