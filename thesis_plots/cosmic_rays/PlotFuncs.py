@@ -134,17 +134,18 @@ class TheCrSpectrum:
             ax.text(x, y, text)
 
         # Add fill between for the E2dNdEdOmega data
+        rotation = 29
         E = np.logspace(0, 15)
         E2dNdEdOmega = E * 1. / 4. / math.pi # m2/s
-        ax.text(0.4e4, 0.8e3, r'1m$^2$/s', color='tab:gray', rotation=36)
+        ax.text(0.2e4, 0.6e3, r'1m$^2$/s', color='tab:gray', rotation=rotation)
         ax.fill_between(E, E2dNdEdOmega, 1e4, alpha=0.12, lw=0, facecolor='tab:gray', edgecolor='tab:gray')
 
         E2dNdEdOmega = E * 1. / 3.14e7 / 4. / math.pi # m2/yr
-        ax.text(4e10, 0.3e3, r'1/m$^2$/yr', color='tab:gray', rotation=36)
+        ax.text(4e10, 0.3e3, r'1/m$^2$/yr', color='tab:gray', rotation=rotation)
         ax.fill_between(E, E2dNdEdOmega, 1e4, alpha=0.12, lw=0, facecolor='tab:gray', edgecolor='tab:gray')
 
         E2dNdEdOmega = E * 1. / 3.14e7 / 1e6 / 4. / math.pi # km2/yr
-        ax.text(2.25e10, 1.6e-4, r'1/km$^2$/yr', color='tab:gray', rotation=36)
+        ax.text(2.25e10, 1.6e-4, r'1/km$^2$/yr', color='tab:gray', rotation=rotation)
         ax.fill_between(E, E2dNdEdOmega, 1e4, alpha=0.12, lw=0, facecolor='tab:gray', edgecolor='tab:gray')
 
         ax.fill_between(E, E2dNdEdOmega, 1e-10, alpha=0.06, lw=0, facecolor='tab:gray', edgecolor='tab:gray')

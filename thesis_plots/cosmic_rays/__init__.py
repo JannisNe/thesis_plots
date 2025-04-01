@@ -5,7 +5,7 @@ from thesis_plots.cosmic_rays.PlotFuncs import TheCrSpectrum
 # all credit goes to: https://github.com/carmeloevoli/The_CR_Spectrum/tree/master
 
 
-@Plotter.register("wide")
+@Plotter.register("slide")
 def spectrum():
     # Initialize the plot class
     plot = TheCrSpectrum()
