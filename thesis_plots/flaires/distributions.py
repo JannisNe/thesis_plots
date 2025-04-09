@@ -245,7 +245,7 @@ def sjoerts_sample_news():
     return fig
 
 
-@Plotter.register(orientation="portrait")
+@Plotter.register(orientation="square")
 def curves():
     data = load_data()
     luminosities = data["blackbody_luminosities"]
